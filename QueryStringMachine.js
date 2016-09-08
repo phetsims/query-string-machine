@@ -54,7 +54,7 @@ window.QueryStringMachine = (function() {
     // TODO: make sure schema default value matches schema type
     if ( values.length === 0 ) {
 
-      //
+      // If flag is not supplied, default to false.
       if ( schemaEntry.type === 'flag' ) {
         return validate( schemaEntry, false );
       }
@@ -73,6 +73,8 @@ window.QueryStringMachine = (function() {
         return validate( schemaEntry, stringToBoolean( values[ 0 ] ) );
       }
       else if ( schemaEntry.type === 'flag' ) {
+
+        // With ?webgl, default to true
         if ( values[ 0 ] === null ) {
           return validate( schemaEntry, true );
         }
