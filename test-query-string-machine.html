@@ -1,0 +1,54 @@
+<!--Test with http://localhost/query-string-machine/test-query-string-machine.html?height=7&isWebGL&wisdom=123-->
+<html>
+<head>
+  <script type="text/javascript" src="QueryStringMachine.js"></script>
+</head>
+<body>
+<script>
+
+  var assert = function( b, text ) {
+    if ( !b ) {
+      console.log( text );
+      throw new Error( text );
+    }
+  };
+
+  var values = QueryStringMachine.parse( {
+    height: {
+      type: 'number',
+      defaultValue: 6,
+      allowedValues: [ 4, 5, 6, 7, 8 ]
+    },
+    name: {
+      type: 'string',
+      defaultValue: 'Larry',
+      validate: function( str ) {
+        assert && assert( str.indexOf( 'Z' ) !== 0, 'Name cannot start with Z: ' + str );
+      }
+    },
+    custom: {
+      parse: function( string ) {
+        return string.toLowerCase();
+      },
+      allowedValues: [ 'abc', 'def', 'ghi' ],
+      defaultValue: 'abc'
+    },
+    isWebGL: {
+      type: 'flag'  // If no equals sign, then presence indicates true
+                    // If there is an equals sign, then parse string as boolean
+    },
+    translationStrings: {
+      type: 'Object',
+      defaultValue: {},
+      validate: function() {}
+    }
+  } );
+  console.log( values );
+
+  var g = QueryStringMachine.get( 'wisdom', { type: 'number' } );
+  console.log( g );
+
+</script>
+
+</body>
+</html>
