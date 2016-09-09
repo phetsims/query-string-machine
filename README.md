@@ -84,9 +84,3 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
 ```
 
 QueryStringMachine is Copyright 2016, University of Colorado Boulder and licensed under MIT
-
-Sam Reid
-
-PhET Interactive Simulations
-
-September 9, 2016
