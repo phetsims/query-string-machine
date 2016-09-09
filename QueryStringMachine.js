@@ -128,7 +128,7 @@ window.QueryStringMachine = (function() {
    */
   var validateResult = function( value, schemaElement ) {
     if ( assert ) {
-      //TODO allowedValues doesn't work for type 'array'
+      //TODO allowedValues check doesn't work for type 'array'
       schemaElement.allowedValues && assert( schemaElement.allowedValues.indexOf( value ) >= 0, 'value not allowed: ' + value + ', allowedValues = ' + schemaElement.allowedValues );
       schemaElement.validate && schemaElement.validate( value );
       schemaElement.type === 'number' && assert( typeof value === 'number', 'should have been a number' );
