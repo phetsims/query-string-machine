@@ -15,11 +15,13 @@ window.QueryStringMachine = (function() {
      * Returns the value for a single element.
      * @param key
      * @param {Object} schemaElement * required: 'type' or 'parse'
-     *                                   * type: one of 'boolean'|'number'|'string'|'flag'
+     *                                   * type: one of 'boolean'|'number'|'string'|'flag'|'array'
      *                                   * parse: a function that takes a string and returns an object
      *                               * optional: 'defaultValue' - The value to take if no query parameter is provided
      *                               * optional: 'allowedValues' - Array of the allowed values for validation
      *                               * optional: 'validate' - function that takes a parsed object (not string) and checks if it is acceptable
+     *                               * optional: 'elementType' - when type==='array' the elementType is specified here
+     *                               * optional: 'separator' - when type==='array' the elements are separated by this string
      *
      * @returns {number}
      * @public
