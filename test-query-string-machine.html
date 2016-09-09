@@ -5,7 +5,8 @@ http://localhost/query-string-machine/test-query-string-machine.html
   "height": 6,
   "name": "Larry",
   "custom": "abc",
-  "isWebGL": false
+  "isWebGL": false,
+  "screens": []
 }
 
 http://localhost/query-string-machine/test-query-string-machine.html?height=7&isWebGL&wisdom=123
@@ -13,7 +14,8 @@ http://localhost/query-string-machine/test-query-string-machine.html?height=7&is
   "height": 7,
   "name": "Larry",
   "custom": "abc",
-  "isWebGL": true
+  "isWebGL": true,
+  "screens": []
 }
 
 http://localhost/query-string-machine/test-query-string-machine.html?height=7&isWebGL&wisdom=123&custom=DEF
@@ -21,11 +23,26 @@ http://localhost/query-string-machine/test-query-string-machine.html?height=7&is
   "height": 7,
   "name": "Larry",
   "custom": "def",
-  "isWebGL": true
+  "isWebGL": true,
+  "screens": []
 }
 
 http://localhost/query-string-machine/test-query-string-machine.html?height=0
 value not allowed: 0, allowedValues = 4,5,6,7,8
+
+http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&screens=1,2,3,5
+{
+  "height": 6,
+  "name": "Larry",
+  "custom": "abc",
+  "isWebGL": true,
+  "screens": [
+    1,
+    2,
+    3,
+    5
+  ]
+}
 
 -->
 <html>
