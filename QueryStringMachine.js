@@ -35,6 +35,9 @@ window.QueryStringMachine = (function() {
      *   [allowedValues] - Array of the allowed values for validation
      *   [validate] - function that takes a parsed Object (not string) and checks if it is acceptable
      *   (allowedValues and validate are mutually exclusive)
+     *   elementType - required when type==='array', specifies the type of the elements in the array
+     *   TODO there should be a default for separator
+     *   separator - required when type==='array' the array elements are separated by this string
      * @returns {*} query parameter value, converted to the proper type
      * @public
      */
