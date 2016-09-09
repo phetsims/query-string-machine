@@ -58,6 +58,19 @@ window.QueryStringMachine = (function() {
       else if ( schemaElement.type === 'boolean' ) {
         return stringToBoolean( values[ 0 ] );
       }
+      else if ( schemaElement.type === 'array' ) {
+        var subSchemaElement = {};
+        for ( var k in schemaElement ) {
+          if ( schemaElement.hasOwnProperty( k ) && k !== 'type' ) {
+            subSchemaElement[ k ] = schemaElement;
+          }
+        }
+        assert && assert( schemaElement.elementType, 'array element type must be defined' );
+        subSchemaElement.type = schemaElement.elementType;
+        return values[ 0 ].split( schemaElement.separator ).map( function( element ) {
+          return parseElement( subSchemaElement, [ element ] );
+        } );
+      }
       else if ( schemaElement.type === 'flag' ) {
 
         // When the value is null, like for ?webgl, default to true
@@ -76,7 +89,8 @@ window.QueryStringMachine = (function() {
       }
     }
     else {
-      throw new Error( 'not implemented' );
+      // In the future we could add support for the form: ?id=1&id=2&id=7 etc
+      throw new Error( 'Specifying keys multiple times not supported..... yet?' );
     }
   };
 

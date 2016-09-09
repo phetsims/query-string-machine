@@ -65,6 +65,12 @@ value not allowed: 0, allowedValues = 4,5,6,7,8
     isWebGL: {
       type: 'flag'  // If no equals sign, then presence indicates true
                     // If there is an equals sign, then parse string as boolean
+    },
+    screens: {
+      type: 'array',
+      elementType: 'number',
+      defaultValue: [],
+      separator: ',' // such as ?screens=1,2,3.  http://stackoverflow.com/questions/2366260/whats-valid-and-whats-not-in-a-uri-query says go for commas
     }
   } );
   console.log( JSON.stringify( values, null, 2 ) );
