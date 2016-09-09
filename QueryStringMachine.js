@@ -28,8 +28,6 @@ window.QueryStringMachine = (function() {
   };
 
   /**
-   *
-   * @param key
    * @param schemaElement
    * @param {Array} values any matches from the query string, could be multiple for ?value=x&value=y for example
    * @returns {*}
@@ -117,6 +115,7 @@ window.QueryStringMachine = (function() {
     }
     return values;
   };
+
   var QueryStringMachine = {
 
     /**
