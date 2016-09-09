@@ -2,6 +2,8 @@
 
 /**
  * Query String parser that supports type coercion, defaults, error checking, etc. based on a schema.
+ * See QueryStringMachine.get for the description of a schema.
+ *
  * @author Sam Reid (PhET Interactive Simulations)
  */
 window.QueryStringMachine = (function() {
