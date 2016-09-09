@@ -121,12 +121,48 @@ window.QueryStringMachine = (function() {
   };
 
   /**
+   * Converts a string to an array.
+   *
+   * @param string
+   * @param schemaElement
+   * @returns {*[]}
+   */
+  var stringToArray = function( string, schemaElement ) {
+    var subSchemaElement = {};
+    for ( var k in schemaElement ) {
+      if ( schemaElement.hasOwnProperty( k ) && k !== 'type' ) {
+        subSchemaElement[ k ] = schemaElement;
+      }
+    }
+    assert && assert( schemaElement.elementType, 'array element type must be defined' );
+    subSchemaElement.type = schemaElement.elementType;
+    return values[ 0 ].split( schemaElement.separator ).map( function( element ) {
+      return parseElement( subSchemaElement, [ element ] );
+    } );
+  };
+
+  /**
+   * Converts a 'flag' type to boolean, based on the value (if any) provided for the query parameter.
+   *
+   * @param {string} string
+   * @returns {boolean}
+   */
+  var flagToBoolean = function( string ) {
+    if ( string === null ) {
+      return true;  // When string is null, like for ?webgl, default to true
+    }
+    else {
+      return stringToBoolean( string );
+    }
+  };
+
+  /**
    * Validates the result of parsing a schemaElement.
    *
    * @param value - see value returned by parseElement
    * @param {Object} schemaElement - see QueryStringMachine.get
    */
-  var validateResult = function( value, schemaElement ) {
+  var validateValue = function( value, schemaElement ) {
     if ( assert ) {
       //TODO allowedValues check doesn't work for type 'array'
       schemaElement.allowedValues && assert( schemaElement.allowedValues.indexOf( value ) >= 0, 'value not allowed: ' + value + ', allowedValues = ' + schemaElement.allowedValues );
@@ -176,25 +212,10 @@ window.QueryStringMachine = (function() {
           value = stringToBoolean( values[ 0 ] );
         }
         else if ( schemaElement.type === 'array' ) {
-          var subSchemaElement = {};
-          for ( var k in schemaElement ) {
-            if ( schemaElement.hasOwnProperty( k ) && k !== 'type' ) {
-              subSchemaElement[ k ] = schemaElement;
-            }
-          }
-          assert && assert( schemaElement.elementType, 'array element type must be defined' );
-          subSchemaElement.type = schemaElement.elementType;
-          value = values[ 0 ].split( schemaElement.separator ).map( function( element ) {
-            return parseElement( subSchemaElement, [ element ] );
-          } );
+          value = stringToArray( string, schemaElement );
         }
         else if ( schemaElement.type === 'flag' ) {
-          if ( values[ 0 ] === null ) {
-            value = true;  // When the value is null, like for ?webgl, default to true
-          }
-          else {
-            value = stringToBoolean( values[ 0 ] );
-          }
+          value = flagToBoolean( values[ 0 ] );
         }
         else {
           throw new Error( 'invalid type: ' + schemaElement.type );
@@ -209,7 +230,7 @@ window.QueryStringMachine = (function() {
       throw new Error( 'duplicate parameters are not currently supported' );
     }
 
-    assert && validateResult( value, schemaElement );
+    assert && validateValue( value, schemaElement );
     return value;
   };
 
