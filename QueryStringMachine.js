@@ -133,7 +133,19 @@ window.QueryStringMachine = (function() {
      * @public
      */
     get: function( key, schemaElement ) {
-      var result = parseElement( schemaElement, getValues( window.location.search, key ) );
+      return this.getForString( window.location.search, key, schemaElement );
+    },
+
+    /**
+     * Like `get` but for an arbitrary string, for testing
+     * @param {string} string
+     * @param {string} key
+     * @param {object} schemaElement, see QueryStringMachine.get
+     * @returns {*}
+     * @public (for-testing)
+     */
+    getForString: function( string, key, schemaElement ) {
+      var result = parseElement( schemaElement, getValues( string, key ) );
       validate( schemaElement, result );
       return result;
     },
@@ -161,7 +173,7 @@ window.QueryStringMachine = (function() {
       var result = {};
       for ( var key in schema ) {
         if ( schema.hasOwnProperty( key ) ) {
-          result[ key ] = this.get( key, schema[ key ] );
+          result[ key ] = this.getForString( string, key, schema[ key ] );
         }
       }
       return result;

@@ -59,7 +59,7 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
     }
   };
 
-  var values = QueryStringMachine.getAll( {
+  var schema = {
     height: {
       type: 'number',
       defaultValue: 6,
@@ -89,9 +89,47 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
       defaultValue: [],
       separator: ',' // such as ?screens=1,2,3.  http://stackoverflow.com/questions/2366260/whats-valid-and-whats-not-in-a-uri-query says go for commas
     }
-  } );
+  };
+  var values = QueryStringMachine.getAll( schema );
   console.log( JSON.stringify( values, null, 2 ) );
 
+  // Automated tests
+  var test = function( testName, queryString, expected ) {
+    assert && assert( JSON.stringify( QueryStringMachine.getAllForString( queryString, schema ) ) === JSON.stringify( expected ), testName );
+  };
+  test( 'test1', '', {
+    "height": 6,
+    "name": "Larry",
+    "custom": "abc",
+    "isWebGL": false,
+    "screens": []
+  } );
+  test( 'test2', '?height=7&isWebGL&wisdom=123', {
+    "height": 7,
+    "name": "Larry",
+    "custom": "abc",
+    "isWebGL": true,
+    "screens": []
+  } );
+  test( 'test3', '?height=7&isWebGL&wisdom=123&custom=DEF', {
+    "height": 7,
+    "name": "Larry",
+    "custom": "def",
+    "isWebGL": true,
+    "screens": []
+  } );
+  test( 'test4', '?isWebGL&screens=1,2,3,5', {
+    "height": 6,
+    "name": "Larry",
+    "custom": "abc",
+    "isWebGL": true,
+    "screens": [
+      1,
+      2,
+      3,
+      5
+    ]
+  } );
 </script>
 
 </body>
