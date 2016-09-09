@@ -226,7 +226,7 @@ window.QueryStringMachine = (function() {
       }
     }
     else {
-      //TODO add support duplicate parameters, e.g.: ?id=1&id=2&id=7
+      //TODO add support for duplicate parameters, e.g.: ?id=1&id=2&id=7
       throw new Error( 'duplicate parameters are not currently supported' );
     }
 
