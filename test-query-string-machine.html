@@ -1,4 +1,33 @@
-<!--Test with http://localhost/query-string-machine/test-query-string-machine.html?height=7&isWebGL&wisdom=123-->
+<!-- Test suite:
+
+http://localhost/query-string-machine/test-query-string-machine.html
+{
+  "height": 6,
+  "name": "Larry",
+  "custom": "abc",
+  "isWebGL": false
+}
+
+http://localhost/query-string-machine/test-query-string-machine.html?height=7&isWebGL&wisdom=123
+{
+  "height": 7,
+  "name": "Larry",
+  "custom": "abc",
+  "isWebGL": true
+}
+
+http://localhost/query-string-machine/test-query-string-machine.html?height=7&isWebGL&wisdom=123&custom=DEF
+{
+  "height": 7,
+  "name": "Larry",
+  "custom": "def",
+  "isWebGL": true
+}
+
+http://localhost/query-string-machine/test-query-string-machine.html?height=0
+value not allowed: 0, allowedValues = 4,5,6,7,8
+
+-->
 <html>
 <head>
   <script type="text/javascript" src="QueryStringMachine.js"></script>
@@ -6,7 +35,7 @@
 <body>
 <script>
 
-  var assert = function( b, text ) {
+  window.assert = function( b, text ) {
     if ( !b ) {
       console.log( text );
       throw new Error( text );
@@ -36,17 +65,9 @@
     isWebGL: {
       type: 'flag'  // If no equals sign, then presence indicates true
                     // If there is an equals sign, then parse string as boolean
-    },
-    translationStrings: {
-      type: 'Object',
-      defaultValue: {},
-      validate: function() {}
     }
   } );
-  console.log( values );
-
-  var g = QueryStringMachine.get( 'wisdom', { type: 'number' } );
-  console.log( g );
+  console.log( JSON.stringify( values, null, 2 ) );
 
 </script>
 

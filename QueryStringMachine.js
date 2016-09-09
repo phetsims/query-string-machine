@@ -21,44 +21,44 @@ window.QueryStringMachine = (function() {
     return string === 'true';
   };
 
-  var validate = function( schemaEntry, value ) {
-    schemaEntry.allowedValues && assert && assert( schemaEntry.allowedValues.indexOf( value ) >= 0, 'value not allowed: ' + value );
-    schemaEntry.validate && schemaEntry.validate( value );
-    schemaEntry.type === 'number' && assert && assert( typeof value === 'number', 'should have been a number' );
+  var validate = function( schemaElement, value ) {
+    schemaElement.allowedValues && assert && assert( schemaElement.allowedValues.indexOf( value ) >= 0, 'value not allowed: ' + value + ', allowedValues = ' + schemaElement.allowedValues );
+    schemaElement.validate && schemaElement.validate( value );
+    schemaElement.type === 'number' && assert && assert( typeof value === 'number', 'should have been a number' );
   };
 
   /**
    *
    * @param key
-   * @param schemaEntry
+   * @param schemaElement
    * @param {Array} values any matches from the query string, could be multiple for ?value=x&value=y for example
    * @returns {*}
    */
-  var parseElement = function( schemaEntry, values ) {
-    assert && assert( !(schemaEntry.allowedValues && schemaEntry.validate), 'cannot specify allowedValues and validate simultaneously' );
+  var parseElement = function( schemaElement, values ) {
+    assert && assert( !(schemaElement.allowedValues && schemaElement.validate), 'cannot specify allowedValues and validate simultaneously' );
 
     // TODO: make sure schema default value matches schema type
     if ( values.length === 0 ) {
 
       // If flag is not supplied, default to false.
-      if ( schemaEntry.type === 'flag' ) {
+      if ( schemaElement.type === 'flag' ) {
         return false;
       }
       else {
-        return schemaEntry.defaultValue;
+        return schemaElement.defaultValue;
       }
     }
     else if ( values.length === 1 ) {
-      if ( schemaEntry.type === 'number' ) {
+      if ( schemaElement.type === 'number' ) {
         return stringToNumber( values[ 0 ] );
       }
-      else if ( schemaEntry.type === 'string' ) {
+      else if ( schemaElement.type === 'string' ) {
         return stringToString( values[ 0 ] );
       }
-      else if ( schemaEntry.type === 'boolean' ) {
+      else if ( schemaElement.type === 'boolean' ) {
         return stringToBoolean( values[ 0 ] );
       }
-      else if ( schemaEntry.type === 'flag' ) {
+      else if ( schemaElement.type === 'flag' ) {
 
         // When the value is null, like for ?webgl, default to true
         if ( values[ 0 ] === null ) {
@@ -68,8 +68,8 @@ window.QueryStringMachine = (function() {
           return stringToBoolean( values[ 0 ] );
         }
       }
-      else if ( schemaEntry.parse ) {
-        return schemaEntry.parse( values[ 0 ] );
+      else if ( schemaElement.parse ) {
+        return schemaElement.parse( values[ 0 ] );
       }
       else {
         throw new Error( 'not supported' );
