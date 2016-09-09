@@ -15,21 +15,14 @@ window.QueryStringMachine = (function() {
     return string;
   };
   var stringToBoolean = function( string ) {
-    assert && assert( string === 'true' || string === 'false', 'illegal value: ' + string );
+    assert && assert( string === 'true' || string === 'false', 'illegal value for boolean: ' + string );
     return string === 'true';
   };
 
   var validate = function( schemaEntry, value ) {
-    if ( schemaEntry.allowedValues ) {
-      assert && assert( schemaEntry.allowedValues.indexOf( value ) >= 0, 'value not allowed: ' + value );
-    }
-    else if ( schemaEntry.validate ) {
-      schemaEntry.validate( value );
-    }
-    else if ( schemaEntry.type === 'number' ) {
-      assert && assert( typeof value === 'number', 'should have been a number' );
-    }
-    return value;
+    schemaEntry.allowedValues && assert && assert( schemaEntry.allowedValues.indexOf( value ) >= 0, 'value not allowed: ' + value );
+    schemaEntry.validate && schemaEntry.validate( value );
+    schemaEntry.type === 'number' && assert && assert( typeof value === 'number', 'should have been a number' );
   };
 
   /**
@@ -37,9 +30,9 @@ window.QueryStringMachine = (function() {
    * @param key
    * @param schemaEntry
    * @param {Array} values any matches from the query string, could be multiple for ?value=x&value=y for example
-   * @returns {number}
+   * @returns {*}
    */
-  var parseElement = function( key, schemaEntry, values ) {
+  var parseElement = function( schemaEntry, values ) {
     assert && assert( !(schemaEntry.allowedValues && schemaEntry.validate), 'cannot specify allowedValues and validate simultaneously' );
 
     // TODO: make sure schema default value matches schema type
@@ -47,34 +40,34 @@ window.QueryStringMachine = (function() {
 
       // If flag is not supplied, default to false.
       if ( schemaEntry.type === 'flag' ) {
-        return validate( schemaEntry, false );
+        return false;
       }
       else {
-        return validate( schemaEntry, schemaEntry.defaultValue );
+        return schemaEntry.defaultValue;
       }
     }
     else if ( values.length === 1 ) {
       if ( schemaEntry.type === 'number' ) {
-        return validate( schemaEntry, stringToNumber( values[ 0 ] ) );
+        return stringToNumber( values[ 0 ] );
       }
       else if ( schemaEntry.type === 'string' ) {
-        return validate( schemaEntry, stringToString( values[ 0 ] ) );
+        return stringToString( values[ 0 ] );
       }
       else if ( schemaEntry.type === 'boolean' ) {
-        return validate( schemaEntry, stringToBoolean( values[ 0 ] ) );
+        return stringToBoolean( values[ 0 ] );
       }
       else if ( schemaEntry.type === 'flag' ) {
 
-        // With ?webgl, default to true
+        // When the value is null, like for ?webgl, default to true
         if ( values[ 0 ] === null ) {
-          return validate( schemaEntry, true );
+          return true;
         }
         else {
-          return validate( schemaEntry, stringToBoolean( values[ 0 ] ) );
+          return stringToBoolean( values[ 0 ] );
         }
       }
       else if ( schemaEntry.parse ) {
-        return validate( schemaEntry, schemaEntry.parse( values[ 0 ] ) );
+        return schemaEntry.parse( values[ 0 ] );
       }
       else {
         throw new Error( 'not supported' );
@@ -124,7 +117,9 @@ window.QueryStringMachine = (function() {
      * @public
      */
     get: function( key, schemaElement ) {
-      return parseElement( key, schemaElement, getValues( window.location.search, key ) );
+      var result = parseElement( schemaElement, getValues( window.location.search, key ) );
+      validate( schemaElement, result );
+      return result;
     },
 
     /**
