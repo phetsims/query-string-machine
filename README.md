@@ -83,4 +83,6 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
 }
 ```
 
+Launch test-query-string-machine.html for automated tests
+
 QueryStringMachine is Copyright 2016, University of Colorado Boulder and licensed under MIT
