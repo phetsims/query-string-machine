@@ -14,7 +14,7 @@ window.QueryStringMachine = (function() {
     /**
      * Returns the value for a single element.
      * @param key
-     * @param {object} schemaElement * required: 'type' or 'parse'
+     * @param {Object} schemaElement * required: 'type' or 'parse'
      *                                   * type: one of 'boolean'|'number'|'string'|'flag'
      *                                   * parse: a function that takes a string and returns an object
      *                               * optional: 'defaultValue' - The value to take if no query parameter is provided
@@ -32,7 +32,7 @@ window.QueryStringMachine = (function() {
      * Like `get` but for an arbitrary string, for testing
      * @param {string} string
      * @param {string} key
-     * @param {object} schemaElement, see QueryStringMachine.get
+     * @param {Object} schemaElement, see QueryStringMachine.get
      * @returns {*}
      * @public (for-testing)
      */
