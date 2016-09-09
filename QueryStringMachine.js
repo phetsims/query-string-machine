@@ -9,6 +9,69 @@
 window.QueryStringMachine = (function() {
   'use strict';
 
+  var QueryStringMachine = {
+
+    /**
+     * Returns the value for a single element.
+     * @param key
+     * @param {object} schemaElement * required: 'type' or 'parse'
+     *                                   * type: one of 'boolean'|'number'|'string'|'flag'
+     *                                   * parse: a function that takes a string and returns an object
+     *                               * optional: 'defaultValue' - The value to take if no query parameter is provided
+     *                               * optional: 'allowedValues' - Array of the allowed values for validation
+     *                               * optional: 'validate' - function that takes a parsed object (not string) and checks if it is acceptable
+     *
+     * @returns {number}
+     * @public
+     */
+    get: function( key, schemaElement ) {
+      return this.getForString( window.location.search, key, schemaElement );
+    },
+
+    /**
+     * Like `get` but for an arbitrary string, for testing
+     * @param {string} string
+     * @param {string} key
+     * @param {object} schemaElement, see QueryStringMachine.get
+     * @returns {*}
+     * @public (for-testing)
+     */
+    getForString: function( string, key, schemaElement ) {
+      var result = parseElement( schemaElement, getValues( string, key ) );
+      validate( schemaElement, result );
+      return result;
+    },
+
+    /**
+     * Get query parameter values for every key, using the supplied schemas.
+     *
+     * @param {Object} schema - key is query parameter name and value is the schemaElement (see QueryStringMachine.get)
+     * @returns {Object} - key value pairs holding the parsed results
+     * @public
+     */
+    getAll: function( schema ) {
+      return this.getAllForString( window.location.search, schema );
+    },
+
+    /**
+     * Get values for each query parameter, using the supplied schemas.
+     *
+     * @param string
+     * @param schema
+     * @returns {Object} - key value pairs holding the parsed results
+     * @public (for-testing)
+     */
+    getAllForString: function( string, schema ) {
+      var result = {};
+      for ( var key in schema ) {
+        if ( schema.hasOwnProperty( key ) ) {
+          result[ key ] = this.getForString( string, key, schema[ key ] );
+        }
+      }
+      return result;
+    }
+  };
+
   // Convenience functions for parsing string to other primitive types
   var stringToNumber = function( string ) {
     return Number( string );
@@ -28,7 +91,7 @@ window.QueryStringMachine = (function() {
   };
 
   /**
-   * @param schemaElement
+   * @param schemaElement TODO add type expression and description
    * @param {Array} values any matches from the query string, could be multiple for ?value=x&value=y for example
    * @returns {*}
    */
@@ -114,69 +177,6 @@ window.QueryStringMachine = (function() {
       }
     }
     return values;
-  };
-
-  var QueryStringMachine = {
-
-    /**
-     * Returns the value for a single element.
-     * @param key
-     * @param {object} schemaElement * required: 'type' or 'parse'
-     *                                   * type: one of 'boolean'|'number'|'string'|'flag'
-     *                                   * parse: a function that takes a string and returns an object
-     *                               * optional: 'defaultValue' - The value to take if no query parameter is provided
-     *                               * optional: 'allowedValues' - Array of the allowed values for validation
-     *                               * optional: 'validate' - function that takes a parsed object (not string) and checks if it is acceptable
-     *
-     * @returns {number}
-     * @public
-     */
-    get: function( key, schemaElement ) {
-      return this.getForString( window.location.search, key, schemaElement );
-    },
-
-    /**
-     * Like `get` but for an arbitrary string, for testing
-     * @param {string} string
-     * @param {string} key
-     * @param {object} schemaElement, see QueryStringMachine.get
-     * @returns {*}
-     * @public (for-testing)
-     */
-    getForString: function( string, key, schemaElement ) {
-      var result = parseElement( schemaElement, getValues( string, key ) );
-      validate( schemaElement, result );
-      return result;
-    },
-
-    /**
-     * Get query parameter values for every key, using the supplied schemas.
-     *
-     * @param {Object} schema - key is query parameter name and value is the schemaElement (see QueryStringMachine.get)
-     * @returns {Object} - key value pairs holding the parsed results
-     * @public
-     */
-    getAll: function( schema ) {
-      return this.getAllForString( window.location.search, schema );
-    },
-
-    /**
-     * Get values for each query parameter, using the supplied schemas.
-     *
-     * @param string
-     * @param schema
-     * @returns {Object} - key value pairs holding the parsed results
-     * @public (for-testing)
-     */
-    getAllForString: function( string, schema ) {
-      var result = {};
-      for ( var key in schema ) {
-        if ( schema.hasOwnProperty( key ) ) {
-          result[ key ] = this.getForString( string, key, schema[ key ] );
-        }
-      }
-      return result;
-    }
   };
 
   return QueryStringMachine;
