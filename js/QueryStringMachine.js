@@ -18,6 +18,9 @@ window.QueryStringMachine = (function() {
     'array' // value is an array with elementType one of the VALID_TYPES and separator as specified (defaults to ',')
   ];
 
+  // Default string that splits array strings
+  var DEFAULT_SEPARATOR = ',';
+
   var QueryStringMachine = {
 
     /**
@@ -27,14 +30,13 @@ window.QueryStringMachine = (function() {
      * @param {Object} schemaElement - describes the query parameter, has these fields:
      *   type - see VALID_TYPES
      *   parse - a function that takes a string and returns an Object
-     *   (type and parse are mutually exclusive)
+     *      - (type and parse are mutually exclusive)
      *   [defaultValue] - The value to take if no query parameter is provided
      *   [allowedValues] - Array of the allowed values for validation
      *   [validate] - function that takes a parsed Object (not string) and checks if it is acceptable
-     *   (allowedValues and validate are mutually exclusive)
+     *      - (allowedValues and validate are mutually exclusive)
      *   elementType - required when type==='array', specifies the type of the elements in the array
-     *   TODO there should be a default for separator
-     *   separator - required when type==='array' the array elements are separated by this string
+     *   [separator] - when type==='array' the array elements are separated by this string, defaults to `,`
      * @returns {*} query parameter value, converted to the proper type
      * @public
      */
@@ -133,7 +135,7 @@ window.QueryStringMachine = (function() {
     }
     assert && assert( schemaElement.elementType, 'array element type must be defined' );
     subSchemaElement.type = schemaElement.elementType;
-    return string.split( schemaElement.separator ).map( function( element ) {
+    return string.split( schemaElement.separator || DEFAULT_SEPARATOR ).map( function( element ) {
       return parseElement( subSchemaElement, [ element ] );
     } );
   };

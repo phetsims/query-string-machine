@@ -32,7 +32,7 @@ QueryStringMachine.getAll( {
       type: 'array',
       elementType: 'number',
       defaultValue: [],
-      separator: ',' // such as ?screens=1,2,3.  http://stackoverflow.com/questions/2366260/whats-valid-and-whats-not-in-a-uri-query says go for commas
+      // separator can be overriden, defaults to ','
     }
   } )
 ```

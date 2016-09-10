@@ -88,8 +88,8 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
     screens: {
       type: 'array',
       elementType: 'number',
-      defaultValue: [],
-      separator: ',' // such as ?screens=1,2,3.  http://stackoverflow.com/questions/2366260/whats-valid-and-whats-not-in-a-uri-query says go for commas
+      defaultValue: []
+      // separator can be overriden, defaults to ','
     }
   };
   var values = QueryStringMachine.getAll( schema );
