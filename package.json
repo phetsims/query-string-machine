@@ -1,0 +1,16 @@
+{
+  "name": "query-string-machine",
+  "version": "1.0.0-dev.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phetsims/query-string-machine.git"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-requirejs": "~0.4.0",
+    "grunt-eslint": "~17.2.0",
+    "uglify-js": "~2.4.0",
+    "requirejs": "~2.1.8"
+  }
+}
