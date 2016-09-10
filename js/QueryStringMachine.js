@@ -15,7 +15,7 @@ window.QueryStringMachine = (function() {
     'flag', // value is true if present, false if absent. If a value is supplied, it is parsed like 'boolean'.
     'number', // value is a number, e.g. frameRate=100
     'string', // value is a string, e.g. name=Ringo
-    'array' //TODO document
+    'array' // value is an array with elementType one of the VALID_TYPES and separator as specified (defaults to ',')
   ];
 
   var QueryStringMachine = {
