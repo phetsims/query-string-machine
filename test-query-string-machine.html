@@ -98,6 +98,7 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
   // Automated tests
   var test = function( testName, queryString, expected ) {
     assert && assert( JSON.stringify( QueryStringMachine.getAllForString( queryString, schema ) ) === JSON.stringify( expected ), testName );
+    console.log( 'test passed if this is true: ' + !!assert );
   };
   test( 'test1', '', {
     "height": 6,
