@@ -99,16 +99,6 @@ window.QueryStringMachine = (function() {
     return value;
   };
 
-  //TODO is this really necessary?
-  /**
-   * Converts a string to a string.
-   * @param string
-   * @returns {*}
-   */
-  var stringToString = function( string ) {
-    return string;
-  };
-
   /**
    * Converts a string to a boolean.
    * @param string
@@ -205,7 +195,7 @@ window.QueryStringMachine = (function() {
           value = stringToNumber( values[ 0 ] );
         }
         else if ( schemaElement.type === 'string' ) {
-          value = stringToString( values[ 0 ] );
+          value = values[ 0 ];
         }
         else if ( schemaElement.type === 'boolean' ) {
           value = stringToBoolean( values[ 0 ] );
