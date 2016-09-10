@@ -1,6 +1,5 @@
 // Copyright 2016, University of Colorado Boulder
 
-//TODO Since we don't have control over what the user enters for the parameter string, assertions herein should probably be changed to Errors
 /**
  * Query String parser that supports type coercion, defaults, error checking, etc. based on a schema.
  * See QueryStringMachine.get for the description of a schema.
