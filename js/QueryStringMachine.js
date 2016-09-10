@@ -2,7 +2,6 @@
 
 //TODO Since we don't have control over what the user enters for the parameter string, assertions herein should probably be changed to Errors
 //TODO Does this need a namespace? Does this repo have a namespace?
-//TODO Can't lint this, repo is missing standard files (Gruntfile, .gitignore, ...)
 /**
  * Query String parser that supports type coercion, defaults, error checking, etc. based on a schema.
  * See QueryStringMachine.get for the description of a schema.
