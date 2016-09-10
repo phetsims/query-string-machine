@@ -93,10 +93,10 @@ window.QueryStringMachine = (function() {
    * @returns {number}
    */
   var stringToNumber = function( string ) {
-    var value = Number( string ); //TODO This looks suspicious. Should this be new Number? Should we be using Number?
+    var value = Number( string );
     // Number returns NaN if the string cannot be converted to a number
     assert && assert( !isNaN( value ), 'illegal value for type number: ' + string );
-    return value; //TODO are we returning number or Number here?
+    return value;
   };
 
   //TODO is this really necessary?
