@@ -136,7 +136,7 @@ window.QueryStringMachine = (function() {
     }
     assert && assert( schemaElement.elementType, 'array element type must be defined' );
     subSchemaElement.type = schemaElement.elementType;
-    return values[ 0 ].split( schemaElement.separator ).map( function( element ) {
+    return string.split( schemaElement.separator ).map( function( element ) {
       return parseElement( subSchemaElement, [ element ] );
     } );
   };
@@ -200,7 +200,7 @@ window.QueryStringMachine = (function() {
     else if ( values.length === 1 ) {
       if ( schemaElement.type ) {
 
-        assert && assert( _.contains( VALID_TYPES, schemaElement.type ), 'invalid type: ' + schemaElement.type );
+        assert && assert( VALID_TYPES.indexOf( schemaElement.type ) >= 0, 'invalid type: ' + schemaElement.type );
 
         if ( schemaElement.type === 'number' ) {
           value = stringToNumber( values[ 0 ] );
@@ -212,7 +212,7 @@ window.QueryStringMachine = (function() {
           value = stringToBoolean( values[ 0 ] );
         }
         else if ( schemaElement.type === 'array' ) {
-          value = stringToArray( string, schemaElement );
+          value = stringToArray( values[ 0 ], schemaElement );
         }
         else if ( schemaElement.type === 'flag' ) {
           value = flagToBoolean( values[ 0 ] );
