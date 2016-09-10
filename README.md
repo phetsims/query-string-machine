@@ -1,6 +1,6 @@
 # query-string-machine
-Query String parser that supports type coercion, defaults, error checking, etc. based on a schema.  Its sole dependency is
-lodash.
+Query String parser that supports type coercion, defaults, error checking, etc. based on a schema.  Small and
+dependency-free.
 
 For example:
 ```js
