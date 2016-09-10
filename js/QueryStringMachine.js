@@ -120,11 +120,12 @@ window.QueryStringMachine = (function() {
     var subSchemaElement = {};
     for ( var k in schemaElement ) {
       if ( schemaElement.hasOwnProperty( k ) && k !== 'type' ) {
-        subSchemaElement[ k ] = schemaElement;
+        subSchemaElement[ k ] = schemaElement[ k ];
       }
     }
     assert && assert( schemaElement.elementType, 'array element type must be defined' );
     subSchemaElement.type = schemaElement.elementType;
+    delete subSchemaElement.allowedValues; // for arrays
     return string.split( schemaElement.separator || DEFAULT_SEPARATOR ).map( function( element ) {
       return parseElement( subSchemaElement, [ element ] );
     } );
@@ -153,8 +154,26 @@ window.QueryStringMachine = (function() {
    */
   var validateValue = function( value, schemaElement ) {
     if ( assert ) {
-      //TODO allowedValues check doesn't work for type 'array'
-      schemaElement.allowedValues && assert( schemaElement.allowedValues.indexOf( value ) >= 0, 'value not allowed: ' + value + ', allowedValues = ' + schemaElement.allowedValues );
+
+      // allowedValues check for type 'array'
+      if ( schemaElement.type === 'array' && schemaElement.allowedValues ) {
+        var arrayJSON = JSON.stringify( value );
+        var matched = false;
+        for ( var i = 0; i < schemaElement.allowedValues.length; i++ ) {
+          var allowedValue = schemaElement.allowedValues[ i ];
+          if ( JSON.stringify( allowedValue ) === arrayJSON ) {
+            matched = true;
+            break;
+          }
+        }
+
+        schemaElement.allowedValues && assert( matched, 'value not allowed: ' + arrayJSON + ', allowedValues: ' + JSON.stringify( schemaElement.allowedValues ) );
+      }
+      else {
+
+        // Compare primitives with indexOf
+        schemaElement.allowedValues && assert( schemaElement.allowedValues.indexOf( value ) >= 0, 'value not allowed: ' + value + ', allowedValues: ' + JSON.stringify( schemaElement.allowedValues ) );
+      }
       schemaElement.validate && schemaElement.validate( value );
       schemaElement.type === 'number' && assert( typeof value === 'number', 'should have been a number' );
     }

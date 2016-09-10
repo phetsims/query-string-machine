@@ -89,7 +89,8 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
       type: 'array',
       elementType: 'number',
       defaultValue: []
-      // separator can be overriden, defaults to ','
+      // allowedValues is optional, for instance-- allowedValues: [ [ 1, 1, 2 ], [ 2, 3, 5 ] ]
+      // separator is optional, defaults to ','
     }
   };
   var values = QueryStringMachine.getAll( schema );
