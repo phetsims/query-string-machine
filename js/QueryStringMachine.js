@@ -249,8 +249,10 @@ window.QueryStringMachine = (function() {
       }
     }
     else {
-      //TODO add support for duplicate parameters, e.g.: ?id=1&id=2&id=7
-      throw new Error( 'duplicate parameters are not currently supported' );
+
+      // If the same key appeared multiple times for something in our schema, it is an error.
+      // QueryStringMachine only supports arrays via type:'array'
+      throw new Error( 'Parameter supplied multiple times' );
     }
 
     validateValue( value, schema );
