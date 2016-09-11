@@ -203,7 +203,6 @@ window.QueryStringMachine = (function() {
 
     var value = null;
 
-    // TODO: make sure schema.defaultValue matches schema.type (how to do that if parse is provided instead of type?)
     if ( values.length === 0 ) {
 
       //TODO Why is flag treated specially here? Why can't it have a defaultValue? If it can't have defaultValue, queryStringMachineAssert that somewhere.
