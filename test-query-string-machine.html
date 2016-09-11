@@ -61,7 +61,7 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
     }
   };
 
-  var schema = {
+  var schemaMap = {
     height: {
       type: 'number',
       defaultValue: 6,
@@ -93,12 +93,12 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
       // separator is optional, defaults to ','
     }
   };
-  var values = QueryStringMachine.getAll( schema );
+  var values = QueryStringMachine.getAll( schemaMap );
   console.log( JSON.stringify( values, null, 2 ) );
 
   // Automated tests
   var test = function( testName, queryString, expected ) {
-    assert && assert( JSON.stringify( QueryStringMachine.getAllForString( queryString, schema ) ) === JSON.stringify( expected ), testName );
+    assert && assert( JSON.stringify( QueryStringMachine.getAllForString( queryString, schemaMap ) ) === JSON.stringify( expected ), testName );
     console.log( 'test passed if this is true: ' + !!assert );
   };
   test( 'test1', '', {

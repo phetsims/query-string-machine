@@ -27,7 +27,7 @@ window.QueryStringMachine = (function() {
      * Returns the value for a single query parameter.
      *
      * @param {string} key - the query parameter name
-     * @param {Object} schemaElement - describes the query parameter, has these fields:
+     * @param {Object} schema - describes the query parameter, has these fields:
      *   type - see VALID_TYPES
      *   parse - a function that takes a string and returns an Object
      *      - (type and parse are mutually exclusive)
@@ -40,8 +40,8 @@ window.QueryStringMachine = (function() {
      * @returns {*} query parameter value, converted to the proper type
      * @public
      */
-    get: function( key, schemaElement ) {
-      return this.getForString( window.location.search, key, schemaElement );
+    get: function( key, schema ) {
+      return this.getForString( window.location.search, key, schema );
     },
 
     /**
@@ -49,38 +49,38 @@ window.QueryStringMachine = (function() {
      *
      * @param {string} string - the parameters string
      * @param {string} key - the query parameter name
-     * @param {Object} schemaElement - see QueryStringMachine.get
+     * @param {Object} schema - see QueryStringMachine.get
      * @returns {*} query parameter value, converted to the proper type
      * @public (for-testing)
      */
-    getForString: function( string, key, schemaElement ) {
-      return parseElement( schemaElement, getValues( string, key ) );
+    getForString: function( string, key, schema ) {
+      return parseElement( schema, getValues( string, key ) );
     },
 
     /**
      * Gets values for every query parameter, using the specified schema.
      *
-     * @param {Object} schema - see QueryStringMachine.getAllForString
+     * @param {Object} schemaMap - see QueryStringMachine.getAllForString
      * @returns {Object} - see QueryStringMachine.getAllForString
      * @public
      */
-    getAll: function( schema ) {
-      return this.getAllForString( window.location.search, schema );
+    getAll: function( schemaMap ) {
+      return this.getAllForString( window.location.search, schemaMap );
     },
 
     /**
      * Like `getAll` but for an arbitrary parameters string.
      *
-     * @param string - the parameters string
-     * @param schema - key/value pairs, key is query parameter name and value is a schemaElement
+     * @param {string} string - the parameters string
+     * @param {Object} schemaMap - key/value pairs, key is query parameter name and value is a schema
      * @returns {Object} - key/value pairs holding the parsed results
      * @public (for-testing)
      */
-    getAllForString: function( string, schema ) {
+    getAllForString: function( string, schemaMap ) {
       var result = {};
-      for ( var key in schema ) {
-        if ( schema.hasOwnProperty( key ) ) {
-          result[ key ] = this.getForString( string, key, schema[ key ] );
+      for ( var key in schemaMap ) {
+        if ( schemaMap.hasOwnProperty( key ) ) {
+          result[ key ] = this.getForString( string, key, schemaMap[ key ] );
         }
       }
       return result;
@@ -113,21 +113,21 @@ window.QueryStringMachine = (function() {
    * Converts a string to an array.
    *
    * @param string
-   * @param schemaElement
+   * @param schema
    * @returns {*[]}
    */
-  var stringToArray = function( string, schemaElement ) {
-    var subSchemaElement = {};
-    for ( var k in schemaElement ) {
-      if ( schemaElement.hasOwnProperty( k ) && k !== 'type' ) {
-        subSchemaElement[ k ] = schemaElement[ k ];
+  var stringToArray = function( string, schema ) {
+    var subSchema = {};
+    for ( var k in schema ) {
+      if ( schema.hasOwnProperty( k ) && k !== 'type' ) {
+        subSchema[ k ] = schema[ k ];
       }
     }
-    assert && assert( schemaElement.elementType, 'array element type must be defined' );
-    subSchemaElement.type = schemaElement.elementType;
-    delete subSchemaElement.allowedValues; // for arrays
-    return string.split( schemaElement.separator || DEFAULT_SEPARATOR ).map( function( element ) {
-      return parseElement( subSchemaElement, [ element ] );
+    assert && assert( schema.elementType, 'array element type must be defined' );
+    subSchema.type = schema.elementType;
+    delete subSchema.allowedValues; // for arrays
+    return string.split( schema.separator || DEFAULT_SEPARATOR ).map( function( element ) {
+      return parseElement( subSchema, [ element ] );
     } );
   };
 
@@ -147,90 +147,90 @@ window.QueryStringMachine = (function() {
   };
 
   /**
-   * Validates the result of parsing a schemaElement.
+   * Validates the result of parsing a schema.
    *
    * @param value - see value returned by parseElement
-   * @param {Object} schemaElement - see QueryStringMachine.get
+   * @param {Object} schema - see QueryStringMachine.get
    */
-  var validateValue = function( value, schemaElement ) {
+  var validateValue = function( value, schema ) {
     if ( assert ) {
 
       // allowedValues check for type 'array'
-      if ( schemaElement.type === 'array' && schemaElement.allowedValues ) {
+      if ( schema.type === 'array' && schema.allowedValues ) {
         var arrayJSON = JSON.stringify( value );
         var matched = false;
-        for ( var i = 0; i < schemaElement.allowedValues.length; i++ ) {
-          var allowedValue = schemaElement.allowedValues[ i ];
+        for ( var i = 0; i < schema.allowedValues.length; i++ ) {
+          var allowedValue = schema.allowedValues[ i ];
           if ( JSON.stringify( allowedValue ) === arrayJSON ) {
             matched = true;
             break;
           }
         }
 
-        schemaElement.allowedValues && assert( matched, 'value not allowed: ' + arrayJSON + ', allowedValues: ' + JSON.stringify( schemaElement.allowedValues ) );
+        schema.allowedValues && assert( matched, 'value not allowed: ' + arrayJSON + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
       }
       else {
 
         // Compare primitives with indexOf
-        schemaElement.allowedValues && assert( schemaElement.allowedValues.indexOf( value ) >= 0, 'value not allowed: ' + value + ', allowedValues: ' + JSON.stringify( schemaElement.allowedValues ) );
+        schema.allowedValues && assert( schema.allowedValues.indexOf( value ) >= 0, 'value not allowed: ' + value + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
       }
-      schemaElement.validate && schemaElement.validate( value );
-      schemaElement.type === 'number' && assert( typeof value === 'number', 'should have been a number' );
+      schema.validate && schema.validate( value );
+      schema.type === 'number' && assert( typeof value === 'number', 'should have been a number' );
     }
   };
 
   /**
-   * Uses the supplied schemaElement to convert query parameter value(s) from string to the desired value type.
+   * Uses the supplied schema to convert query parameter value(s) from string to the desired value type.
    *
-   * @param schemaElement - see QueryStringMachine.get
+   * @param schema - see QueryStringMachine.get
    * @param {string[]} values - any matches from the query string, could be multiple for ?value=x&value=y for example
    * @returns {*} the associated value, converted to the proper type
    */
-  var parseElement = function( schemaElement, values ) {
+  var parseElement = function( schema, values ) {
 
-    assert && assert( !(schemaElement.type && schemaElement.parse), 'type and parse are mutually exclusive' );
-    assert && assert( !(schemaElement.allowedValues && schemaElement.validate), 'allowedValues and validate are mutually exclusive' );
+    assert && assert( !(schema.type && schema.parse), 'type and parse are mutually exclusive' );
+    assert && assert( !(schema.allowedValues && schema.validate), 'allowedValues and validate are mutually exclusive' );
 
     var value = null;
 
-    // TODO: make sure schemaElement.defaultValue matches schemaElement.type (how to do that if parse is provided instead of type?)
+    // TODO: make sure schema.defaultValue matches schema.type (how to do that if parse is provided instead of type?)
     if ( values.length === 0 ) {
 
       //TODO Why is flag treated specially here? Why can't it have a defaultValue? If it can't have defaultValue, assert that somewhere.
       // If flag is not supplied, default to false.
-      if ( schemaElement.type === 'flag' ) {
+      if ( schema.type === 'flag' ) {
         value = false;
       }
       else {
-        value = schemaElement.defaultValue;
+        value = schema.defaultValue;
       }
     }
     else if ( values.length === 1 ) {
-      if ( schemaElement.type ) {
+      if ( schema.type ) {
 
-        assert && assert( VALID_TYPES.indexOf( schemaElement.type ) >= 0, 'invalid type: ' + schemaElement.type );
+        assert && assert( VALID_TYPES.indexOf( schema.type ) >= 0, 'invalid type: ' + schema.type );
 
-        if ( schemaElement.type === 'number' ) {
+        if ( schema.type === 'number' ) {
           value = stringToNumber( values[ 0 ] );
         }
-        else if ( schemaElement.type === 'string' ) {
+        else if ( schema.type === 'string' ) {
           value = values[ 0 ];
         }
-        else if ( schemaElement.type === 'boolean' ) {
+        else if ( schema.type === 'boolean' ) {
           value = stringToBoolean( values[ 0 ] );
         }
-        else if ( schemaElement.type === 'array' ) {
-          value = stringToArray( values[ 0 ], schemaElement );
+        else if ( schema.type === 'array' ) {
+          value = stringToArray( values[ 0 ], schema );
         }
-        else if ( schemaElement.type === 'flag' ) {
+        else if ( schema.type === 'flag' ) {
           value = flagToBoolean( values[ 0 ] );
         }
         else {
-          throw new Error( 'invalid type: ' + schemaElement.type );
+          throw new Error( 'invalid type: ' + schema.type );
         }
       }
       else {
-        value = schemaElement.parse( values[ 0 ] );
+        value = schema.parse( values[ 0 ] );
       }
     }
     else {
@@ -238,7 +238,7 @@ window.QueryStringMachine = (function() {
       throw new Error( 'duplicate parameters are not currently supported' );
     }
 
-    assert && validateValue( value, schemaElement );
+    assert && validateValue( value, schema );
     return value;
   };
 
