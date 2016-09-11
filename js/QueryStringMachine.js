@@ -203,15 +203,21 @@ window.QueryStringMachine = (function() {
 
     var value = null;
 
+    // values.length indicates that the key did not appear in the query string.
+    // for strings like ?isWebGL (without an equals sign), values.length===1 and values[0]=null
     if ( values.length === 0 ) {
 
-      //TODO Why is flag treated specially here? Why can't it have a defaultValue? If it can't have defaultValue, queryStringMachineAssert that somewhere.
-      // If flag is not supplied, default to false.
-      if ( schema.type === 'flag' ) {
+      if ( schema.hasOwnProperty( 'defaultValue' ) ) {
+        value = schema.defaultValue;
+      }
+      else if ( schema.type === 'flag' ) {
+
+        // type "flag" automatically defaults to false to support the most common usage cases.
+        // This can be overriden by specifying defaultValue.
         value = false;
       }
       else {
-        value = schema.defaultValue;
+        queryStringMachineAssert( false, 'Value cannot be determined.' );
       }
     }
     else if ( values.length === 1 ) {
