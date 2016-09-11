@@ -54,7 +54,7 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
 <body>
 <script>
 
-  window.assert = function( b, text ) {
+  var testAssert = function( b, text ) {
     if ( !b ) {
       console.log( text );
       throw new Error( text );
@@ -71,7 +71,7 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
       type: 'string',
       defaultValue: 'Larry',
       validate: function( str ) {
-        assert && assert( str.indexOf( 'Z' ) !== 0, 'Name cannot start with Z: ' + str );
+        testAssert( str.indexOf( 'Z' ) !== 0, 'Name cannot start with Z: ' + str );
       }
     },
     custom: {
@@ -98,8 +98,8 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
 
   // Automated tests
   var test = function( testName, queryString, expected ) {
-    assert && assert( JSON.stringify( QueryStringMachine.getAllForString( queryString, schemaMap ) ) === JSON.stringify( expected ), testName );
-    console.log( 'test passed if this is true: ' + !!assert );
+    testAssert( JSON.stringify( QueryStringMachine.getAllForString( queryString, schemaMap ) ) === JSON.stringify( expected ), testName );
+    console.log( 'test passed' );
   };
   test( 'test1', '', {
     "height": 6,

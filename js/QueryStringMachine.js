@@ -18,6 +18,18 @@ window.QueryStringMachine = (function() {
     'array' // value is an array with elementType one of the VALID_TYPES and separator as specified (defaults to ',')
   ];
 
+  /**
+   * The application should fail to start if query parameters are invalid (even if window.assert is disabled).
+   * @param {boolean} condition
+   * @param {string} message
+   */
+  var queryStringMachineAssert = function( condition, message ) {
+    if ( !condition ) {
+      console && console.log && console.log( 'Query String Machine Assertion failed: ' + message );
+      throw new Error( 'Assertion failed: ' + message );
+    }
+  };
+
   // Default string that splits array strings
   var DEFAULT_SEPARATOR = ',';
 
@@ -95,7 +107,7 @@ window.QueryStringMachine = (function() {
   var stringToNumber = function( string ) {
     var value = Number( string );
     // Number returns NaN if the string cannot be converted to a number
-    assert && assert( !isNaN( value ), 'illegal value for type number: ' + string );
+    queryStringMachineAssert( !isNaN( value ), 'illegal value for type number: ' + string );
     return value;
   };
 
@@ -105,7 +117,7 @@ window.QueryStringMachine = (function() {
    * @returns {boolean}
    */
   var stringToBoolean = function( string ) {
-    assert && assert( string === 'true' || string === 'false', 'illegal value for boolean: ' + string );
+    queryStringMachineAssert( string === 'true' || string === 'false', 'illegal value for boolean: ' + string );
     return ( string === 'true' );
   };
 
@@ -123,7 +135,7 @@ window.QueryStringMachine = (function() {
         subSchema[ k ] = schema[ k ];
       }
     }
-    assert && assert( schema.elementType, 'array element type must be defined' );
+    queryStringMachineAssert( schema.elementType, 'array element type must be defined' );
     subSchema.type = schema.elementType;
     delete subSchema.allowedValues; // for arrays
     return string.split( schema.separator || DEFAULT_SEPARATOR ).map( function( element ) {
@@ -153,30 +165,28 @@ window.QueryStringMachine = (function() {
    * @param {Object} schema - see QueryStringMachine.get
    */
   var validateValue = function( value, schema ) {
-    if ( assert ) {
 
-      // allowedValues check for type 'array'
-      if ( schema.type === 'array' && schema.allowedValues ) {
-        var arrayJSON = JSON.stringify( value );
-        var matched = false;
-        for ( var i = 0; i < schema.allowedValues.length; i++ ) {
-          var allowedValue = schema.allowedValues[ i ];
-          if ( JSON.stringify( allowedValue ) === arrayJSON ) {
-            matched = true;
-            break;
-          }
+    // allowedValues check for type 'array'
+    if ( schema.type === 'array' && schema.allowedValues ) {
+      var arrayJSON = JSON.stringify( value );
+      var matched = false;
+      for ( var i = 0; i < schema.allowedValues.length; i++ ) {
+        var allowedValue = schema.allowedValues[ i ];
+        if ( JSON.stringify( allowedValue ) === arrayJSON ) {
+          matched = true;
+          break;
         }
-
-        schema.allowedValues && assert( matched, 'value not allowed: ' + arrayJSON + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
       }
-      else {
 
-        // Compare primitives with indexOf
-        schema.allowedValues && assert( schema.allowedValues.indexOf( value ) >= 0, 'value not allowed: ' + value + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
-      }
-      schema.validate && schema.validate( value );
-      schema.type === 'number' && assert( typeof value === 'number', 'should have been a number' );
+      schema.allowedValues && queryStringMachineAssert( matched, 'value not allowed: ' + arrayJSON + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
     }
+    else {
+
+      // Compare primitives with indexOf
+      schema.allowedValues && queryStringMachineAssert( schema.allowedValues.indexOf( value ) >= 0, 'value not allowed: ' + value + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
+    }
+    schema.validate && schema.validate( value );
+    schema.type === 'number' && queryStringMachineAssert( typeof value === 'number', 'should have been a number' );
   };
 
   /**
@@ -188,15 +198,15 @@ window.QueryStringMachine = (function() {
    */
   var parseElement = function( schema, values ) {
 
-    assert && assert( !(schema.type && schema.parse), 'type and parse are mutually exclusive' );
-    assert && assert( !(schema.allowedValues && schema.validate), 'allowedValues and validate are mutually exclusive' );
+    queryStringMachineAssert( !(schema.type && schema.parse), 'type and parse are mutually exclusive' );
+    queryStringMachineAssert( !(schema.allowedValues && schema.validate), 'allowedValues and validate are mutually exclusive' );
 
     var value = null;
 
     // TODO: make sure schema.defaultValue matches schema.type (how to do that if parse is provided instead of type?)
     if ( values.length === 0 ) {
 
-      //TODO Why is flag treated specially here? Why can't it have a defaultValue? If it can't have defaultValue, assert that somewhere.
+      //TODO Why is flag treated specially here? Why can't it have a defaultValue? If it can't have defaultValue, queryStringMachineAssert that somewhere.
       // If flag is not supplied, default to false.
       if ( schema.type === 'flag' ) {
         value = false;
@@ -208,7 +218,7 @@ window.QueryStringMachine = (function() {
     else if ( values.length === 1 ) {
       if ( schema.type ) {
 
-        assert && assert( VALID_TYPES.indexOf( schema.type ) >= 0, 'invalid type: ' + schema.type );
+        queryStringMachineAssert( VALID_TYPES.indexOf( schema.type ) >= 0, 'invalid type: ' + schema.type );
 
         if ( schema.type === 'number' ) {
           value = stringToNumber( values[ 0 ] );
@@ -238,7 +248,7 @@ window.QueryStringMachine = (function() {
       throw new Error( 'duplicate parameters are not currently supported' );
     }
 
-    assert && validateValue( value, schema );
+    validateValue( value, schema );
     return value;
   };
 
