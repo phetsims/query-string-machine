@@ -129,17 +129,9 @@ window.QueryStringMachine = (function() {
    * @returns {*[]}
    */
   var stringToArray = function( string, schema ) {
-    var subSchema = {};
-    for ( var k in schema ) {
-      if ( schema.hasOwnProperty( k ) && k !== 'type' ) {
-        subSchema[ k ] = schema[ k ];
-      }
-    }
-    queryStringMachineAssert( schema.elementType, 'array element type must be defined' );
-    subSchema.type = schema.elementType;
-    delete subSchema.allowedValues; // for arrays
+    queryStringMachineAssert( schema.elementSchema, 'array element schema must be defined' );
     return string.split( schema.separator || DEFAULT_SEPARATOR ).map( function( element ) {
-      return parseElement( subSchema, [ element ] );
+      return parseElement( schema.elementSchema, [ element ] );
     } );
   };
 

@@ -87,7 +87,9 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
     },
     screens: {
       type: 'array',
-      elementType: 'number',
+      elementSchema: {
+        type: 'number'
+      },
       defaultValue: []
       // allowedValues is optional, for instance-- allowedValues: [ [ 1, 1, 2 ], [ 2, 3, 5 ] ]
       // separator is optional, defaults to ','
@@ -134,6 +136,26 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
       5
     ]
   } );
+
+
+  var result = QueryStringMachine.getAllForString( '?minefield=1,2,3/4,3,2', {
+    // example for nested arrays
+    minefield: {
+      type: 'array',
+      separator: '/',
+      elementSchema: {
+        type: 'array',
+        separator: ',',
+        elementSchema: {
+          type: 'number',
+          allowedValues: [ 1, 2, 3, 4 ]
+        }
+      }
+    }
+  } );
+  console.log( JSON.stringify( result ) );
+  testAssert( JSON.stringify( result ) === '{"minefield":[[1,2,3],[4,3,2]]}', 'array of number should work' )
+  console.log( 'test passed' );
 </script>
 
 </body>
