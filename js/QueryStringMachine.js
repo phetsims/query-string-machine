@@ -15,7 +15,7 @@ window.QueryStringMachine = (function() {
     'flag', // value is true if present, false if absent. If a value is supplied, it is parsed like 'boolean'.
     'number', // value is a number, e.g. frameRate=100
     'string', // value is a string, e.g. name=Ringo
-    'array' // value is an array with elementType one of the VALID_TYPES and separator as specified (defaults to ',')
+    'array' // value is an array with elementSchema and separator as specified (defaults to ',')
   ];
 
   /**
@@ -47,7 +47,7 @@ window.QueryStringMachine = (function() {
      *   [allowedValues] - Array of the allowed values for validation
      *   [validate] - function that takes a parsed Object (not string) and checks if it is acceptable
      *      - (allowedValues and validate are mutually exclusive)
-     *   elementType - required when type==='array', specifies the type of the elements in the array
+     *   elementSchema - required when type==='array', specifies the schema for elements in the array
      *   [separator] - when type==='array' the array elements are separated by this string, defaults to `,`
      * @returns {*} query parameter value, converted to the proper type
      * @public
