@@ -66,7 +66,7 @@ window.QueryStringMachine = (function() {
      * @public (for-testing)
      */
     getForString: function( string, key, schema ) {
-      return parseElement( schema, getValues( string, key ) );
+      return parseElement( key, schema, getValues( string, key ) );
     },
 
     /**
@@ -128,10 +128,10 @@ window.QueryStringMachine = (function() {
    * @param schema
    * @returns {*[]}
    */
-  var stringToArray = function( string, schema ) {
+  var stringToArray = function( key, string, schema ) {
     queryStringMachineAssert( schema.elementSchema, 'array element schema must be defined' );
     return string.split( schema.separator || DEFAULT_SEPARATOR ).map( function( element ) {
-      return parseElement( schema.elementSchema, [ element ] );
+      return parseElement( key, schema.elementSchema, [ element ] );
     } );
   };
 
@@ -184,11 +184,12 @@ window.QueryStringMachine = (function() {
   /**
    * Uses the supplied schema to convert query parameter value(s) from string to the desired value type.
    *
+   * @param {string} key - for helpful error messages
    * @param schema - see QueryStringMachine.get
    * @param {string[]} values - any matches from the query string, could be multiple for ?value=x&value=y for example
    * @returns {*} the associated value, converted to the proper type
    */
-  var parseElement = function( schema, values ) {
+  var parseElement = function( key, schema, values ) {
 
     queryStringMachineAssert( !(schema.type && schema.parse), 'type and parse are mutually exclusive' );
     queryStringMachineAssert( !(schema.allowedValues && schema.validate), 'allowedValues and validate are mutually exclusive' );
@@ -209,7 +210,7 @@ window.QueryStringMachine = (function() {
         value = false;
       }
       else {
-        queryStringMachineAssert( false, 'Value cannot be determined.' );
+        queryStringMachineAssert( false, 'missing value for "' + key + '"' );
       }
     }
     else if ( values.length === 1 ) {
@@ -227,7 +228,7 @@ window.QueryStringMachine = (function() {
           value = stringToBoolean( values[ 0 ] );
         }
         else if ( schema.type === 'array' ) {
-          value = stringToArray( values[ 0 ], schema );
+          value = stringToArray( key, values[ 0 ], schema );
         }
         else if ( schema.type === 'flag' ) {
           value = flagToBoolean( values[ 0 ] );

@@ -156,6 +156,23 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
   console.log( JSON.stringify( result ) );
   testAssert( JSON.stringify( result ) === '{"minefield":[[1,2,3],[4,3,2]]}', 'array of number should work' )
   console.log( 'test passed' );
+
+  // Test required parameter 'sim'
+  var error = null;
+  try {
+    QueryStringMachine.getAllForString( '?ea&hello=true', {
+      sim: {
+        type: 'string'
+      }
+    } );
+  }
+  catch( e ) {
+    error = e;
+    console.log( 'Kindly ignore the preceding error log, it was expected when testing for missing query parameter.' );
+  }
+  testAssert( error, 'missing query parameter should be caught' );
+  console.log( 'test passed' );
+
 </script>
 
 </body>
