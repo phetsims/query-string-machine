@@ -105,7 +105,11 @@ window.QueryStringMachine = (function() {
    * @returns {number}
    */
   var stringToNumber = function( string ) {
+
+    // See the the "Convert numeric strings to numbers" section of
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
     var value = Number( string );
+
     // Number returns NaN if the string cannot be converted to a number
     queryStringMachineAssert( !isNaN( value ), 'illegal value for type number: ' + string );
     return value;
