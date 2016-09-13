@@ -128,6 +128,7 @@ window.QueryStringMachine = (function() {
   /**
    * Converts a string to an array.
    *
+   * @param {string} key - the query parameter name
    * @param string
    * @param schema
    * @returns {*[]}
@@ -188,7 +189,7 @@ window.QueryStringMachine = (function() {
   /**
    * Uses the supplied schema to convert query parameter value(s) from string to the desired value type.
    *
-   * @param {string} key - for helpful error messages
+   * @param {string} key - the query parameter name, for helpful error messages
    * @param schema - see QueryStringMachine.get
    * @param {string[]} values - any matches from the query string, could be multiple for ?value=x&value=y for example
    * @returns {*} the associated value, converted to the proper type
