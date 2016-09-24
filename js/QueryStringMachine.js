@@ -63,26 +63,28 @@ window.QueryStringMachine = (function() {
      * @param {Object} schema - see QueryStringMachine.get
      */
     validateSchema: function( key, schema ) {
-      assert && assert( !!schema.type, 'all schemas must have a type' );
+      window.assert && assert( !!schema.type, 'all schemas must have a type' );
       var i;
       if ( typeof schema.defaultValue !== 'undefined' ) {
-        validateValue( key, schema.defaultValue, schema );
+        validateValue( key, schema.defaultValue, schema, 'validateSchema.defaultValue: ' );
       }
       if ( schema.allowedValues ) {
         for ( i = 0; i < schema.allowedValues.length; i++ ) {
-          validateValue( key, schema.allowedValues[ i ], schema );
+          validateValue( key, schema.allowedValues[ i ], schema, 'validateSchema.allowedValue: ' );
         }
       }
       var ok = false;
       if ( typeof schema.defaultValue !== 'undefined' && schema.allowedValues ) {
         for ( i = 0; i < schema.allowedValues.length; i++ ) {
-          if ( _.isEqual( schema.allowedValues[ i ], schema.defaultValue ) ) {
+
+          // TODO: validate arrays
+          if ( schema.defaultValue === schema.allowedValues[ i ] ) {
             ok = true;
             break;
           }
         }
       }
-      assert && assert( ok, 'default value sholud be allowed' );
+      window.assert && assert( ok, 'default value should be allowed' );
     },
 
     /**
@@ -193,10 +195,12 @@ window.QueryStringMachine = (function() {
   /**
    * Validates the result of parsing a schema.
    *
-   * @param value - see value returned by parseElement
+   * @param {sting} key - the query parameter key
+   * @param {Object} value - see value returned by parseElement
    * @param {Object} schema - see QueryStringMachine.get
+   * @param {string} prefix - prefix to output for error messages (such as whether it is during schema validation)
    */
-  var validateValue = function( key, value, schema ) {
+  var validateValue = function( key, value, schema, prefix ) {
 
     // allowedValues check for type 'array'
     if ( schema.type === 'array' && schema.allowedValues ) {
@@ -210,15 +214,15 @@ window.QueryStringMachine = (function() {
         }
       }
 
-      schema.allowedValues && queryStringMachineAssert( matched, key, 'value not allowed: ' + arrayJSON + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
+      schema.allowedValues && queryStringMachineAssert( matched, key, prefix + 'value not allowed: ' + arrayJSON + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
     }
     else {
 
       // Compare primitives with indexOf
-      schema.allowedValues && queryStringMachineAssert( schema.allowedValues.indexOf( value ) >= 0, key, 'value not allowed: ' + value + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
+      schema.allowedValues && queryStringMachineAssert( schema.allowedValues.indexOf( value ) >= 0, key, prefix + 'value not allowed: ' + value + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
     }
     schema.validate && schema.validate( value );
-    schema.type === 'number' && queryStringMachineAssert( typeof value === 'number', key, 'should have been a number' );
+    schema.type === 'number' && queryStringMachineAssert( typeof value === 'number', key, prefix + 'should have been a number' );
   };
 
   /**
@@ -288,7 +292,7 @@ window.QueryStringMachine = (function() {
       throw new Error( 'Parameter supplied multiple times' );
     }
 
-    validateValue( key, value, schema );
+    validateValue( key, value, schema, '' );
     return value;
   };
 
