@@ -21,11 +21,12 @@ window.QueryStringMachine = (function() {
   /**
    * The application should fail to start if query parameters are invalid (even if window.assert is disabled).
    * @param {boolean} condition
+   * @param {string} key - the key name for the query parameter being processed when the error occurred
    * @param {string} message
    */
-  var queryStringMachineAssert = function( condition, message ) {
+  var queryStringMachineAssert = function( condition, key, message ) {
     if ( !condition ) {
-      console && console.log && console.log( 'Query String Machine Assertion failed: ' + message );
+      console && console.log && console.log( 'Error for query parameter "' + key + '": ' + message );
       throw new Error( 'Assertion failed: ' + message );
     }
   };
@@ -101,17 +102,18 @@ window.QueryStringMachine = (function() {
 
   /**
    * Converts a string to a number.
-   * @param string
+   * @param {string} key - the query parameter being processed
+   * @param {string} string - the text for the number
    * @returns {number}
    */
-  var stringToNumber = function( string ) {
+  var stringToNumber = function( key, string ) {
 
     // See the the "Convert numeric strings to numbers" section of
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
     var value = Number( string );
 
     // Number returns NaN if the string cannot be converted to a number
-    queryStringMachineAssert( !isNaN( value ), 'illegal value for type number: ' + string );
+    queryStringMachineAssert( !isNaN( value ), key, 'illegal value for type number: ' + string );
     return value;
   };
 
@@ -120,8 +122,8 @@ window.QueryStringMachine = (function() {
    * @param string
    * @returns {boolean}
    */
-  var stringToBoolean = function( string ) {
-    queryStringMachineAssert( string === 'true' || string === 'false', 'illegal value for boolean: ' + string );
+  var stringToBoolean = function( key, string ) {
+    queryStringMachineAssert( string === 'true' || string === 'false', key, 'illegal value for boolean: ' + string );
     return ( string === 'true' );
   };
 
@@ -134,7 +136,7 @@ window.QueryStringMachine = (function() {
    * @returns {*[]}
    */
   var stringToArray = function( key, string, schema ) {
-    queryStringMachineAssert( schema.elementSchema, 'array element schema must be defined' );
+    queryStringMachineAssert( schema.elementSchema, key, 'array element schema must be defined' );
     return string.split( schema.separator || DEFAULT_SEPARATOR ).map( function( element ) {
       return parseElement( key, schema.elementSchema, [ element ] );
     } );
@@ -143,15 +145,16 @@ window.QueryStringMachine = (function() {
   /**
    * Converts a 'flag' type to boolean, based on the value (if any) provided for the query parameter.
    *
+   * @param {string} key - the query parameter key that is being processed
    * @param {string} string
    * @returns {boolean}
    */
-  var flagToBoolean = function( string ) {
+  var flagToBoolean = function( key, string ) {
     if ( string === null ) {
       return true;  // When string is null, like for ?webgl, default to true
     }
     else {
-      return stringToBoolean( string );
+      return stringToBoolean( key, string );
     }
   };
 
@@ -161,7 +164,7 @@ window.QueryStringMachine = (function() {
    * @param value - see value returned by parseElement
    * @param {Object} schema - see QueryStringMachine.get
    */
-  var validateValue = function( value, schema ) {
+  var validateValue = function( key, value, schema ) {
 
     // allowedValues check for type 'array'
     if ( schema.type === 'array' && schema.allowedValues ) {
@@ -175,15 +178,15 @@ window.QueryStringMachine = (function() {
         }
       }
 
-      schema.allowedValues && queryStringMachineAssert( matched, 'value not allowed: ' + arrayJSON + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
+      schema.allowedValues && queryStringMachineAssert( matched, key, 'value not allowed: ' + arrayJSON + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
     }
     else {
 
       // Compare primitives with indexOf
-      schema.allowedValues && queryStringMachineAssert( schema.allowedValues.indexOf( value ) >= 0, 'value not allowed: ' + value + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
+      schema.allowedValues && queryStringMachineAssert( schema.allowedValues.indexOf( value ) >= 0, key, 'value not allowed: ' + value + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
     }
     schema.validate && schema.validate( value );
-    schema.type === 'number' && queryStringMachineAssert( typeof value === 'number', 'should have been a number' );
+    schema.type === 'number' && queryStringMachineAssert( typeof value === 'number', key, 'should have been a number' );
   };
 
   /**
@@ -196,8 +199,8 @@ window.QueryStringMachine = (function() {
    */
   var parseElement = function( key, schema, values ) {
 
-    queryStringMachineAssert( !(schema.type && schema.parse), 'type and parse are mutually exclusive' );
-    queryStringMachineAssert( !(schema.allowedValues && schema.validate), 'allowedValues and validate are mutually exclusive' );
+    queryStringMachineAssert( !(schema.type && schema.parse), key, 'type and parse are mutually exclusive' );
+    queryStringMachineAssert( !(schema.allowedValues && schema.validate), key, 'allowedValues and validate are mutually exclusive' );
 
     var value = null;
 
@@ -215,16 +218,16 @@ window.QueryStringMachine = (function() {
         value = false;
       }
       else {
-        queryStringMachineAssert( false, 'missing value for "' + key + '"' );
+        queryStringMachineAssert( false, key, 'missing value for "' + key + '"' );
       }
     }
     else if ( values.length === 1 ) {
       if ( schema.type ) {
 
-        queryStringMachineAssert( VALID_TYPES.indexOf( schema.type ) >= 0, 'invalid type: ' + schema.type );
+        queryStringMachineAssert( VALID_TYPES.indexOf( schema.type ) >= 0, key, 'invalid type: ' + schema.type );
 
         if ( schema.type === 'number' ) {
-          value = stringToNumber( values[ 0 ] );
+          value = stringToNumber( key, values[ 0 ] );
         }
         else if ( schema.type === 'string' ) {
           value = values[ 0 ];
@@ -236,7 +239,7 @@ window.QueryStringMachine = (function() {
           value = stringToArray( key, values[ 0 ], schema );
         }
         else if ( schema.type === 'flag' ) {
-          value = flagToBoolean( values[ 0 ] );
+          value = flagToBoolean( key, values[ 0 ] );
         }
         else {
           throw new Error( 'invalid type: ' + schema.type );
@@ -253,7 +256,7 @@ window.QueryStringMachine = (function() {
       throw new Error( 'Parameter supplied multiple times' );
     }
 
-    validateValue( value, schema );
+    validateValue( key, value, schema );
     return value;
   };
 
