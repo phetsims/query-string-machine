@@ -58,6 +58,34 @@ window.QueryStringMachine = (function() {
     },
 
     /**
+     * Make sure default values and allowed values have the right type.
+     * @param {string} key - for error reporting
+     * @param {Object} schema - see QueryStringMachine.get
+     */
+    validateSchema: function( key, schema ) {
+      assert && assert( !!schema.type, 'all schemas must have a type' );
+      var i;
+      if ( typeof schema.defaultValue !== 'undefined' ) {
+        validateValue( key, schema.defaultValue, schema );
+      }
+      if ( schema.allowedValues ) {
+        for ( i = 0; i < schema.allowedValues.length; i++ ) {
+          validateValue( key, schema.allowedValues[ i ], schema );
+        }
+      }
+      var ok = false;
+      if ( typeof schema.defaultValue !== 'undefined' && schema.allowedValues ) {
+        for ( i = 0; i < schema.allowedValues.length; i++ ) {
+          if ( _.isEqual( schema.allowedValues[ i ], schema.defaultValue ) ) {
+            ok = true;
+            break;
+          }
+        }
+      }
+      assert && assert( ok, 'default value sholud be allowed' );
+    },
+
+    /**
      * Like `get` but for an arbitrary parameters string.
      *
      * @param {string} string - the parameters string
@@ -67,11 +95,15 @@ window.QueryStringMachine = (function() {
      * @public (for-testing)
      */
     getForString: function( string, key, schema ) {
+
+      // This code is run for every schema in a map, so it is a good place to validate defaults
+      this.validateSchema( key, schema );
+
       return parseElement( key, schema, getValues( string, key ) );
     },
 
     /**
-     * Gets values for every query parameter, using the specified schema.
+     * Gets values for every query parameter, using the specified schema map.
      *
      * @param {Object} schemaMap - see QueryStringMachine.getAllForString
      * @returns {Object} - see QueryStringMachine.getAllForString
