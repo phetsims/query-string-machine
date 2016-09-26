@@ -84,7 +84,7 @@ window.QueryStringMachine = (function() {
           }
         }
       }
-      window.assert && assert( ok, 'default value should be allowed' );
+      window.assert && assert( ok, 'defaultValue must be a member of allowedValues' );
     },
 
     /**
