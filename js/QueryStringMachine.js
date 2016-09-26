@@ -69,26 +69,22 @@ window.QueryStringMachine = (function() {
     validateSchema: function( key, schema ) {
       assert && assert( !!schema.type, formatErrorMessage( key, 'all schemas must have a type' ) );
       var i;
+
       if ( typeof schema.defaultValue !== 'undefined' ) {
         validateValue( key, schema.defaultValue, schema, 'validateSchema.defaultValue: ' );
       }
+
       if ( schema.allowedValues ) {
         for ( i = 0; i < schema.allowedValues.length; i++ ) {
           validateValue( key, schema.allowedValues[ i ], schema, 'validateSchema.allowedValue: ' );
         }
       }
-      var ok = false;
-      if ( typeof schema.defaultValue !== 'undefined' && schema.allowedValues ) {
-        for ( i = 0; i < schema.allowedValues.length; i++ ) {
 
-          // TODO: validate arrays
-          if ( schema.defaultValue === schema.allowedValues[ i ] ) {
-            ok = true;
-            break;
-          }
-        }
+      // TODO: validate arrays
+      if ( typeof schema.defaultValue !== 'undefined' && schema.allowedValues ) {
+        var validDefault = ( schema.allowedValues.indexOf( schema.defaultValue ) !== -1 );
+        assert && assert( validDefault, formatErrorMessage( key, 'defaultValue must be a member of allowedValues' ) );
       }
-      assert && assert( ok, formatErrorMessage( key, 'defaultValue must be a member of allowedValues' ) );
     },
 
     /**
