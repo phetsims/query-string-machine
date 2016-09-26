@@ -18,29 +18,6 @@ window.QueryStringMachine = (function() {
     'array' // value is an array with elementSchema and separator as specified (defaults to ',')
   ];
 
-  /**
-   * The application should fail to start if query parameters are invalid (even if window.assert is disabled).
-   * @param {boolean} condition
-   * @param {string} key - the key name for the query parameter being processed when the error occurred
-   * @param {string} message
-   */
-  var queryStringMachineAssert = function( condition, key, message ) {
-    if ( !condition ) {
-      console && console.log && console.log( formatErrorMessage( key, message ) );
-      throw new Error( 'Assertion failed: ' + message );
-    }
-  };
-
-  /**
-   * Formats an error message.
-   * @param {string} key
-   * @param {string} message
-   * @returns {string}
-   */
-  var formatErrorMessage = function( key, message ) {
-    return 'Error for query parameter "' + key + '": ' + message;
-  };
-
   // Default string that splits array strings
   var DEFAULT_SEPARATOR = ',';
 
@@ -325,6 +302,29 @@ window.QueryStringMachine = (function() {
       }
     }
     return values;
+  };
+
+  /**
+   * The application should fail to start if query parameters are invalid (even if window.assert is disabled).
+   * @param {boolean} condition
+   * @param {string} key - the key name for the query parameter being processed when the error occurred
+   * @param {string} message
+   */
+  var queryStringMachineAssert = function( condition, key, message ) {
+    if ( !condition ) {
+      console && console.log && console.log( formatErrorMessage( key, message ) );
+      throw new Error( 'Assertion failed: ' + message );
+    }
+  };
+
+  /**
+   * Formats an error message.
+   * @param {string} key
+   * @param {string} message
+   * @returns {string}
+   */
+  var formatErrorMessage = function( key, message ) {
+    return 'Error for query parameter "' + key + '": ' + message;
   };
 
   return QueryStringMachine;
