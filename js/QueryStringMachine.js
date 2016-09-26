@@ -31,6 +31,12 @@ window.QueryStringMachine = (function() {
     }
   };
 
+  /**
+   * Formats an error message.
+   * @param {string} key
+   * @param {string} message
+   * @returns {string}
+   */
   var formatErrorMessage = function( key, message ) {
     return 'Error for query parameter "' + key + '": ' + message;
   };
