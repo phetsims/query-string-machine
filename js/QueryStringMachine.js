@@ -26,9 +26,13 @@ window.QueryStringMachine = (function() {
    */
   var queryStringMachineAssert = function( condition, key, message ) {
     if ( !condition ) {
-      console && console.log && console.log( 'Error for query parameter "' + key + '": ' + message );
+      console && console.log && console.log( formatErrorMessage( key, message ) );
       throw new Error( 'Assertion failed: ' + message );
     }
+  };
+
+  var formatErrorMessage = function( key, message ) {
+    return 'Error for query parameter "' + key + '": ' + message;
   };
 
   // Default string that splits array strings
@@ -63,7 +67,7 @@ window.QueryStringMachine = (function() {
      * @param {Object} schema - see QueryStringMachine.get
      */
     validateSchema: function( key, schema ) {
-      window.assert && assert( !!schema.type, 'all schemas must have a type' );
+      assert && assert( !!schema.type, formatErrorMessage( key, 'all schemas must have a type' ) );
       var i;
       if ( typeof schema.defaultValue !== 'undefined' ) {
         validateValue( key, schema.defaultValue, schema, 'validateSchema.defaultValue: ' );
@@ -84,7 +88,7 @@ window.QueryStringMachine = (function() {
           }
         }
       }
-      window.assert && assert( ok, 'defaultValue must be a member of allowedValues' );
+      assert && assert( ok, formatErrorMessage( key, 'defaultValue must be a member of allowedValues' ) );
     },
 
     /**
