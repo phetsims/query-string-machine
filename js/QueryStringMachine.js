@@ -32,9 +32,9 @@ window.QueryStringMachine = (function() {
      *   parse - a function that takes a string and returns an Object
      *      - (type and parse are mutually exclusive)
      *   [defaultValue] - The value to take if no query parameter is provided
-     *   [allowedValues] - Array of the allowed values for validation
-     *   [validate] - function that takes a parsed Object (not string) and checks if it is acceptable
-     *      - (allowedValues and validate are mutually exclusive)
+     *   [validValues] - Array of the valid values for the query parameter
+     *   [isValidValue] - function that takes a parsed Object (not string) and checks if it is acceptable
+     *      - (validValues and isValidValue are mutually exclusive)
      *   elementSchema - required when type==='array', specifies the schema for elements in the array
      *   [separator] - when type==='array' the array elements are separated by this string, defaults to `,`
      * @returns {*} query parameter value, converted to the proper type
@@ -57,16 +57,16 @@ window.QueryStringMachine = (function() {
         validateValue( key, schema.defaultValue, schema, 'validateSchema.defaultValue: ' );
       }
 
-      if ( schema.allowedValues ) {
-        for ( i = 0; i < schema.allowedValues.length; i++ ) {
-          validateValue( key, schema.allowedValues[ i ], schema, 'validateSchema.allowedValue: ' );
+      if ( schema.validValues ) {
+        for ( i = 0; i < schema.validValues.length; i++ ) {
+          validateValue( key, schema.validValues[ i ], schema, 'validateSchema.allowedValue: ' );
         }
       }
 
       // TODO: validate arrays
-      if ( typeof schema.defaultValue !== 'undefined' && schema.allowedValues ) {
-        var validDefault = ( schema.allowedValues.indexOf( schema.defaultValue ) !== -1 );
-        assert && assert( validDefault, formatErrorMessage( key, 'defaultValue must be a member of allowedValues' ) );
+      if ( typeof schema.defaultValue !== 'undefined' && schema.validValues ) {
+        var validDefault = ( schema.validValues.indexOf( schema.defaultValue ) !== -1 );
+        assert && assert( validDefault, formatErrorMessage( key, 'defaultValue must be a member of validValues' ) );
       }
     },
 
@@ -178,33 +178,33 @@ window.QueryStringMachine = (function() {
   /**
    * Validates the result of parsing a schema.
    *
-   * @param {sting} key - the query parameter key
+   * @param {string} key - the query parameter key
    * @param {Object} value - see value returned by parseElement
    * @param {Object} schema - see QueryStringMachine.get
    * @param {string} prefix - prefix to output for error messages (such as whether it is during schema validation)
    */
   var validateValue = function( key, value, schema, prefix ) {
 
-    // allowedValues check for type 'array'
-    if ( schema.type === 'array' && schema.allowedValues ) {
+    // validValues check for type 'array'
+    if ( schema.type === 'array' && schema.validValues ) {
       var arrayJSON = JSON.stringify( value );
       var matched = false;
-      for ( var i = 0; i < schema.allowedValues.length; i++ ) {
-        var allowedValue = schema.allowedValues[ i ];
+      for ( var i = 0; i < schema.validValues.length; i++ ) {
+        var allowedValue = schema.validValues[ i ];
         if ( JSON.stringify( allowedValue ) === arrayJSON ) {
           matched = true;
           break;
         }
       }
 
-      schema.allowedValues && queryStringMachineAssert( matched, key, prefix + 'value not allowed: ' + arrayJSON + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
+      schema.validValues && queryStringMachineAssert( matched, key, prefix + 'value not allowed: ' + arrayJSON + ', validValues: ' + JSON.stringify( schema.validValues ) );
     }
     else {
 
       // Compare primitives with indexOf
-      schema.allowedValues && queryStringMachineAssert( schema.allowedValues.indexOf( value ) >= 0, key, prefix + 'value not allowed: ' + value + ', allowedValues: ' + JSON.stringify( schema.allowedValues ) );
+      schema.validValues && queryStringMachineAssert( schema.validValues.indexOf( value ) >= 0, key, prefix + 'value not allowed: ' + value + ', validValues: ' + JSON.stringify( schema.validValues ) );
     }
-    schema.validate && schema.validate( value );
+    schema.isValidValue && schema.isValidValue( value );
     schema.type === 'number' && queryStringMachineAssert( typeof value === 'number', key, prefix + 'should have been a number' );
   };
 
@@ -219,7 +219,7 @@ window.QueryStringMachine = (function() {
   var parseElement = function( key, schema, values ) {
 
     queryStringMachineAssert( !(schema.type && schema.parse), key, 'type and parse are mutually exclusive' );
-    queryStringMachineAssert( !(schema.allowedValues && schema.validate), key, 'allowedValues and validate are mutually exclusive' );
+    queryStringMachineAssert( !(schema.validValues && schema.isValidValue), key, 'validValues and isValidValue are mutually exclusive' );
 
     var value = null;
 
