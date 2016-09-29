@@ -9,6 +9,10 @@
 window.QueryStringMachine = (function() {
   'use strict';
 
+  // Query String Machine has been designed as a zero-dependency module for ease of use in any project.
+  // window.assert and assert both check for the existence of a global named assert. However, the latter errors out if the global is not found.
+  var assert = window.assert;
+
   // valid values for the 'type' field in the schema that describes a query parameter
   var VALID_TYPES = [
     'boolean', // value is either 'true' or 'false', e.g. showAnswer=true
