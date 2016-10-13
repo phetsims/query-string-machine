@@ -1,6 +1,6 @@
 // Copyright 2016, University of Colorado Boulder
 
-( function() {
+(function() {
   'use strict';
 
   var testAssert = function( b, text ) {
@@ -32,7 +32,7 @@
     },
     isWebGL: {
       type: 'flag' // If no equals sign, then presence indicates true
-        // If there is an equals sign, then parse string as boolean
+      // If there is an equals sign, then parse string as boolean
     },
     screens: {
       type: 'array',
@@ -40,8 +40,8 @@
         type: 'number'
       },
       defaultValue: []
-        // allowedValues is optional, for instance-- allowedValues: [ [ 1, 1, 2 ], [ 2, 3, 5 ] ]
-        // separator is optional, defaults to ','
+      // allowedValues is optional, for instance-- allowedValues: [ [ 1, 1, 2 ], [ 2, 3, 5 ] ]
+      // separator is optional, defaults to ','
     }
   };
   var values = QueryStringMachine.getAll( schemaMap );
@@ -115,11 +115,11 @@
       }
     } );
   }
-  catch ( e ) {
+  catch( e ) {
     error = e;
     console.log( 'Kindly ignore the preceding error log, it was expected when testing for missing query parameter.' );
   }
   testAssert( error, 'missing query parameter should be caught' );
   console.log( 'test passed' );
 
-} )();
+})();
