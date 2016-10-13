@@ -47,32 +47,50 @@
   var values = QueryStringMachine.getAll( schemaMap );
   console.log( JSON.stringify( values, null, 2 ) );
 
-  // Automated tests
-  var test = function( testName, queryString, expected ) {
-    testAssert( JSON.stringify( QueryStringMachine.getAllForString( queryString, schemaMap ) ) === JSON.stringify( expected ), testName );
-    console.log( 'test passed' );
+  /**
+   * Automated testing function
+   *
+   * @param  {string} testName - identifier for the test being run
+   * @param  {string} queryString - the query string to be parsed
+   * @param  {Object} expected - expected result to test against
+   * @param  {Object} schema - specification for use in parsing queryString
+   */
+  var test = function( testName, queryString, expected, schema ) {
+    var parsedQueryString = QueryStringMachine.getAllForString( queryString, schema );
+    var a = JSON.stringify( parsedQueryString );
+    var b = JSON.stringify( expected );
+    if ( a !== b ) {
+      console.log('Mismatch: ' + a + ' vs. ' + b );
+    }
+    testAssert( a === b, testName );
+    console.log( testName + ' passed' );
   };
+
+  // Automated tests
   test( 'test1', '', {
     'height': 6,
     'name': 'Larry',
     'custom': 'abc',
     'isWebGL': false,
     'screens': []
-  } );
+  }, schemaMap );
+
   test( 'test2', '?height=7&isWebGL&wisdom=123', {
     'height': 7,
     'name': 'Larry',
     'custom': 'abc',
     'isWebGL': true,
     'screens': []
-  } );
+  }, schemaMap );
+
   test( 'test3', '?height=7&isWebGL&wisdom=123&custom=DEF', {
     'height': 7,
     'name': 'Larry',
     'custom': 'def',
     'isWebGL': true,
     'screens': []
-  } );
+  }, schemaMap );
+
   test( 'test4', '?isWebGL&screens=1,2,3,5', {
     'height': 6,
     'name': 'Larry',
@@ -84,11 +102,10 @@
       3,
       5
     ]
-  } );
+  }, schemaMap );
 
-
-  var result = QueryStringMachine.getAllForString( '?minefield=1,2,3/4,3,2', {
-    // example for nested arrays
+  // example schema for nested arrays
+  var minefieldArraySchema = {
     minefield: {
       type: 'array',
       separator: '/',
@@ -101,10 +118,11 @@
         }
       }
     }
-  } );
-  console.log( JSON.stringify( result ) );
-  testAssert( JSON.stringify( result ) === '{"minefield":[[1,2,3],[4,3,2]]}', 'array of number should work' );
-  console.log( 'test passed' );
+  };
+
+  test( 'test5', '?minefield=1,2,3/4,3,2', {
+    'minefield': [[ 1, 2, 3 ], [ 4, 3, 2 ]]
+  }, minefieldArraySchema );
 
   // Test required parameter 'sim'
   var error = null;
