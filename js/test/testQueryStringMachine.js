@@ -138,6 +138,7 @@
     console.log( 'Kindly ignore the preceding error log, it was expected when testing for missing query parameter.' );
   }
   testAssert( error, 'missing query parameter should be caught' );
-  console.log( 'test passed' );
 
+  // If this point is reached, congratulations
+  console.log( '\n* All tests passed *' );
 })();
