@@ -116,6 +116,9 @@
           type: 'number',
           allowedValues: [ 1, 2, 3, 4 ]
         }
+      },
+      validate: function( str ) {
+        testAssert( false, 'Assert message' );
       }
     }
   };
@@ -123,6 +126,47 @@
   test( 'test5', '?minefield=1,2,3/4,3,2', {
     'minefield': [[ 1, 2, 3 ], [ 4, 3, 2 ]]
   }, minefieldArraySchema );
+
+  var colorArraySchema = {
+     colors: {
+      type: 'array',
+      elementSchema: {
+        type: 'string'
+      },
+      defaultValue: ['red', 'green', 'blue']
+      // allowedValues is optional, for instance-- allowedValues: [ [ 1, 1, 2 ], [ 2, 3, 5 ] ]
+      // separator is optional, defaults to ','
+    }
+  };
+
+  test( 'test6', '?colors=red,blue', {
+    'colors': [ 'red', 'blue' ]
+  }, colorArraySchema );
+
+
+( function() {
+  var parsedQuery = QueryStringMachine.getAllForString( '?numbers=2,4,1', {
+    numbers: {
+      type: 'array',
+      elementSchema: {
+        type: 'number'
+      },
+      defaultValue: [ 1, 2, 3 ]
+    }
+  } );
+
+  var sum = parsedQuery.numbers.reduce( function( a, b ) { return a + b; }, 0 );
+
+  try {
+    // TODO: add assertion that sum === 7 in QueryStringMachine.
+    // Then change numbers so the error is triggered
+  }
+  catch ( e ) {
+    console.log( 'catching ' + e );
+  }
+    testAssert( sum === 7, 'Error: array sum must be 7' );
+
+} )();
 
   // Test required parameter 'sim'
   var error = null;
