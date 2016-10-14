@@ -216,7 +216,6 @@
       // validValues check for type 'array'
       if ( schema.type === 'array' && schema.validValues ) {
         var arrayJSON = JSON.stringify( value );
-        console.log(arrayJSON);
         var matched = false;
         for ( var i = 0; i < schema.validValues.length; i++ ) {
           var allowedValue = schema.validValues[ i ];
