@@ -104,8 +104,12 @@
     ]
   }, schemaMap );
 
-  // example schema for nested arrays
-  var minefieldArraySchema = {
+  test( 'test5', '?minefield=1,2,3/4,3,2', {
+    'minefield': [
+      [ 1, 2, 3 ],
+      [ 4, 3, 2 ]
+    ]
+  }, {
     minefield: {
       type: 'array',
       separator: '/',
@@ -121,11 +125,7 @@
         testAssert( false, 'Assert message' );
       }
     }
-  };
-
-  test( 'test5', '?minefield=1,2,3/4,3,2', {
-    'minefield': [[ 1, 2, 3 ], [ 4, 3, 2 ]]
-  }, minefieldArraySchema );
+  } );
 
   var colorArraySchema = {
      colors: {
