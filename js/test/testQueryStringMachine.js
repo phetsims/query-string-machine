@@ -14,12 +14,12 @@
     height: {
       type: 'number',
       defaultValue: 6,
-      allowedValues: [ 4, 5, 6, 7, 8 ]
+      validValues: [ 4, 5, 6, 7, 8 ]
     },
     name: {
       type: 'string',
       defaultValue: 'Larry',
-      validate: function( str ) {
+      isValidValue: function( str ) {
         testAssert( str.indexOf( 'Z' ) !== 0, 'Name cannot start with Z: ' + str );
       }
     },
@@ -27,7 +27,7 @@
       parse: function( string ) {
         return string.toLowerCase();
       },
-      allowedValues: [ 'abc', 'def', 'ghi' ],
+      validValues: [ 'abc', 'def', 'ghi' ],
       defaultValue: 'abc'
     },
     isWebGL: {
@@ -40,7 +40,7 @@
         type: 'number'
       },
       defaultValue: []
-      // allowedValues is optional, for instance-- allowedValues: [ [ 1, 1, 2 ], [ 2, 3, 5 ] ]
+      // validValues is optional, for instance-- validValues: [ [ 1, 1, 2 ], [ 2, 3, 5 ] ]
       // separator is optional, defaults to ','
     }
   };
@@ -118,10 +118,10 @@
         separator: ',',
         elementSchema: {
           type: 'number',
-          allowedValues: [ 1, 2, 3, 4 ]
+          validValues: [ 1, 2, 3, 4 ]
         }
       },
-      validate: function( str ) {
+      isValidValue: function( str ) {
         testAssert( false, 'Assert message' );
       }
     }
@@ -134,7 +134,7 @@
         type: 'string'
       },
       defaultValue: ['red', 'green', 'blue']
-      // allowedValues is optional, for instance-- allowedValues: [ [ 1, 1, 2 ], [ 2, 3, 5 ] ]
+      // validValues is optional, for instance-- validValues: [ [ 1, 1, 2 ], [ 2, 3, 5 ] ]
       // separator is optional, defaults to ','
     }
   };
