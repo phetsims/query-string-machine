@@ -122,7 +122,7 @@
         }
       },
       isValidValue: function( str ) {
-        return true; //TODO AA needs to fix this
+        return true; //TODO AA needs to fix this, see https://github.com/phetsims/query-string-machine/issues/11
       }
     }
   } );
