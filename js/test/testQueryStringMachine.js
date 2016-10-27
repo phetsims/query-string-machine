@@ -20,7 +20,7 @@
       type: 'string',
       defaultValue: 'Larry',
       isValidValue: function( str ) {
-        testAssert( str.indexOf( 'Z' ) !== 0, 'Name cannot start with Z: ' + str );
+        return ( str.indexOf( 'Z' ) !== 0 ); // Name cannot start with 'Z'
       }
     },
     custom: {
@@ -122,7 +122,7 @@
         }
       },
       isValidValue: function( str ) {
-        testAssert( false, 'Assert message' );
+        return true; //TODO AA needs to fix this
       }
     }
   } );

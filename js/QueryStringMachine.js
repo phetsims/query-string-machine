@@ -232,7 +232,7 @@
         // Compare primitives with indexOf
         schema.validValues && queryStringMachineAssert( schema.validValues.indexOf( value ) >= 0, key, prefix + 'value not allowed: ' + value + ', validValues: ' + JSON.stringify( schema.validValues ) );
       }
-      schema.isValidValue && schema.isValidValue( value );
+      schema.isValidValue && queryStringMachineAssert( schema.isValidValue( value ), key, prefix + 'value not allowed: ' + value );
       schema.type === 'number' && queryStringMachineAssert( typeof value === 'number', key, prefix + 'should have been a number' );
     };
 
