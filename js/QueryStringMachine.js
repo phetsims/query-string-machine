@@ -142,6 +142,19 @@
           }
         }
         return result;
+      },
+
+      /**
+       * Returns true if the window.location.search contains the given key
+       * @param {string} key
+       */
+      containsKey: function( key ) {
+        return this.containsKeyForString( window.location.search, key );
+      },
+
+      containsKeyForString: function( string, key ) {
+        var values = getValues( string, key );
+        return values.length > 0;
       }
     };
 
