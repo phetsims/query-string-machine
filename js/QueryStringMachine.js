@@ -293,7 +293,7 @@
             value = values[ 0 ];
           }
           else if ( schema.type === 'boolean' ) {
-            value = stringToBoolean( values[ 0 ] );
+            value = stringToBoolean( key, values[ 0 ] );
           }
           else if ( schema.type === 'array' ) {
             value = stringToArray( key, values[ 0 ], schema );
