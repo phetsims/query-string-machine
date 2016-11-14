@@ -166,6 +166,8 @@
      */
     var stringToNumber = function( key, string ) {
 
+      queryStringMachineAssert( string && string.length > 0, key, 'missing value' );
+
       // See the the "Convert numeric strings to numbers" section of
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
       var value = Number( string );
