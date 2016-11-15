@@ -196,6 +196,7 @@
      * @returns {*[]}
      */
     var stringToArray = function( key, string, schema ) {
+      queryStringMachineAssert( string, key, 'missing value' );
       queryStringMachineAssert( schema.elementSchema, key, 'array element schema must be defined' );
       return string.split( schema.separator || DEFAULT_SEPARATOR ).map( function( element ) {
         return parseElement( key, schema.elementSchema, [ element ] );
