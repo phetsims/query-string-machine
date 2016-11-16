@@ -316,7 +316,7 @@
 
         // If the same key appeared multiple times for something in our schema, it is an error.
         // QueryStringMachine only supports arrays via type:'array'
-        throw new Error( 'Parameter supplied multiple times' );
+        throw new Error( 'Parameter supplied multiple times: key=' + key + ', values=' + values );
       }
 
       validateValue( key, value, schema, '' );
