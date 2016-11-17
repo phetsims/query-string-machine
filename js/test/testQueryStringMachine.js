@@ -144,29 +144,32 @@
   }, colorArraySchema );
 
 
-( function() {
-  var parsedQuery = QueryStringMachine.getAllForString( '?numbers=2,4,1', {
-    numbers: {
-      type: 'array',
-      elementSchema: {
-        type: 'number'
-      },
-      defaultValue: [ 1, 2, 3 ]
+  ( function() {
+    var arraySum = 0;
+    var error = null;
+    try {
+      QueryStringMachine.getAllForString( '?numbers=2,4,1', {
+        numbers: {
+          type: 'array',
+          elementSchema: {
+            type: 'number'
+          },
+          defaultValue: [ 1, 6, 1 ],
+          isValidValue: function( arr ) {
+            // Fake test: check that elements sum to 7 for phetsims/query-string-machine#11
+            arraySum = arr.reduce( function( a, b ) { return a + b; }, 0 );
+            return ( arraySum === 7 );
+          }
+        }
+      } );
     }
-  } );
-
-  var sum = parsedQuery.numbers.reduce( function( a, b ) { return a + b; }, 0 );
-
-  try {
-    // TODO: add assertion that sum === 7 in QueryStringMachine.
-    // Then change numbers so the error is triggered
-  }
-  catch ( e ) {
-    console.log( 'catching ' + e );
-  }
-    testAssert( sum === 7, 'Error: array sum must be 7' );
-
-} )();
+    catch ( e ) {
+      error = e;
+      console.log( 'catching ' + e );
+      console.log( 'Received error above because array sum must be 7. Computed ' + arraySum );
+    }
+    testAssert( error, 'missing query parameter should be caught' );
+  } )();
 
   // Test required parameter 'sim'
   var error = null;
