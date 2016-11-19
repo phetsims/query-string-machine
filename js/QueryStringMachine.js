@@ -191,7 +191,7 @@
      * Converts a string to an array.
      *
      * @param {string} key - the query parameter name
-     * @param {string|null} value - the query parameter value
+     * @param {string|null} string - the query parameter value
      * @param schema
      * @returns {*[]}
      */
