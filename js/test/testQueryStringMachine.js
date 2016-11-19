@@ -60,7 +60,7 @@
     var a = JSON.stringify( parsedQueryString );
     var b = JSON.stringify( expected );
     if ( a !== b ) {
-      console.log('Mismatch: ' + a + ' vs. ' + b );
+      console.log( 'Mismatch: ' + a + ' vs. ' + b );
     }
     testAssert( a === b, testName );
     console.log( testName + ' passed' );
@@ -128,12 +128,12 @@
   } );
 
   var colorArraySchema = {
-     colors: {
+    colors: {
       type: 'array',
       elementSchema: {
         type: 'string'
       },
-      defaultValue: ['red', 'green', 'blue']
+      defaultValue: [ 'red', 'green', 'blue' ]
       // validValues is optional, for instance-- validValues: [ [ 1, 1, 2 ], [ 2, 3, 5 ] ]
       // separator is optional, defaults to ','
     }
@@ -146,7 +146,7 @@
 
   // Test that isValidValue is supported for arrays with a contrived check (element sum == 7).
   // With an input of [2,4,0], QSM should throw an error, and it should be caught here.
-  ( function() {
+  (function() {
     var arraySum = 0;
     var error = null;
     try {
@@ -165,13 +165,13 @@
         }
       } );
     }
-    catch ( e ) {
+    catch( e ) {
       error = e;
       console.log( 'You should see a \"value not allowed\" error above if sum != 7. Computed ' + arraySum );
     }
     // Assert here that there _is_ an error, since the element sum test is supposed to fail.
     testAssert( error, 'Error: Array error handling test failed to catch exception' );
-  } )();
+  })();
 
   // Test required parameter 'sim'
   var error = null;
