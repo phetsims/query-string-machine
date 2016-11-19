@@ -144,17 +144,19 @@
   }, colorArraySchema );
 
 
+  // Test that isValidValue is supported for arrays with a contrived check (element sum == 7).
+  // With an input of [2,4,0], QSM should throw an error, and it should be caught here.
   ( function() {
     var arraySum = 0;
     var error = null;
     try {
-      QueryStringMachine.getAllForString( '?numbers=2,4,1', {
+      QueryStringMachine.getAllForString( '?numbers=2,4,0', {
         numbers: {
           type: 'array',
           elementSchema: {
             type: 'number'
           },
-          defaultValue: [ 1, 6, 1 ],
+          defaultValue: [ 1, 6, 0 ],
           isValidValue: function( arr ) {
             // Fake test: check that elements sum to 7 for phetsims/query-string-machine#11
             arraySum = arr.reduce( function( a, b ) { return a + b; }, 0 );
@@ -165,10 +167,10 @@
     }
     catch ( e ) {
       error = e;
-      console.log( 'catching ' + e );
-      console.log( 'Received error above because array sum must be 7. Computed ' + arraySum );
+      console.log( 'You should see a \"value not allowed\" error above if sum != 7. Computed ' + arraySum );
     }
-    testAssert( error, 'missing query parameter should be caught' );
+    // Assert here that there _is_ an error, since the element sum test is supposed to fail.
+    testAssert( error, 'Error: Array error handling test failed to catch exception' );
   } )();
 
   // Test required parameter 'sim'
