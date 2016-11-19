@@ -191,11 +191,19 @@
      * Converts a string to an array.
      *
      * @param {string} key - the query parameter name
-     * @param string
+     * @param {string|null} value - the query parameter value
      * @param schema
      * @returns {*[]}
      */
     var stringToArray = function( key, string, schema ) {
+
+      // An empty string signifies an empty array.  For instance ?hello&screens=&webgl=false would give screens=[]
+      // See https://github.com/phetsims/query-string-machine/issues/17
+      if ( string === null ) {
+        return [];
+      }
+
+      // A value was provided.  Validate and parse.
       queryStringMachineAssert( string, key, 'missing value' );
       queryStringMachineAssert( schema.elementSchema, key, 'array element schema must be defined' );
       return string.split( schema.separator || DEFAULT_SEPARATOR ).map( function( element ) {
