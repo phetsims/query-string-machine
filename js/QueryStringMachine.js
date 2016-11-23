@@ -33,6 +33,7 @@
   // can return a function as the exported value.
   return (function() {
 
+    //TODO How do we enable assert in PhET sims? window.assert is defined in initialize-globals.js, based on a query parameter.
     // Query String Machine has been designed as a zero-dependency module for ease of use in any project.
     // window.assert and assert both check for the existence of a global named assert. However, the latter errors out if the global is not found.
     var assert = typeof window === 'object' ? window.assert : global.assert;
@@ -51,6 +52,7 @@
 
     var QueryStringMachine = {
 
+      //TODO documentation of which schema fields are required/optional is incorrect, and depends on type
       /**
        * Returns the value for a single query parameter.
        *
@@ -179,6 +181,7 @@
 
     /**
      * Converts a string to a boolean.
+     * @param key
      * @param string
      * @returns {boolean}
      */
@@ -243,6 +246,8 @@
         var matched = false;
         for ( var i = 0; i < schema.validValues.length; i++ ) {
           var allowedValue = schema.validValues[ i ];
+
+          //TODO This is an unsafe comparison, JSON.stringify does not guarantee order!
           if ( JSON.stringify( allowedValue ) === arrayJSON ) {
             matched = true;
             break;
