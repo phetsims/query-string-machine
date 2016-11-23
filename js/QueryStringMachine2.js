@@ -41,7 +41,7 @@
     //TODO assert is enabled by QueryStringMachine in initialize-globals.js, so how can we use assert?
     // Query String Machine has been designed as a zero-dependency module for ease of use in any project.
     // window.assert and assert both check for the existence of a global named assert. However, the latter errors out if the global is not found.
-    var assert = typeof window === 'object' ? window.assert : global.assert;
+    // var assert = typeof window === 'object' ? window.assert : global.assert;
 
     // valid values for the 'type' field in the schema that describes a query parameter
     var VALID_TYPES = [
@@ -255,7 +255,7 @@
           validateArraySchema( key, schema );
         }
         else {
-          throw new Error( formatErrorMessage( key, 'unsupported type: ' + type ) );
+          throw new Error( formatErrorMessage( key, 'unsupported type: ' + schema.type ) );
         }
       }
       else if ( schema.hasOwnProperty( 'parse' ) ) {
@@ -520,7 +520,7 @@
       queryStringMachineAssert( !isNaN( returnValue ), key, 'invalid value: ' + value ); // Number returns NaN if the string cannot be converted to a number
       queryStringMachineAssert( typeof returnValue === 'number', key, 'invalid value: ' + returnValue );
       if ( schema.hasOwnProperty( 'validValues' ) ) {
-        queryStringMachineAssert( schema.validValues.indexOf( returnValue ) !== -1, key, 'invalid value: ' + returnValue )
+        queryStringMachineAssert( schema.validValues.indexOf( returnValue ) !== -1, key, 'invalid value: ' + returnValue );
       }
       else if ( schema.hasOwnProperty( 'isValidValue' ) ) {
         queryStringMachineAssert( schema.isValidValue( returnValue ), key, 'invalid value: ' + returnValue );
@@ -554,7 +554,7 @@
       // validate the value
       queryStringMachineAssert( returnValue === null || typeof returnValue === 'string', key, 'invalid value: ' + returnValue );
       if ( schema.hasOwnProperty( 'validValues' ) ) {
-        queryStringMachineAssert( schema.validValues.indexOf( returnValue ) !== -1, key, 'invalid value: ' + returnValue )
+        queryStringMachineAssert( schema.validValues.indexOf( returnValue ) !== -1, key, 'invalid value: ' + returnValue );
       }
       else if ( schema.hasOwnProperty( 'isValidValue' ) ) {
         queryStringMachineAssert( schema.isValidValue( returnValue ), key, 'invalid value: ' + returnValue );
