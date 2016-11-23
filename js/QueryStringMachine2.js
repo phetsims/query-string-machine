@@ -53,7 +53,7 @@
     ];
 
     //TODO make 'type' unnecessary in required
-    // Required and optional properties for each type
+    // Required and optional schema properties for each type
     var PROPERTIES_BY_TYPE = {
 
       flag: {
