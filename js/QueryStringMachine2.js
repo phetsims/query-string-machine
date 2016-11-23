@@ -14,19 +14,19 @@
   'use strict';
 
   if ( typeof define === 'function' && define.amd ) {
-    
+
     // AMD. Register as an anonymous module.
     define( [], factory );
   }
   else if ( typeof module === 'object' && module.exports ) {
-    
+
     // Node. Does not work with strict CommonJS, but
     // only CommonJS-like environments that support module.exports,
     // like Node.
     module.exports = factory();
   }
   else {
-    
+
     // Browser globals (root is window)
     root.QueryStringMachine = factory();
   }
@@ -207,7 +207,7 @@
         key, 'type or parse is required' );
 
       // type is valid
-      queryStringMachineAssert( !schema.hasOwnProperty( 'type' ) || _.contains( VALID_TYPES, schema.type ),
+      queryStringMachineAssert( !schema.hasOwnProperty( 'type' ) || VALID_TYPES.indexOf( schema.type ) !== -1,
         key, 'invalid type: ' + schema.type );
 
       // parse is a function
