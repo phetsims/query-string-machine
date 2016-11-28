@@ -568,9 +568,10 @@
     };
 
     /**
-     * Required and optional schema properties for each type.
-     * The properties that are required or optional depend on the type (see TYPES), and include:
+     * Data structure that describes each query parameter type, which properties are required vs optional,
+     * how to validate, and how to parse.
      *
+     * The properties that are required or optional depend on the type (see TYPES), and include:
      * type - {string} the type name
      * defaultValue - the value to use if no query parameter is provided
      * validValues - array of the valid values for the query parameter
@@ -578,7 +579,6 @@
      * elementSchema - specifies the schema for elements in an array
      * separator -  array elements are separated by this string, defaults to `,`
      * parse - a function that takes a string and returns an Object
-     *
      */
     var TYPES = {
 
