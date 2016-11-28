@@ -624,7 +624,7 @@
 
       // value is a custom data type, e.g. color=255,0,255
       custom: {
-        required: [ 'parse', 'defaultValue' ],
+        required: [ 'defaultValue', 'parse' ],
         optional: [ 'validValues', 'isValidValue' ],
         validate: validateCustom,
         parse: parseCustom
