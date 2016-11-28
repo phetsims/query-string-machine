@@ -42,6 +42,13 @@
       defaultValue: []
       // validValues is optional, for instance-- validValues: [ [ 1, 1, 2 ], [ 2, 3, 5 ] ]
       // separator is optional, defaults to ','
+    },
+    colors: {
+      type: 'array',
+      defaultValue: [ 'red', 'green', 'blue' ],
+      elementSchema: {
+        type: 'string'
+      }
     }
   };
   var values = QueryStringMachine.getAll( schemaMap );
@@ -72,7 +79,8 @@
     'name': 'Larry',
     'custom': 'abc',
     'isWebGL': false,
-    'screens': []
+    'screens': [],
+    'colors': [ 'red', 'green', 'blue' ]
   }, schemaMap );
 
   test( 'test2', '?height=7&isWebGL&wisdom=123', {
@@ -80,7 +88,8 @@
     'name': 'Larry',
     'custom': 'abc',
     'isWebGL': true,
-    'screens': []
+    'screens': [],
+    'colors': [ 'red', 'green', 'blue' ]
   }, schemaMap );
 
   test( 'test3', '?height=7&isWebGL&wisdom=123&custom=DEF', {
@@ -88,38 +97,18 @@
     'name': 'Larry',
     'custom': 'def',
     'isWebGL': true,
-    'screens': []
+    'screens': [],
+    'colors': [ 'red', 'green', 'blue' ]
   }, schemaMap );
 
-  test( 'test4', '?isWebGL&screens=1,2,3,5', {
+  test( 'test4', '?isWebGL&screens=1,2,3,5&colors=yellow,orange,pink', {
     'height': 6,
     'name': 'Larry',
     'custom': 'abc',
     'isWebGL': true,
-    'screens': [
-      1,
-      2,
-      3,
-      5
-    ]
+    'screens': [ 1, 2, 3, 5 ],
+    'colors': [ 'yellow', 'orange', 'pink' ]
   }, schemaMap );
-
-  var colorArraySchema = {
-    colors: {
-      type: 'array',
-      elementSchema: {
-        type: 'string'
-      },
-      defaultValue: [ 'red', 'green', 'blue' ]
-      // validValues is optional, for instance-- validValues: [ [ 1, 1, 2 ], [ 2, 3, 5 ] ]
-      // separator is optional, defaults to ','
-    }
-  };
-
-  test( 'test6', '?colors=red,blue', {
-    'colors': [ 'red', 'blue' ]
-  }, colorArraySchema );
-
 
   // Test that isValidValue is supported for arrays with a contrived check (element sum == 7).
   // With an input of [2,4,0], QSM should throw an error, and it should be caught here.
