@@ -614,7 +614,7 @@
         parse: parseString
       },
 
-      // value is an array with elementSchema and separator as specified (defaults to ',')
+      // value is an array, e.g. screens=1,2,3
       array: {
         required: [ 'type', 'defaultValue', 'elementSchema' ],
         optional: [ 'validValues', 'isValidValue', 'separator' ],
@@ -622,7 +622,7 @@
         parse: parseArray
       },
 
-      // value is a custom data type
+      // value is a custom data type, e.g. color=255,0,255
       custom: {
         required: [ 'parse' ],
         optional: [ 'defaultValues', 'validValues' ],
