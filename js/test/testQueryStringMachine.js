@@ -28,6 +28,7 @@
       }
     },
     custom: {
+      type: 'custom',
       parse: function( string ) {
         return string.toLowerCase();
       },
