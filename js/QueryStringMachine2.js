@@ -622,6 +622,7 @@
         parse: parseArray
       },
 
+      // value is a custom data type
       custom: {
         required: [ 'parse' ],
         optional: [ 'defaultValues', 'validValues' ],
