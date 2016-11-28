@@ -9,7 +9,7 @@
  * @author Chris Malley (PixelZoom, Inc.)
  */
 
-// UMD, see https://github.com/umdjs/umd/blob/master/templates/returnExports.js
+// UMD (Universal Module Definition), see https://github.com/umdjs/umd/blob/master/templates/returnExports.js
 (function( root, factory ) {
   'use strict';
 
