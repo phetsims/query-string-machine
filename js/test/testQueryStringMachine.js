@@ -104,29 +104,6 @@
     ]
   }, schemaMap );
 
-  test( 'test5', '?minefield=1,2,3/4,3,2', {
-    'minefield': [
-      [ 1, 2, 3 ],
-      [ 4, 3, 2 ]
-    ]
-  }, {
-    minefield: {
-      type: 'array',
-      separator: '/',
-      elementSchema: {
-        type: 'array',
-        separator: ',',
-        elementSchema: {
-          type: 'number',
-          validValues: [ 1, 2, 3, 4 ]
-        }
-      },
-      isValidValue: function( str ) {
-        return true; //TODO AA needs to fix this, see https://github.com/phetsims/query-string-machine/issues/11
-      }
-    }
-  } );
-
   var colorArraySchema = {
     colors: {
       type: 'array',
