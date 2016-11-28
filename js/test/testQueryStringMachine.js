@@ -63,8 +63,8 @@
    * @param  {Object} schema - specification for use in parsing queryString
    */
   var test = function( testName, queryString, expected, schema ) {
-    var parsedQueryString = QueryStringMachine.getAllForString( queryString, schema );
-    var a = JSON.stringify( parsedQueryString );
+    var queryParameters = QueryStringMachine.getAllForString( queryString, schema );
+    var a = JSON.stringify( queryParameters );
     var b = JSON.stringify( expected );
     if ( a !== b ) {
       console.log( 'Mismatch: ' + a + ' vs. ' + b );
