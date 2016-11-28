@@ -510,6 +510,9 @@
         }
         queryStringMachineAssert( isValid, key, 'invalid value: ' + arrayJSON );
       }
+      else if ( schema.hasOwnProperty( 'isValidValue' ) ) {
+        queryStringMachineAssert( schema.isValidValue( returnValue ), key, 'invalid value: ' + returnValue );
+      }
 
       return returnValue;
     };
