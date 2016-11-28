@@ -5,11 +5,12 @@
  * Query String parser that supports type coercion, defaults, error checking, etc. based on a schema.
  * See QueryStringMachine.get for the description of a schema.
  *
+ * Implemented as a UMD (Universal Module Definition) so that it's capable of working everywhere.
+ * See https://github.com/umdjs/umd/blob/master/templates/returnExports.js
+ *
  * @author Sam Reid (PhET Interactive Simulations)
  * @author Chris Malley (PixelZoom, Inc.)
  */
-
-// UMD (Universal Module Definition), see https://github.com/umdjs/umd/blob/master/templates/returnExports.js
 (function( root, factory ) {
   'use strict';
 
