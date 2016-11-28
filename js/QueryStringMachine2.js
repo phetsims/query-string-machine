@@ -33,6 +33,9 @@
 }( this, function() {
   'use strict';
 
+  // Default string that splits array strings
+  var DEFAULT_SEPARATOR = ',';
+
   // Just return a value to define the module export.
   // This example returns an object, but the module
   // can return a function as the exported value.
@@ -43,64 +46,13 @@
     // window.assert and assert both check for the existence of a global named assert. However, the latter errors out if the global is not found.
     // var assert = typeof window === 'object' ? window.assert : global.assert;
 
-    // valid values for the 'type' field in the schema that describes a query parameter
-    var VALID_TYPES = [
-      'flag', // value is true if present, false if absent
-      'boolean', // value is either true or false, e.g. showAnswer=true
-      'number', // value is a number, e.g. frameRate=100
-      'string', // value is a string, e.g. name=Ringo
-      'array' // value is an array with elementSchema and separator as specified (defaults to ',')
-    ];
-
-    //TODO make 'type' unnecessary in required
-    // Required and optional schema properties for each type
-    var PROPERTIES_BY_TYPE = {
-
-      flag: {
-        required: [ 'type' ],
-        optional: []
-      },
-
-      boolean: {
-        required: [ 'type' ],
-        optional: [ 'defaultValue' ]
-      },
-
-      number: {
-        required: [ 'type', 'defaultValue' ],
-        optional: [ 'validValues', 'isValidValue' ]
-      },
-
-      string: {
-        required: [ 'type', 'defaultValue' ],
-        optional: [ 'validValues', 'isValidValue' ]
-      },
-
-      array: {
-        required: [ 'type', 'defaultValue', 'elementSchema' ],
-        optional: [ 'validValues', 'isValidValue', 'separator' ]
-      }
-    };
-
-    // Default string that splits array strings
-    var DEFAULT_SEPARATOR = ',';
-
     var QueryStringMachine = {
 
       /**
        * Gets the value for a single query parameter.
        *
        * @param {string} key - the query parameter name
-       * @param {Object} schema - describes the query parameter, has these fields:
-       *   type - see VALID_TYPES
-       *   parse - a function that takes a string and returns an Object
-       *      - (type and parse are mutually exclusive)
-       *   [defaultValue] - The value to take if no query parameter is provided
-       *   [validValues] - Array of the valid values for the query parameter
-       *   [isValidValue] - function that takes a parsed Object (not string) and checks if it is acceptable
-       *      - (validValues and isValidValue are mutually exclusive)
-       *   elementSchema - required when type==='array', specifies the schema for elements in the array
-       *   [separator] - when type==='array' the array elements are separated by this string, defaults to `,`
+       * @param {Object} schema`
        * @returns {*} query parameter value, converted to the proper type
        * @public
        */
@@ -200,14 +152,12 @@
 
       // first, do validation that isn't type specific
 
-      // type and parse are mutually exclusive, one of them is required
-      queryStringMachineAssert( !( schema.hasOwnProperty( 'type' ) && schema.hasOwnProperty( 'parse' ) ),
-        key, 'type and parse are mutually exclusive' );
-      queryStringMachineAssert( ( schema.hasOwnProperty( 'type' ) || schema.hasOwnProperty( 'parse' ) ),
-        key, 'type or parse is required' );
+      // type is required
+      queryStringMachineAssert( schema.hasOwnProperty( 'type' ),
+        key, 'type field is required' );
 
       // type is valid
-      queryStringMachineAssert( !schema.hasOwnProperty( 'type' ) || VALID_TYPES.indexOf( schema.type ) !== -1,
+      queryStringMachineAssert( TYPES.hasOwnProperty( schema.type ),
         key, 'invalid type: ' + schema.type );
 
       // parse is a function
@@ -233,37 +183,11 @@
           key, 'defaultValue must be a member of validValues' );
       }
 
-      if ( schema.hasOwnProperty( 'type' ) ) {
+      // verify that the schema has appropriate properties
+      validateSchemaProperties( key, schema, TYPES[ schema.type ].required, TYPES[ schema.type ].optional );
 
-        // verify that the schema has appropriate properties
-        validateSchemaProperties( key, schema, PROPERTIES_BY_TYPE[ schema.type ].required, PROPERTIES_BY_TYPE[ schema.type ].optional );
-
-        // dispatch further validation to a type-specific function
-        if ( schema.type === 'flag' ) {
-          validateFlagSchema( key, schema );
-        }
-        else if ( schema.type === 'boolean' ) {
-          validateBooleanSchema( key, schema );
-        }
-        else if ( schema.type === 'number' ) {
-          validateNumberSchema( key, schema );
-        }
-        else if ( schema.type === 'string' ) {
-          validateStringSchema( key, schema );
-        }
-        else if ( schema.type === 'array' ) {
-          validateArraySchema( key, schema );
-        }
-        else {
-          throw new Error( formatErrorMessage( key, 'unsupported type: ' + schema.type ) );
-        }
-      }
-      else if ( schema.hasOwnProperty( 'parse' ) ) {
-        //TODO what validation is required? what properties are required and optional?
-      }
-      else {
-        throw new Error( formatErrorMessage( key, 'type or parse is required' ) );
-      }
+      // dispatch further validation to a type-specific function
+      TYPES[ schema.type ].validate( key, schema );
     };
 
     /**
@@ -272,7 +196,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
-    var validateFlagSchema = function( key, schema ) {
+    var validateFlag = function( key, schema ) {
       //TODO anything to do here?
     };
 
@@ -282,7 +206,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
-    var validateBooleanSchema = function( key, schema ) {
+    var validateBoolean = function( key, schema ) {
 
       // defaultValue is true or false
       if ( schema.hasOwnProperty( 'defaultValue' ) ) {
@@ -297,7 +221,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
-    var validateNumberSchema = function( key, schema ) {
+    var validateNumber = function( key, schema ) {
 
       // defaultValue is a number
       queryStringMachineAssert( typeof schema.defaultValue === 'number',
@@ -318,7 +242,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
-    var validateStringSchema = function( key, schema ) {
+    var validateString = function( key, schema ) {
 
       // defaultValue is a string or null
       queryStringMachineAssert( typeof schema.defaultValue === 'string' || schema.defaultValue === null,
@@ -339,7 +263,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
-    var validateArraySchema = function( key, schema ) {
+    var validateArray = function( key, schema ) {
 
       // defaultValue can be a string or null
       queryStringMachineAssert( schema.defaultValue instanceof Array || schema.defaultValue === null,
@@ -365,6 +289,16 @@
     };
 
     /**
+     * Validates schema for type 'custom'.
+     *
+     * @param {string} key - the query parameter name
+     * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
+     */
+    var validateCustom = function( key, schema ) {
+      //TODO anything to do here?
+    };
+
+    /**
      * Verifies that a schema contains only supported properties, and contains all required properties.
      *
      * @param {string} key - the query parameter name
@@ -379,7 +313,6 @@
 
       // verify that all required properties are present
       requiredProperties.forEach( function( property ) {
-        console.log( key + ':' + property + ' ' + schemaProperties.indexOf( property ) );//XXX
         queryStringMachineAssert( schemaProperties.indexOf( property ) !== -1,
           key, 'missing required property: ' + property );
       } );
@@ -405,45 +338,8 @@
       //TODO future support for multiple occurrences?
       queryStringMachineAssert( values.length <= 1, key, 'query parameter cannot occur multiple times' );
 
-      var value = null;
-
-      if ( schema.hasOwnProperty( 'type' ) ) {
-
-        // dispatch parsing to a type-specific function
-        if ( schema.type === 'flag' ) {
-          value = parseFlag( key, schema, values[ 0 ] );
-        }
-        else if ( schema.type === 'boolean' ) {
-          value = parseBoolean( key, schema, values[ 0 ] );
-        }
-        else if ( schema.type === 'number' ) {
-          value = parseNumber( key, schema, values[ 0 ] );
-        }
-        else if ( schema.type === 'string' ) {
-          value = parseString( key, schema, values[ 0 ] );
-        }
-        else if ( schema.type === 'array' ) {
-          value = parseArray( key, schema, values[ 0 ] );
-        }
-        else {
-          throw new Error( formatErrorMessage( key, 'invalid type: ' + schema.type ) );
-        }
-      }
-      else if ( schema.hasOwnProperty( 'parse' ) ) {
-
-        //TODO is this correct? complete?
-        if ( values[ 0 ] ) {
-          value = schema.parse( values[ 0 ] );
-        }
-        else {
-          value = null;
-        }
-      }
-      else {
-        throw new Error( formatErrorMessage( key, 'type or parse must be specified' ) );
-      }
-
-      return value;
+      // dispatch parsing to a type-specific function
+      return TYPES[ schema.type ].parse( key, schema, values[ 0 ] ) ;
     };
 
     /**
@@ -619,6 +515,35 @@
     };
 
     /**
+     * Parses the value for a type 'custom'.
+     * @param {string} key - the query parameter name
+     * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
+     * @param {string} value - value from the query parameter string
+     * @returns {*}
+     */
+    var parseCustom = function( key, schema, value ) {
+
+      // determine the value
+      var returnValue = null;
+      if ( value === undefined ) {
+        returnValue = schema.defaultValue;
+      }
+      else {
+        returnValue = schema.parse( value );
+      }
+
+      // validate the value
+      if ( schema.hasOwnProperty( 'validValues' ) ) {
+        queryStringMachineAssert( schema.validValues.indexOf( returnValue ) !== -1, key, 'invalid value: ' + returnValue );
+      }
+      else if ( schema.hasOwnProperty( 'isValidValue' ) ) {
+        queryStringMachineAssert( schema.isValidValue( returnValue ), key, 'invalid value: ' + returnValue );
+      }
+
+      return returnValue;
+    };
+
+    /**
      * Query parameters are specified by the user, and are outside the control of the programmer.
      * So the application should throw an Error if query parameters are invalid (even if window.assert is disabled).
      * @param {boolean} condition - if this condition is false, an Error is throw
@@ -640,6 +565,69 @@
      */
     var formatErrorMessage = function( key, message ) {
       return 'Error for query parameter "' + key + '": ' + message;
+    };
+
+    /**
+     *  Required and optional schema properties for each type.
+     * The properties that are required or optional depend on the type, and include:
+     *
+     * type - {string} the type name
+     * defaultValue - the value to use if no query parameter is provided
+     * validValues - array of the valid values for the query parameter
+     * isValidValue - function that takes a parsed Object (not string) and checks if it is acceptable
+     * elementSchema - specifies the schema for elements in an array
+     * separator -  array elements are separated by this string, defaults to `,`
+     * parse - a function that takes a string and returns an Object
+     *
+     */
+    var TYPES = {
+
+      // value is true if present, false if absent
+      flag: {
+        required: [ 'type' ],  //TODO make 'type' unnecessary in required
+        optional: [],
+        validate: validateFlag,
+        parse: parseFlag
+      },
+
+      // value is either true or false, e.g. showAnswer=true
+      boolean: {
+        required: [ 'type' ],
+        optional: [ 'defaultValue' ],
+        validate: validateBoolean,
+        parse: parseBoolean
+      },
+
+      // value is a number, e.g. frameRate=100
+      number: {
+        required: [ 'type', 'defaultValue' ],
+        optional: [ 'validValues', 'isValidValue' ],
+        validate: validateNumber,
+        parse: parseNumber
+      },
+
+      // value is a string, e.g. name=Ringo
+      string: {
+        required: [ 'type', 'defaultValue' ],
+        optional: [ 'validValues', 'isValidValue' ],
+        validate: validateString,
+        parse: parseString
+      },
+
+      // value is an array with elementSchema and separator as specified (defaults to ',')
+      array: {
+        required: [ 'type', 'defaultValue', 'elementSchema' ],
+        optional: [ 'validValues', 'isValidValue', 'separator' ],
+        validate: validateArray,
+        parse: parseArray
+      },
+
+      custom: {
+        required: [ 'parse' ],
+        optional: [ 'defaultValues', 'validValues' ],
+        validate: validateCustom,
+        parse: parseCustom
+      }
     };
 
     return QueryStringMachine;
