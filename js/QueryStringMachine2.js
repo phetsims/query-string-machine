@@ -568,8 +568,8 @@
     };
 
     /**
-     *  Required and optional schema properties for each type.
-     * The properties that are required or optional depend on the type, and include:
+     * Required and optional schema properties for each type.
+     * The properties that are required or optional depend on the type (see TYPES), and include:
      *
      * type - {string} the type name
      * defaultValue - the value to use if no query parameter is provided
