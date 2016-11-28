@@ -57,7 +57,7 @@
        * @public
        */
       get: function( key, schema ) {
-        return this.getForString( key, schema, window.location.search );
+        return this.getForString( window.location.search, key, schema );
       },
 
       /**
@@ -68,19 +68,19 @@
        * @public
        */
       getAll: function( schemaMap ) {
-        return this.getAllForString( schemaMap, window.location.search );
+        return this.getAllForString( window.location.search, schemaMap );
       },
 
       /**
        * Like `get` but for an arbitrary parameters string.
        *
+       * @param {string} string - the parameters string
        * @param {string} key - the query parameter name
        * @param {Object} schema - see QueryStringMachine.get
-       * @param {string} string - the parameters string
        * @returns {*} query parameter value, converted to the proper type
        * @public (for testing only)
        */
-      getForString: function( key, schema, string ) {
+      getForString: function( string, key, schema ) {
         validateSchema( key, schema );
         return parseValues( key, schema, getValues( key, string ) );
       },
@@ -88,16 +88,16 @@
       /**
        * Like `getAll` but for an arbitrary parameters string.
        *
-       * @param {Object} schemaMap - key/value pairs, key is query parameter name and value is a schema
        * @param {string} string - the parameters string
+       * @param {Object} schemaMap - key/value pairs, key is query parameter name and value is a schema
        * @returns {Object} - key/value pairs holding the parsed results
        * @public (for testing only)
        */
-      getAllForString: function( schemaMap, string ) {
+      getAllForString: function( string, schemaMap ) {
         var result = {};
         for ( var key in schemaMap ) {
           if ( schemaMap.hasOwnProperty( key ) ) {
-            result[ key ] = this.getForString( key, schemaMap[ key ], string );
+            result[ key ] = this.getForString( string, key, schemaMap[ key ] );
           }
         }
         return result;
