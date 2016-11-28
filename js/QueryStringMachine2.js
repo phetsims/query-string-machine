@@ -320,7 +320,7 @@
       // verify that there are no unsupported properties
       var supportedProperties = requiredProperties.concat( optionalProperties );
       schemaProperties.forEach( function( property ) {
-        queryStringMachineAssert( supportedProperties.indexOf( property ) !== -1,
+        queryStringMachineAssert( property === 'type' || supportedProperties.indexOf( property ) !== -1,
           key, 'unsupported property: ' + property );
       } );
     };
@@ -584,7 +584,7 @@
 
       // value is true if present, false if absent
       flag: {
-        required: [ 'type' ],  //TODO make 'type' unnecessary in required
+        required: [],
         optional: [],
         validate: validateFlag,
         parse: parseFlag
@@ -592,7 +592,7 @@
 
       // value is either true or false, e.g. showAnswer=true
       boolean: {
-        required: [ 'type' ],
+        required: [],
         optional: [ 'defaultValue' ],
         validate: validateBoolean,
         parse: parseBoolean
@@ -600,7 +600,7 @@
 
       // value is a number, e.g. frameRate=100
       number: {
-        required: [ 'type', 'defaultValue' ],
+        required: [ 'defaultValue' ],
         optional: [ 'validValues', 'isValidValue' ],
         validate: validateNumber,
         parse: parseNumber
@@ -608,7 +608,7 @@
 
       // value is a string, e.g. name=Ringo
       string: {
-        required: [ 'type', 'defaultValue' ],
+        required: [ 'defaultValue' ],
         optional: [ 'validValues', 'isValidValue' ],
         validate: validateString,
         parse: parseString
@@ -616,7 +616,7 @@
 
       // value is an array, e.g. screens=1,2,3
       array: {
-        required: [ 'type', 'defaultValue', 'elementSchema' ],
+        required: [ 'defaultValue', 'elementSchema' ],
         optional: [ 'validValues', 'isValidValue', 'separator' ],
         validate: validateArray,
         parse: parseArray
