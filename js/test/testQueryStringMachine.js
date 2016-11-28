@@ -3,11 +3,15 @@
 (function() {
   'use strict';
 
-  var testAssert = function( b, text ) {
-    if ( !b ) {
-      console.log( text );
-      throw new Error( text );
+  var testAssert = function( condition, message ) {
+    if ( !condition ) {
+      console.log( message );
+      throw new Error( message );
     }
+  };
+  
+  var consoleErrorMessage = function( testName, message ) {
+    console.log( 'ERROR ' + testName + ': ' + message );
   };
 
   var schemaMap = {
@@ -52,7 +56,7 @@
     }
   };
   var values = QueryStringMachine.getAll( schemaMap );
-  console.log( JSON.stringify( values, null, 2 ) );
+  console.log( 'Based on URL: ' + JSON.stringify( values, null, 2 ) );
 
   /**
    * Automated testing function
@@ -63,13 +67,63 @@
    * @param  {Object} schema - specification for use in parsing queryString
    */
   var test = function( testName, queryString, expected, schema ) {
-    var queryParameters = QueryStringMachine.getAllForString( queryString, schema );
-    var a = JSON.stringify( queryParameters );
-    var b = JSON.stringify( expected );
-    if ( a !== b ) {
-      console.log( 'Mismatch: ' + a + ' vs. ' + b );
-    }
-    testAssert( a === b, testName );
+
+    // the actual result
+    var actual = QueryStringMachine.getAllForString( queryString, schema );
+
+    var errors = 0;
+
+    // Look for unexpected keys in the actual result
+    var actualProperties = Object.getOwnPropertyNames( actual );
+    actualProperties.forEach( function( property ) {
+      if ( !expected.hasOwnProperty( property ) ) {
+        consoleErrorMessage( testName, 'unexpected key: ' + property );
+        errors++;
+      }
+    } );
+
+    // Look for missing keys and unexpected values
+    var expectedProperties = Object.getOwnPropertyNames( expected );
+    expectedProperties.forEach( function( property ) {
+      if ( !actual.hasOwnProperty( property ) ) {
+        consoleErrorMessage( testName, 'missing key:' + property );
+        errors++;
+      }
+      else if ( actual[ property ] instanceof Array ) {
+
+        // array comparison is more involved...
+        var actualArray = actual[ property ];
+        var expectedArray = expected[ property ];
+        if ( actualArray.length !== expectedArray.length ) {
+
+          // array lengths are different, so the arrays must be different
+          consoleErrorMessage( testName,
+            'unexpected array for key=' + property + ', expected=' + JSON.stringify( expectedArray ) + ', actual=' + JSON.stringify( actualArray ) );
+          errors++;
+        }
+        else {
+
+          // compare elements in the arrays
+          actualArray.forEach( function( element ) {
+            if ( expectedArray.indexOf( element ) === -1 ) {
+              consoleErrorMessage( testName,
+                'unexpected array for key=' + property + ', expected=' + JSON.stringify( expectedArray ) + ', actual=' + JSON.stringify( actualArray ) );
+              errors++;
+            }
+          } );
+        }
+      }
+      else if ( actual[ property ] !== expected[ property ] ) {
+
+        //TODO This is going to be problematic for 'custom' type
+        // non-array comparison
+        consoleErrorMessage( testName,
+          'unexpected value for key=' + property + ', expected=' + expected[ property ] + ', actual=' + actual[ property ] );
+        errors++;
+      }
+    } );
+
+    testAssert( errors === 0, testName + ' failed' );
     console.log( testName + ' passed' );
   };
 
