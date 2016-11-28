@@ -101,15 +101,18 @@
       },
 
       /**
-       * Like `get` but for an arbitrary parameters string.
+       * Like `get` but for an arbitrary parameter string such as "?hello=true&test"
        *
-       * @param {string} string - the parameters string
+       * @param {string} string - the parameters string, an empty string or a string that starts with '?'
        * @param {string} key - the query parameter name
        * @param {Object} schema - see QueryStringMachine.get
        * @returns {*} query parameter value, converted to the proper type
        * @public (for-testing)
        */
       getForString: function( string, key, schema ) {
+
+        assert && assert( string.length === 0 || string.indexOf( '?' ) === 0, 'Query strings should be either the empty ' +
+                                                                              'string or start with a "?": ' + string );
 
         // This code is run for every schema in a map, so it is a good place to validate defaults
         this.validateSchema( key, schema );
