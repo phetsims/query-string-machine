@@ -614,32 +614,32 @@
 
       // value is a number, e.g. frameRate=100
       number: {
-        required: [ 'defaultValue' ],
-        optional: [ 'validValues', 'isValidValue' ],
+        required: [],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue' ],
         validate: validateNumber,
         parse: parseNumber
       },
 
       // value is a string, e.g. name=Ringo
       string: {
-        required: [ 'defaultValue' ],
-        optional: [ 'validValues', 'isValidValue' ],
+        required: [],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue' ],
         validate: validateString,
         parse: parseString
       },
 
       // value is an array, e.g. screens=1,2,3
       array: {
-        required: [ 'elementSchema' ],
-        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues' ],
+        required: [],
+        optional: [ 'elementSchema', 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues' ],
         validate: validateArray,
         parse: parseArray
       },
 
       // value is a custom data type, e.g. color=255,0,255
       custom: {
-        required: [ 'defaultValue', 'parse' ],
-        optional: [ 'validValues', 'isValidValue' ],
+        required: [ 'parse' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue' ],
         validate: validateCustom,
         parse: parseCustom
       }
