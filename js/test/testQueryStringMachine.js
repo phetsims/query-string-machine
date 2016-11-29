@@ -53,58 +53,41 @@
     var values = QueryStringMachine.getAll( schemaMap );
     console.log( 'Based on URL: ' + JSON.stringify( values, null, 2 ) );
 
-    /**
-     * Automated testing function
-     *
-     * @param  {string} testName - identifier for the test being run
-     * @param  {string} queryString - the query string to be parsed
-     * @param  {Object} expected - expected result to test against
-     * @param  {Object} schemaMap - specification for use in parsing queryString
-     */
-    var test = function( testName, queryString, expected, schemaMap ) {
-
-      // the actual result
-      var actual = QueryStringMachine.getAllForString( queryString, schemaMap );
-
-      assert.deepEqual( actual, expected, testName );
-    };
-
-    // Automated tests
-    test( 'A blank query string should provide defaults', '', {
+    assert.deepEqual( QueryStringMachine.getAllForString( '', schemaMap ), {
       'height': 6,
       'name': 'Larry',
       'custom': 'abc',
       'isWebGL': false,
       'screens': [],
       'colors': [ 'red', 'green', 'blue' ]
-    }, schemaMap );
+    }, 'A blank query string should provide defaults' );
 
-    test( 'Query parameter values should be parsed', '?height=7&isWebGL&wisdom=123', {
+    assert.deepEqual( QueryStringMachine.getAllForString( '?height=7&isWebGL&wisdom=123', schemaMap ), {
       'height': 7,
       'name': 'Larry',
       'custom': 'abc',
       'isWebGL': true,
       'screens': [],
       'colors': [ 'red', 'green', 'blue' ]
-    }, schemaMap );
+    }, 'Query parameter values should be parsed' );
 
-    test( 'Custom query parameter should be supported', '?height=7&isWebGL&wisdom=123&custom=DEF', {
+    assert.deepEqual( QueryStringMachine.getAllForString( '?height=7&isWebGL&wisdom=123&custom=DEF', schemaMap ), {
       'height': 7,
       'name': 'Larry',
       'custom': 'def',
       'isWebGL': true,
       'screens': [],
       'colors': [ 'red', 'green', 'blue' ]
-    }, schemaMap );
+    }, 'Custom query parameter should be supported' );
 
-    test( 'Array should be parsed', '?isWebGL&screens=1,2,3,5&colors=yellow,orange,pink', {
+    assert.deepEqual( QueryStringMachine.getAllForString( '?isWebGL&screens=1,2,3,5&colors=yellow,orange,pink', schemaMap ), {
       'height': 6,
       'name': 'Larry',
       'custom': 'abc',
       'isWebGL': true,
       'screens': [ 1, 2, 3, 5 ],
       'colors': [ 'yellow', 'orange', 'pink' ]
-    }, schemaMap );
+    }, 'Array should be parsed' );
 
     // Test that isValidValue is supported for arrays with a contrived check (element sum == 7).
     // With an input of [2,4,0], QSM should throw an error, and it should be caught here.
