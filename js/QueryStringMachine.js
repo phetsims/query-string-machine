@@ -507,8 +507,6 @@
         }
       }
 
-      //TODO validate elements of the array based on elementSchema
-
       // validate the entire array
       if ( schema.hasOwnProperty( 'validValues' ) ) {
         var arrayJSON = JSON.stringify( returnValue );
