@@ -308,7 +308,8 @@
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
     var validateCustom = function( key, schema ) {
-      //TODO anything to do here?
+
+      //TODO provide custom validation rules in the element schemas (instead of just a parse function that doesn't tolerate errors)
     };
 
     /**
