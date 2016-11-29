@@ -208,7 +208,9 @@
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
     var validateFlag = function( key, schema ) {
-      //TODO anything to do here?
+
+      // Nothing specific to do for validating flag type, all necessary validation (making sure the right keys and
+      // values are supplied) is done in validateSchema
     };
 
     /**
@@ -513,6 +515,7 @@
         for ( var i = 0; i < schema.validValues.length; i++ ) {
           var validValue = schema.validValues[ i ];
 
+          debugger;
           //TODO this is a dangerous comparison, stringify does not guarantee ordering!!
           if ( JSON.stringify( validValue ) === arrayJSON ) {
             isValid = true;
