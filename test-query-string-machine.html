@@ -1,62 +1,20 @@
-<!-- Copyright 2016, University of Colorado Boulder.
-
-Test suite: Launch the url, open the console and compare to the expected output:
-
-http://localhost/query-string-machine/test-query-string-machine.html
-{
-  "height": 6,
-  "name": "Larry",
-  "custom": "abc",
-  "isWebGL": false,
-  "screens": []
-}
-
-http://localhost/query-string-machine/test-query-string-machine.html?height=7&isWebGL&wisdom=123
-{
-  "height": 7,
-  "name": "Larry",
-  "custom": "abc",
-  "isWebGL": true,
-  "screens": []
-}
-
-http://localhost/query-string-machine/test-query-string-machine.html?height=7&isWebGL&wisdom=123&custom=DEF
-{
-  "height": 7,
-  "name": "Larry",
-  "custom": "def",
-  "isWebGL": true,
-  "screens": []
-}
-
-http://localhost/query-string-machine/test-query-string-machine.html?height=0
-value not allowed: 0, allowedValues = 4,5,6,7,8
-
-http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&screens=1,2,3,5
-{
-  "height": 6,
-  "name": "Larry",
-  "custom": "abc",
-  "isWebGL": true,
-  "screens": [
-    1,
-    2,
-    3,
-    5
-  ]
-}
-
--->
+<!DOCTYPE html>
 <html>
 <head>
-  <script src="js/QueryStringMachine.js"></script>
-  <script src="../assert/js/assert.js"></script>
-  <script>
-    window.assertions.enableAssert();
-  </script>
-  <script type="text/javascript" src="js/test/testQueryStringMachine.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Query String Machine Unit Tests</title>
+  <link rel="stylesheet" href="../sherpa/lib/qunit-2.0.1.css">
 </head>
 <body>
-<h3> See browser console for test output </h3>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+<script src="../assert/js/assert.js"></script>
+<script>
+  window.assertions.enableAssert();
+</script>
+<script src="js/QueryStringMachine.js"></script>
+<script src="../sherpa/lib/qunit-2.0.1.js"></script>
+<script src="js/test/testQueryStringMachine.js"></script>
 </body>
 </html>
