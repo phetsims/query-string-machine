@@ -1,6 +1,5 @@
 // Copyright 2016, University of Colorado Boulder
 
-//TODO not for production use, see https://github.com/phetsims/query-string-machine/issues/20
 /**
  * Query String parser that supports type coercion, defaults, error checking, etc. based on a schema.
  * See QueryStringMachine.get for the description of a schema.
@@ -37,15 +36,13 @@
   // Default string that splits array strings
   var DEFAULT_SEPARATOR = ',';
 
+  // Support assertions in the browser (window.assert) and in node (global.assert)
+  var assert = typeof window === 'object' ? window.assert : global.assert;
+
   // Just return a value to define the module export.
   // This example returns an object, but the module
   // can return a function as the exported value.
   return (function() {
-
-    //TODO assert is enabled by QueryStringMachine in initialize-globals.js, so how can we use assert?
-    // Query String Machine has been designed as a zero-dependency module for ease of use in any project.
-    // window.assert and assert both check for the existence of a global named assert. However, the latter errors out if the global is not found.
-    // var assert = typeof window === 'object' ? window.assert : global.assert;
 
     var QueryStringMachine = {
 
