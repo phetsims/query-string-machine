@@ -1,6 +1,6 @@
 # query-string-machine
-Query String parser that supports type coercion, defaults, error checking, etc. based on a schema.  Small and
-dependency-free.
+Query String parser that supports type coercion, defaults, error checking, etc. based on a schema.  Runs in browser or 
+node. Small and only depends on `window.assert` and `_.isEqual`.
 
 For example:
 ```js
