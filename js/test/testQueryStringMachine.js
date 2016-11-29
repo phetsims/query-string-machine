@@ -50,7 +50,6 @@
         }
       }
     };
-    var values = QueryStringMachine.getAll( schemaMap );
 
     assert.deepEqual( QueryStringMachine.getAllForString( '', schemaMap ), {
       'height': 6,
