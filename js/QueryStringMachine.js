@@ -636,8 +636,8 @@
 
       // value is an array, e.g. screens=1,2,3
       array: {
-        required: [],
-        optional: [ 'elementSchema', 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues' ],
+        required: [ 'elementSchema' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues' ],
         validate: validateArray,
         parse: parseArray
       },
