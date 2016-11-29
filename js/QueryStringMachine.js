@@ -240,9 +240,10 @@
      */
     var validateNumber = function( key, schema ) {
 
-      // defaultValue is a number
-      queryStringMachineAssert( typeof schema.defaultValue === 'number',
-        key, 'invalid defaultValue: ' + schema.defaultValue );
+      if ( schema.hasOwnProperty( 'defaultValue' ) ) {
+        queryStringMachineAssert( typeof schema.defaultValue === 'number',
+          key, 'invalid defaultValue: ' + schema.defaultValue );
+      }
 
       // validValues are numbers
       if ( schema.hasOwnProperty( 'validValues' ) ) {
@@ -262,8 +263,10 @@
     var validateString = function( key, schema ) {
 
       // defaultValue is a string or null
-      queryStringMachineAssert( typeof schema.defaultValue === 'string' || schema.defaultValue === null,
-        key, 'invalid defaultValue: ' + schema.defaultValue );
+      if ( schema.hasOwnProperty( 'defaultValue' ) ) {
+        queryStringMachineAssert( typeof schema.defaultValue === 'string' || schema.defaultValue === null,
+          key, 'invalid defaultValue: ' + schema.defaultValue );
+      }
 
       // validValues are strings or null
       if ( schema.hasOwnProperty( 'validValues' ) ) {
@@ -283,8 +286,10 @@
     var validateArray = function( key, schema ) {
 
       // defaultValue can be a string or null
-      queryStringMachineAssert( schema.defaultValue instanceof Array || schema.defaultValue === null,
-        key, 'invalid defaultValue: ' + schema.defaultValue );
+      if ( schema.hasOwnProperty( 'defaultValue' ) ) {
+        queryStringMachineAssert( schema.defaultValue instanceof Array || schema.defaultValue === null,
+          key, 'invalid defaultValue: ' + schema.defaultValue );
+      }
 
       // validValues are arrays or null
       if ( schema.hasOwnProperty( 'validValues' ) ) {
@@ -300,7 +305,7 @@
           key, 'invalid separator: ' + schema.separator );
       }
 
-      //TODO validate elementSchema
+      validateSchema( key + '.element', schema.elementSchema );
       //TODO validate elements in defaultValue
       //TODO validate elements in validValues
     };
