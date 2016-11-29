@@ -515,7 +515,6 @@
         for ( var i = 0; i < schema.validValues.length; i++ ) {
           var validValue = schema.validValues[ i ];
 
-          debugger;
           //TODO this is a dangerous comparison, stringify does not guarantee ordering!!
           if ( JSON.stringify( validValue ) === arrayJSON ) {
             isValid = true;
