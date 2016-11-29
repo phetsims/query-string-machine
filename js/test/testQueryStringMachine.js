@@ -51,7 +51,6 @@
       }
     };
     var values = QueryStringMachine.getAll( schemaMap );
-    console.log( 'Based on URL: ' + JSON.stringify( values, null, 2 ) );
 
     assert.deepEqual( QueryStringMachine.getAllForString( '', schemaMap ), {
       'height': 6,
@@ -116,9 +115,6 @@
       } );
 
     }, 'missing query parameter should be caught' );
-
-    // If this point is reached, congratulations
-    console.log( '\n* All tests passed *' );
   } );
 
 })();
