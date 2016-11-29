@@ -183,6 +183,8 @@
 
         // Validate defaultValue for type 'array'
         if ( schema.type === 'array' ) {
+
+          // TODO: use lodash deep equals instead of stringify (which only works for arrays of primitives)
           var validValueStrings = schema.validValues.map( function( v ) {return JSON.stringify( v );} );
           var defaultValueString = JSON.stringify( schema.defaultValue );
           queryStringMachineAssert( ( validValueStrings.indexOf( defaultValueString ) !== -1 ),
@@ -514,7 +516,10 @@
         for ( var i = 0; i < schema.validValues.length; i++ ) {
           var validValue = schema.validValues[ i ];
 
-          //TODO this is a dangerous comparison, stringify does not guarantee ordering!!
+          //TODO While this comparison works for arrays of primitives such as [1,2,3] or [true,false], this will not
+          // necessarily be correct for arrays of objects, such as [{hello:'there',food:'salad'}], because stringify
+          // cannot guarantee the ordering of the keys in the elements.  We should try to use a lodash deep comparison
+          // instead.
           if ( JSON.stringify( validValue ) === arrayJSON ) {
             isValid = true;
             break;
