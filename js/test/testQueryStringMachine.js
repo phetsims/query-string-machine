@@ -114,6 +114,37 @@
       } );
 
     }, 'missing query parameter should be caught' );
-  } );
 
+    assert.deepEqual( QueryStringMachine.getForString( '?ea&hello=1,2,3', 'hello', {
+      type: 'array',
+      elementSchema: {
+        type: 'number'
+      },
+      validValues: [
+        [ 1, 2 ], [ 3, 4 ], [ 1, 2, 3 ]
+      ],
+      defaultValue: [ 1, 2 ]
+    } ), [ 1, 2, 3 ], 'Arrays should support defaultValue and validValues' );
+
+    assert.throws( function() {
+      QueryStringMachine.getForString( '?ea&hello=1,2,3,99', 'hello', {
+        type: 'array',
+        elementSchema: {
+          type: 'number'
+        },
+        validValues: [
+          [ 1, 2 ], [ 3, 4 ], [ 1, 2, 3 ]
+        ],
+        defaultValue: [ 1, 2 ]
+      } );
+    }, 'Arrays should throw an error if the array is not supported' );
+
+    assert.deepEqual( QueryStringMachine.getForString( '?screens=1,2,3', 'screens', {
+      type: 'array',
+      elementSchema: {
+        type: 'number'
+      },
+      defaultValue: null
+    } ), [ 1, 2, 3 ], 'Support for screens' );
+  } );
 })();

@@ -113,7 +113,7 @@
         return this.containsKeyForString( window.location.search, key );
       },
 
-      containsKeyForString: function( key, string ) {
+      containsKeyForString: function( string, key ) {
         var values = getValues( key, string );
         return values.length > 0;
       }
@@ -178,11 +178,20 @@
       queryStringMachineAssert( !schema.hasOwnProperty( 'isValidValue' ) || ( typeof schema.isValidValue === 'function' ),
         key, 'isValidValue must be a function' );
 
-      // TODO: validate defaultValue for type 'array'
       // defaultValue is a member of validValues
       if ( schema.hasOwnProperty( 'defaultValue' ) && schema.hasOwnProperty( 'validValues' ) ) {
-        queryStringMachineAssert( ( schema.validValues.indexOf( schema.defaultValue ) !== -1 ),
-          key, 'defaultValue must be a member of validValues' );
+
+        // Validate defaultValue for type 'array'
+        if ( schema.type === 'array' ) {
+          var validValueStrings = schema.validValues.map( function( v ) {return JSON.stringify( v );} );
+          var defaultValueString = JSON.stringify( schema.defaultValue );
+          queryStringMachineAssert( ( validValueStrings.indexOf( defaultValueString ) !== -1 ),
+            key, 'defaultValue must be a member of validValues' );
+        }
+        else {
+          queryStringMachineAssert( ( schema.validValues.indexOf( schema.defaultValue ) !== -1 ),
+            key, 'defaultValue must be a member of validValues' );
+        }
       }
 
       // verify that the schema has appropriate properties
@@ -621,8 +630,8 @@
 
       // value is an array, e.g. screens=1,2,3
       array: {
-        required: [ 'defaultValue', 'elementSchema' ],
-        optional: [ 'validValues', 'isValidValue', 'separator' ],
+        required: [ 'elementSchema' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues' ],
         validate: validateArray,
         parse: parseArray
       },
