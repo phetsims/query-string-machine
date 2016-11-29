@@ -59,12 +59,12 @@
      * @param  {string} testName - identifier for the test being run
      * @param  {string} queryString - the query string to be parsed
      * @param  {Object} expected - expected result to test against
-     * @param  {Object} schema - specification for use in parsing queryString
+     * @param  {Object} schemaMap - specification for use in parsing queryString
      */
-    var test = function( testName, queryString, expected, schema ) {
+    var test = function( testName, queryString, expected, schemaMap ) {
 
       // the actual result
-      var actual = QueryStringMachine.getAllForString( queryString, schema );
+      var actual = QueryStringMachine.getAllForString( queryString, schemaMap );
 
       assert.deepEqual( actual, expected, testName );
     };
