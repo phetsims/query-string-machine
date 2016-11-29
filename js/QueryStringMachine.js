@@ -184,11 +184,13 @@
         // Validate defaultValue for type 'array'
         if ( schema.type === 'array' ) {
 
-          // TODO: use lodash deep equals instead of stringify (which only works for arrays of primitives)
-          var validValueStrings = schema.validValues.map( function( v ) {return JSON.stringify( v );} );
-          var defaultValueString = JSON.stringify( schema.defaultValue );
-          queryStringMachineAssert( ( validValueStrings.indexOf( defaultValueString ) !== -1 ),
-            key, 'defaultValue must be a member of validValues' );
+          var matched = false;
+          schema.validValues.forEach( function( validValue ) {
+            if ( _.isEqual( validValue, schema.defaultValue ) ) {
+              matched = true;
+            }
+          } );
+          queryStringMachineAssert( matched, key, 'defaultValue must be a member of validValues' );
         }
         else {
           queryStringMachineAssert( ( schema.validValues.indexOf( schema.defaultValue ) !== -1 ),
@@ -511,21 +513,16 @@
 
       // validate the entire array
       if ( schema.hasOwnProperty( 'validValues' ) ) {
-        var arrayJSON = JSON.stringify( returnValue );
         var isValid = false;
+
         for ( var i = 0; i < schema.validValues.length; i++ ) {
           var validValue = schema.validValues[ i ];
-
-          //TODO While this comparison works for arrays of primitives such as [1,2,3] or [true,false], this will not
-          // necessarily be correct for arrays of objects, such as [{hello:'there',food:'salad'}], because stringify
-          // cannot guarantee the ordering of the keys in the elements.  We should try to use a lodash deep comparison
-          // instead.
-          if ( JSON.stringify( validValue ) === arrayJSON ) {
+          if ( _.isEqual( validValue, returnValue ) ) {
             isValid = true;
             break;
           }
         }
-        queryStringMachineAssert( isValid, key, 'invalid value: ' + arrayJSON );
+        queryStringMachineAssert( isValid, key, 'invalid value: ' + JSON.stringify( returnValue ) );
       }
       else if ( schema.hasOwnProperty( 'isValidValue' ) ) {
         queryStringMachineAssert( schema.isValidValue( returnValue ), key, 'invalid value: ' + returnValue );
