@@ -313,7 +313,7 @@
      * @param {number} value - value from the query parameter string
      */
     var validateNumberValue = function( key, schema, value ) {
-      queryStringMachineAssert( typeof value === 'number', key, 'invalid value: ' + value );
+      queryStringMachineAssert( typeof value === 'number' && !isNaN( value ), key, 'invalid value: ' + value );
     };
 
     /**
