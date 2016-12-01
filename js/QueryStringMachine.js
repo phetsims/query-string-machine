@@ -359,7 +359,12 @@
     var parseValues = function( key, schema, values ) {
 
       //TODO future support for multiple occurrences?
+      // validation that is independent of type
       queryStringMachineAssert( values.length <= 1, key, 'query parameter cannot occur multiple times' );
+      if ( schema.type !== 'flag' ) {
+        queryStringMachineAssert( values[ 0 ] !== undefined || schema.hasOwnProperty( 'defaultValue' ),
+          key, 'missing required query parameter' );
+      }
 
       // dispatch parsing to a type-specific function
       return TYPES[ schema.type ].parse( key, schema, values[ 0 ] );
@@ -393,12 +398,7 @@
       if ( value === undefined ) {
 
         // query parameter is not present, use defaultValue
-        if ( schema.hasOwnProperty( 'defaultValue' ) ) {
-          returnValue = schema.defaultValue;
-        }
-        else {
-          returnValue = true; // if no defaultValue is specified, boolean type defaults to true
-        }
+        returnValue = schema.defaultValue;
       }
       else {
 
@@ -595,7 +595,8 @@
      *
      * The properties that are required or optional depend on the type (see TYPES), and include:
      * type - {string} the type name
-     * defaultValue - the value to use if no query parameter is provided
+     * defaultValue - the value to use if no query parameter is provided. If there is no defaultValue, then
+     *    the query parameter is required in the query string; omitting the query parameter will result in an Error.
      * validValues - array of the valid values for the query parameter
      * isValidValue - function that takes a parsed Object (not string) and checks if it is acceptable
      * elementSchema - specifies the schema for elements in an array
