@@ -30,8 +30,7 @@
         defaultValue: 'abc'
       },
       isWebGL: {
-        type: 'flag' // If no equals sign, then presence indicates true
-        // If there is an equals sign, then parse string as boolean
+        type: 'flag'
       },
       screens: {
         type: 'array',
