@@ -23,23 +23,21 @@
       },
       custom: {
         type: 'custom',
+        defaultValue: 'abc',
+        validValues: [ 'abc', 'def', 'ghi' ],
         parse: function( string ) {
           return string.toLowerCase();
-        },
-        validValues: [ 'abc', 'def', 'ghi' ],
-        defaultValue: 'abc'
+        }
       },
       isWebGL: {
         type: 'flag'
       },
       screens: {
         type: 'array',
+        defaultValue: [],
         elementSchema: {
           type: 'number'
-        },
-        defaultValue: []
-        // validValues is optional, for instance-- validValues: [ [ 1, 1, 2 ], [ 2, 3, 5 ] ]
-        // separator is optional, defaults to ','
+        }
       },
       colors: {
         type: 'array',
