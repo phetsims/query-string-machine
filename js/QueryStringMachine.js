@@ -202,7 +202,7 @@
       validateSchemaProperties( key, schema, TYPES[ schema.type ].required, TYPES[ schema.type ].optional );
 
       // dispatch further validation to a type-specific function
-      TYPES[ schema.type ].validate( key, schema );
+      TYPES[ schema.type ].validateSchema( key, schema );
     };
 
     /**
@@ -211,7 +211,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
-    var validateFlag = function( key, schema ) {
+    var validateFlagSchema = function( key, schema ) {
 
       // Nothing specific to do for validating flag type, all necessary validation (making sure the right keys and
       // values are supplied) is done in validateSchema
@@ -223,7 +223,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
-    var validateBoolean = function( key, schema ) {
+    var validateBooleanSchema = function( key, schema ) {
 
       // defaultValue is true or false
       if ( schema.hasOwnProperty( 'defaultValue' ) ) {
@@ -238,7 +238,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
-    var validateNumber = function( key, schema ) {
+    var validateNumberSchema = function( key, schema ) {
 
       if ( schema.hasOwnProperty( 'defaultValue' ) ) {
         queryStringMachineAssert( typeof schema.defaultValue === 'number',
@@ -260,7 +260,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
-    var validateString = function( key, schema ) {
+    var validateStringSchema = function( key, schema ) {
 
       // defaultValue is a string or null
       if ( schema.hasOwnProperty( 'defaultValue' ) ) {
@@ -283,7 +283,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
-    var validateArray = function( key, schema ) {
+    var validateArraySchema = function( key, schema ) {
 
       // defaultValue can be a string or null
       if ( schema.hasOwnProperty( 'defaultValue' ) ) {
@@ -316,7 +316,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
-    var validateCustom = function( key, schema ) {
+    var validateCustomSchema = function( key, schema ) {
 
       //TODO provide custom validation rules in the element schemas (instead of just a parse function that doesn't tolerate errors)
     };
@@ -609,7 +609,7 @@
       flag: {
         required: [],
         optional: [],
-        validate: validateFlag,
+        validateSchema: validateFlagSchema,
         parse: parseFlag
       },
 
@@ -617,7 +617,7 @@
       boolean: {
         required: [],
         optional: [ 'defaultValue' ],
-        validate: validateBoolean,
+        validateSchema: validateBooleanSchema,
         parse: parseBoolean
       },
 
@@ -625,7 +625,7 @@
       number: {
         required: [],
         optional: [ 'defaultValue', 'validValues', 'isValidValue' ],
-        validate: validateNumber,
+        validateSchema: validateNumberSchema,
         parse: parseNumber
       },
 
@@ -633,7 +633,7 @@
       string: {
         required: [],
         optional: [ 'defaultValue', 'validValues', 'isValidValue' ],
-        validate: validateString,
+        validateSchema: validateStringSchema,
         parse: parseString
       },
 
@@ -641,7 +641,7 @@
       array: {
         required: [ 'elementSchema' ],
         optional: [ 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues' ],
-        validate: validateArray,
+        validateSchema: validateArraySchema,
         parse: parseArray
       },
 
@@ -649,7 +649,7 @@
       custom: {
         required: [ 'parse' ],
         optional: [ 'defaultValue', 'validValues', 'isValidValue' ],
-        validate: validateCustom,
+        validateSchema: validateCustomSchema,
         parse: parseCustom
       }
     };
