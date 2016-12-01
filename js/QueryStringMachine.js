@@ -516,7 +516,7 @@
 
     //==================================================================================================================
 
-    //TODO do we need elementSchema, or would elementType suffice?
+    //TODO do we need elementSchema, or would elementType suffice? All current usages include 'type' property only.
     /**
      * Data structure that describes each query parameter type, which properties are required vs optional,
      * how to validate, and how to parse.
