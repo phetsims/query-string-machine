@@ -352,7 +352,8 @@
      * Uses the supplied schema to convert query parameter value(s) from string to the desired value type.
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
-     * @param {Array.<string|null>} values - any matches from the query string, could be multiple for ?value=x&value=y for example
+     * @param {Array.<string|null|undefined>} values - any matches from the query string,
+     *   could be multiple for ?value=x&value=y for example
      * @returns {*} the associated value, converted to the proper type
      */
     var parseValues = function( key, schema, values ) {
