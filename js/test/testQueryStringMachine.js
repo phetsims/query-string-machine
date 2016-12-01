@@ -57,7 +57,7 @@
       'colors': [ 'red', 'green', 'blue' ]
     }, 'A blank query string should provide defaults' );
 
-    assert.deepEqual( QueryStringMachine.getAllForString( '?height=7&isWebGL&wisdom=123', schemaMap ), {
+    assert.deepEqual( QueryStringMachine.getAllForString( '?height=7&isWebGL', schemaMap ), {
       'height': 7,
       'name': 'Larry',
       'custom': 'abc',
@@ -66,7 +66,7 @@
       'colors': [ 'red', 'green', 'blue' ]
     }, 'Query parameter values should be parsed' );
 
-    assert.deepEqual( QueryStringMachine.getAllForString( '?height=7&isWebGL&wisdom=123&custom=DEF', schemaMap ), {
+    assert.deepEqual( QueryStringMachine.getAllForString( '?height=7&isWebGL&custom=DEF', schemaMap ), {
       'height': 7,
       'name': 'Larry',
       'custom': 'def',
@@ -110,7 +110,7 @@
         }
       } );
 
-    }, 'missing query parameter should be caught' );
+    }, 'Catch missing required query parameter' );
 
     assert.deepEqual( QueryStringMachine.getForString( '?ea&hello=1,2,3', 'hello', {
       type: 'array',
@@ -134,7 +134,7 @@
         ],
         defaultValue: [ 1, 2 ]
       } );
-    }, 'Arrays should throw an error if the array is not supported' );
+    }, 'Catch invalid value for array' );
 
     assert.deepEqual( QueryStringMachine.getForString( '?screens=1,2,3', 'screens', {
       type: 'array',
@@ -142,6 +142,6 @@
         type: 'number'
       },
       defaultValue: null
-    } ), [ 1, 2, 3 ], 'Support for screens' );
+    } ), [ 1, 2, 3 ], 'Test array of numbers' );
   } );
 })();
