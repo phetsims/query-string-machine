@@ -143,5 +143,18 @@
       },
       defaultValue: null
     } ), [ 1, 2, 3 ], 'Test array of numbers' );
+
+    // Tests for our own deepEquals method
+    assert.equal( QueryStringMachine.deepEquals( 7, 7 ), true, '7 should equal itself' );
+    assert.equal( QueryStringMachine.deepEquals( 7, 8 ), false, '7 should not equal 8' );
+    assert.equal( QueryStringMachine.deepEquals( 7, '7' ), false, '7 should not equal "7"' );
+    assert.equal( QueryStringMachine.deepEquals( { 0: 'A' }, 'A' ), false, 'string tests' );
+    assert.equal( QueryStringMachine.deepEquals( [ 'hello', 7 ], [ 'hello', 7 ] ), true, 'array equality test' );
+    assert.equal( QueryStringMachine.deepEquals( [ 'hello', 7 ], [ 'hello', '7' ] ), false, 'array inequality test' );
+    assert.equal( QueryStringMachine.deepEquals( [ 'hello', { hello: true } ], [ 'hello', { hello: true } ] ), true, 'object in array inequality test' );
+    assert.equal( QueryStringMachine.deepEquals( [ 'hello', { hello: true } ], [ 'hello', { hello: false } ] ), false, 'object in array  inequality test' );
+    assert.equal( QueryStringMachine.deepEquals( { x: [ { y: 'hello' }, true, 123, 'x' ] }, { x: [ { y: 'hello' }, true, 123, 'x' ] } ), true, 'object in array  inequality test' );
+    assert.equal( QueryStringMachine.deepEquals( { x: [ { y: 'hello' }, true, 123, 'x' ] }, { x: [ true, { y: 'hello' }, true, 123, 'x' ] } ), false, 'object in array  inequality test' );
+    assert.equal( QueryStringMachine.deepEquals( { x: [ { y: 'hello' }, true, 123, 'x' ] }, { y: [ { y: 'hello' }, true, 123, 'x' ] } ), false, 'object in array  inequality test' );
   } );
 })();

@@ -81,7 +81,7 @@
        */
       getForString: function( string, key, schema ) {
         assert && assert( string.length === 0 || string.indexOf( '?' ) === 0,
-                  'Query strings should be either the empty string or start with a "?": ' + string );
+          'Query strings should be either the empty string or start with a "?": ' + string );
         validateSchema( key, schema );
         var value = parseValues( key, schema, getValues( key, string ) );
         validateValue( key, schema, value );
@@ -117,6 +117,43 @@
       containsKeyForString: function( string, key ) {
         var values = getValues( key, string );
         return values.length > 0;
+      },
+
+      /**
+       * Returns true if the objects are equal.  Exported on the QueryStringMachine for testing.  Only works for
+       * arrays objects that contain primitives (i.e. terminals are compared with ===)
+       * @param {Object} a - an object to compare
+       * @param {Object} b - an object to compare
+       */
+      deepEquals: function( a, b ) {
+        if ( typeof a !== typeof b ) {
+          return false;
+        }
+        if ( typeof a === 'string' ) {
+          return a === b;
+        }
+        var aKeys = Object.keys( a );
+        var bKeys = Object.keys( b );
+        if ( aKeys.length !== bKeys.length ) {
+          return false;
+        }
+        else if ( aKeys.length === 0 ) {
+          return a === b;
+        }
+        else {
+
+          for ( var i = 0; i < aKeys.length; i++ ) {
+            if ( aKeys[ i ] !== bKeys[ i ] ) {
+              return false;
+            }
+            var aChild = a[ aKeys[ i ] ];
+            var bChild = b[ aKeys[ i ] ];
+            if ( !QueryStringMachine.deepEquals( aChild, bChild ) ) {
+              return false;
+            }
+          }
+          return true;
+        }
       }
     };
 
@@ -486,7 +523,7 @@
     var isValidValue = function( value, validValues ) {
       var found = false;
       for ( var i = 0; i < validValues.length && !found; i++ ) {
-        found = _.isEqual( validValues[i], value ); //TODO can we use lodash?
+        found = QueryStringMachine.deepEquals( validValues[ i ], value );
       }
       return found;
     };
