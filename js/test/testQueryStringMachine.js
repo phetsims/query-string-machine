@@ -144,7 +144,10 @@
       defaultValue: null
     } ), [ 1, 2, 3 ], 'Test array of numbers' );
 
-    // Tests for our own deepEquals method
+  } );
+
+  // Tests for our own deepEquals method
+  QUnit.test( 'deepEquals', function( assert ) {
     assert.equal( QueryStringMachine.deepEquals( 7, 7 ), true, '7 should equal itself' );
     assert.equal( QueryStringMachine.deepEquals( 7, 8 ), false, '7 should not equal 8' );
     assert.equal( QueryStringMachine.deepEquals( 7, '7' ), false, '7 should not equal "7"' );
