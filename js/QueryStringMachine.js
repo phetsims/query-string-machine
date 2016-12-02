@@ -132,6 +132,21 @@
         if ( typeof a === 'string' ) {
           return a === b;
         }
+        if ( a === null && b === null ) {
+          return true;
+        }
+        if ( a === undefined && b === undefined ) {
+          return true;
+        }
+        if ( a === null && b === undefined ) {
+          return false;
+        }
+        if ( a === undefined && b === null ) {
+          return false;
+        }
+        if ( a instanceof Date && b instanceof Date ) {
+          return a.getTime() === b.getTime();
+        }
         var aKeys = Object.keys( a );
         var bKeys = Object.keys( b );
         if ( aKeys.length !== bKeys.length ) {
