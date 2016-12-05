@@ -38,7 +38,7 @@
   // Default string that splits array strings
   var DEFAULT_SEPARATOR = ',';
 
-  //TODO ask SR to explain this to me
+  //TODO how is assert useful here? window.assert isn't defined until after QSM is loaded.
   // Support assertions in the browser (window.assert) and in node (global.assert)
   var assert = typeof window === 'object' ? window.assert : global.assert;
 
