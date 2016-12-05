@@ -275,17 +275,6 @@
     };
 
     /**
-     * Validates schema for type 'custom'.
-     *
-     * @param {string} key - the query parameter name
-     * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
-     */
-    var validateCustomSchema = function( key, schema ) {
-
-      //TODO provide custom validation rules in the element schemas (instead of just a parse function that doesn't tolerate errors)
-    };
-
-    /**
      * Verifies that a schema contains only supported properties, and contains all required properties.
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
@@ -632,7 +621,7 @@
       custom: {
         required: [ 'parse' ],
         optional: [ 'defaultValue', 'validValues', 'isValidValue' ],
-        validateSchema: validateCustomSchema,
+        validateSchema: null, // no type-specific schema validation
         parse: parseCustom,
         validateValue: validateCustomValue
       }
