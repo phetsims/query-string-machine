@@ -382,7 +382,7 @@
      * @param {*} value - type depends on what parse returns
      */
     var validateCustomValue = function( key, schema, value ) {
-      //TODO do we need to add a property to 'custom' schema that handles validation of custom value?
+      //TODO do we need to add a property to 'custom' schema that handles validation of custom value's type?
     };
 
     // Parsing =========================================================================================================
