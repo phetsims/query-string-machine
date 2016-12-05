@@ -410,7 +410,7 @@
 
       var returnValue;
 
-      //TODO future support for multiple occurrences?
+      // values contains values for all occurrences of the query parameter.  We currently support only 1 occurrence.
       queryStringMachineAssert( values.length <= 1, key, 'query parameter cannot occur multiple times' );
 
       if ( schema.type === 'flag' ) {
