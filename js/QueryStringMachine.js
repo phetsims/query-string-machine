@@ -144,9 +144,6 @@
         if ( a === undefined && b === null ) {
           return false;
         }
-        if ( a instanceof Date && b instanceof Date ) {
-          return a.getTime() === b.getTime();
-        }
         var aKeys = Object.keys( a );
         var bKeys = Object.keys( b );
         if ( aKeys.length !== bKeys.length ) {

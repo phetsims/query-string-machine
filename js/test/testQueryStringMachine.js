@@ -162,8 +162,6 @@
     assert.equal( QueryStringMachine.deepEquals( null, null ), true, 'null null' );
     assert.equal( QueryStringMachine.deepEquals( null, undefined ), false, 'null undefined' );
     assert.equal( QueryStringMachine.deepEquals( undefined, undefined ), true, 'undefined undefined' );
-    assert.equal( QueryStringMachine.deepEquals( new Date( 123 ), new Date( 123 ) ), true, 'same dates' );
-    assert.equal( QueryStringMachine.deepEquals( new Date( 123 ), new Date( 124 ) ), false, 'different dates' );
     assert.equal( QueryStringMachine.deepEquals( function() {}, function() {} ), false, 'different implementations of similar functions' );
     var f = function() {};
     assert.equal( QueryStringMachine.deepEquals( f, f ), true, 'same reference function' );
