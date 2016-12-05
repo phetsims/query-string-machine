@@ -268,7 +268,6 @@
           key, 'invalid separator: ' + schema.separator );
       }
 
-      //TODO Is validation really the same for elementSchema?
       // validate elementSchema
       validateSchema( key + '.element', schema.elementSchema );
     };
@@ -566,7 +565,6 @@
 
     //==================================================================================================================
 
-    //TODO do we need elementSchema, or would elementType suffice? All current usages include 'type' property only.
     /**
      * Data structure that describes each query parameter type, which properties are required vs optional,
      * how to validate, and how to parse.
