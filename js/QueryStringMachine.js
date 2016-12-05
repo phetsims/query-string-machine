@@ -7,6 +7,8 @@
  * Implemented as a UMD (Universal Module Definition) so that it's capable of working everywhere.
  * See https://github.com/umdjs/umd/blob/master/templates/returnExports.js
  *
+ * See TYPES for a description of the schema types and their properties.
+ *
  * @author Sam Reid (PhET Interactive Simulations)
  * @author Chris Malley (PixelZoom, Inc.)
  */
