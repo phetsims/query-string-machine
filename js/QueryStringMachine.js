@@ -38,10 +38,6 @@
   // Default string that splits array strings
   var DEFAULT_SEPARATOR = ',';
 
-  //TODO how is assert useful here? window.assert isn't defined until after QSM is loaded.
-  // Support assertions in the browser (window.assert) and in node (global.assert)
-  var assert = typeof window === 'object' ? window.assert : global.assert;
-
   // Just return a value to define the module export.
   // This example returns an object, but the module
   // can return a function as the exported value.
@@ -82,8 +78,11 @@
        * @public (for testing only)
        */
       getForString: function( key, schema, string ) {
-        assert && assert( string.length === 0 || string.indexOf( '?' ) === 0,
-          'Query strings should be either the empty string or start with a "?": ' + string );
+
+        // Uses window.assert in the browser, and global.assert in node
+        assert && assert( string.length === 0 || string.indexOf( '?' ) === 0, 'Query strings should be either the ' +
+                                                                              'empty string or start with a "?": ' +
+                                                                              string );
         validateSchema( key, schema );
         var value = parseValues( key, schema, getValues( key, string ) );
         validateValue( key, schema, value );
