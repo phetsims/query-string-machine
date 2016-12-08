@@ -79,10 +79,10 @@
        */
       getForString: function( key, schema, string ) {
 
-        // Uses window.assert in the browser, and global.assert in node
-        assert && assert( string.length === 0 || string.indexOf( '?' ) === 0, 'Query strings should be either the ' +
-                                                                              'empty string or start with a "?": ' +
-                                                                              string );
+        if ( !( string.length === 0 || string.indexOf( '?' ) === 0 ) ) {
+          throw new Error( 'Query strings should be either the empty string or start with a "?": ' + string );
+        }
+
         validateSchema( key, schema );
         var value = parseValues( key, schema, getValues( key, string ) );
         validateValue( key, schema, value );
@@ -530,7 +530,7 @@
 
     /**
      * Query parameters are specified by the user, and are outside the control of the programmer.
-     * So the application should throw an Error if query parameters are invalid (even if window.assert is disabled).
+     * So the application should throw an Error if query parameters are invalid.
      * @param {boolean} condition - if this condition is false, an Error is throw
      * @param {string} key - the query parameter name
      * @param {string} message
