@@ -69,7 +69,7 @@
        * @public
        */
       getAll: function( schemaMap ) {
-        return this.getAllForString( window.location.search, schemaMap );
+        return this.getAllForString( schemaMap, window.location.search );
       },
 
       /**
