@@ -48,7 +48,7 @@
       }
     };
 
-    assert.deepEqual( QueryStringMachine.getAllForString( '', schemaMap ), {
+    assert.deepEqual( QueryStringMachine.getAllForString( schemaMap, '' ), {
       'height': 6,
       'name': 'Larry',
       'custom': 'abc',
@@ -57,7 +57,7 @@
       'colors': [ 'red', 'green', 'blue' ]
     }, 'A blank query string should provide defaults' );
 
-    assert.deepEqual( QueryStringMachine.getAllForString( '?height=7&isWebGL', schemaMap ), {
+    assert.deepEqual( QueryStringMachine.getAllForString( schemaMap, '?height=7&isWebGL' ), {
       'height': 7,
       'name': 'Larry',
       'custom': 'abc',
@@ -66,7 +66,7 @@
       'colors': [ 'red', 'green', 'blue' ]
     }, 'Query parameter values should be parsed' );
 
-    assert.deepEqual( QueryStringMachine.getAllForString( '?height=7&isWebGL&custom=DEF', schemaMap ), {
+    assert.deepEqual( QueryStringMachine.getAllForString( schemaMap, '?height=7&isWebGL&custom=DEF' ), {
       'height': 7,
       'name': 'Larry',
       'custom': 'def',
@@ -75,7 +75,7 @@
       'colors': [ 'red', 'green', 'blue' ]
     }, 'Custom query parameter should be supported' );
 
-    assert.deepEqual( QueryStringMachine.getAllForString( '?isWebGL&screens=1,2,3,5&colors=yellow,orange,pink', schemaMap ), {
+    assert.deepEqual( QueryStringMachine.getAllForString( schemaMap, '?isWebGL&screens=1,2,3,5&colors=yellow,orange,pink' ), {
       'height': 6,
       'name': 'Larry',
       'custom': 'abc',
@@ -87,7 +87,7 @@
     // Test that isValidValue is supported for arrays with a contrived check (element sum == 7).
     // With an input of [2,4,0], QSM should throw an error, and it should be caught here.
     assert.throws( function() {
-      QueryStringMachine.getAllForString( '?numbers=2,4,0', {
+      QueryStringMachine.getAllForString( {
         numbers: {
           type: 'array',
           elementSchema: {
@@ -100,19 +100,19 @@
             return ( arraySum === 7 );
           }
         }
-      } );
+      }, '?numbers=2,4,0' );
     }, 'Array error handling should catch exception' );
 
     assert.throws( function() {
-      QueryStringMachine.getAllForString( '?ea&hello=true', {
+      QueryStringMachine.getAllForString( {
         sim: {
           type: 'string'
         }
-      } );
+      }, '?ea&hello=true' );
 
     }, 'Catch missing required query parameter' );
 
-    assert.deepEqual( QueryStringMachine.getForString( '?ea&hello=1,2,3', 'hello', {
+    assert.deepEqual( QueryStringMachine.getForString( 'hello', {
       type: 'array',
       elementSchema: {
         type: 'number'
@@ -121,10 +121,10 @@
         [ 1, 2 ], [ 3, 4 ], [ 1, 2, 3 ]
       ],
       defaultValue: [ 1, 2 ]
-    } ), [ 1, 2, 3 ], 'Arrays should support defaultValue and validValues' );
+    }, '?ea&hello=1,2,3' ), [ 1, 2, 3 ], 'Arrays should support defaultValue and validValues' );
 
     assert.throws( function() {
-      QueryStringMachine.getForString( '?ea&hello=1,2,3,99', 'hello', {
+      QueryStringMachine.getForString( 'hello', {
         type: 'array',
         elementSchema: {
           type: 'number'
@@ -133,16 +133,16 @@
           [ 1, 2 ], [ 3, 4 ], [ 1, 2, 3 ]
         ],
         defaultValue: [ 1, 2 ]
-      } );
+      }, '?ea&hello=1,2,3,99' );
     }, 'Catch invalid value for array' );
 
-    assert.deepEqual( QueryStringMachine.getForString( '?screens=1,2,3', 'screens', {
+    assert.deepEqual( QueryStringMachine.getForString( 'screens', {
       type: 'array',
       elementSchema: {
         type: 'number'
       },
       defaultValue: null
-    } ), [ 1, 2, 3 ], 'Test array of numbers' );
+    }, '?screens=1,2,3' ), [ 1, 2, 3 ], 'Test array of numbers' );
 
   } );
 

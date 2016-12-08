@@ -58,7 +58,7 @@
        * @public
        */
       get: function( key, schema ) {
-        return this.getForString( window.location.search, key, schema );
+        return this.getForString( key, schema, window.location.search );
       },
 
       /**
@@ -81,7 +81,7 @@
        * @returns {*} query parameter value, converted to the proper type
        * @public (for testing only)
        */
-      getForString: function( string, key, schema ) {
+      getForString: function( key, schema, string ) {
         assert && assert( string.length === 0 || string.indexOf( '?' ) === 0,
           'Query strings should be either the empty string or start with a "?": ' + string );
         validateSchema( key, schema );
@@ -92,17 +92,16 @@
 
       /**
        * Like `getAll` but for an arbitrary parameters string.
-       *
-       * @param {string} string - the parameters string
        * @param {Object} schemaMap - key/value pairs, key is query parameter name and value is a schema
+       * @param {string} string - the parameters string
        * @returns {Object} - key/value pairs holding the parsed results
        * @public (for testing only)
        */
-      getAllForString: function( string, schemaMap ) {
+      getAllForString: function( schemaMap, string ) {
         var result = {};
         for ( var key in schemaMap ) {
           if ( schemaMap.hasOwnProperty( key ) ) {
-            result[ key ] = this.getForString( string, key, schemaMap[ key ] );
+            result[ key ] = this.getForString( key, schemaMap[ key ], string );
           }
         }
         return result;
