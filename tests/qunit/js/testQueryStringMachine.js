@@ -3,6 +3,27 @@
 (function() {
   'use strict';
 
+  QUnit.log( function( details ) {
+    window.parent && window.parent.postMessage( JSON.stringify( {
+      type: 'qunit-test',
+      main: 'scenery',
+      result: details.result,
+      module: details.module,
+      name: details.name,
+      message: details.message,
+      source: details.source // TODO: consider expected/actual, or don't worry because we'll run finer tests once it fails.
+    } ), '*' );
+  } );
+
+  QUnit.done( function( details ) {
+    window.parent && window.parent.postMessage( JSON.stringify( {
+      type: 'qunit-done',
+      failed: details.failed,
+      passed: details.passed,
+      total: details.total
+    } ), '*' );
+  } );
+
   // assert shadows window.assert
   QUnit.test( 'basic tests', function( assert ) {
     var value = 'hello';
