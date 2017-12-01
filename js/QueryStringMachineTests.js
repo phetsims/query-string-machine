@@ -1,28 +1,14 @@
-// Copyright 2016, University of Colorado Boulder
+// Copyright 2017, University of Colorado Boulder
 
-(function() {
+/**
+ * QueryStringMachine tests
+ *
+ * @author Sam Reid (PhET Interactive Simulations)
+ */
+define( function( require ) {
   'use strict';
 
-  QUnit.log( function( details ) {
-    window.parent && window.parent.postMessage( JSON.stringify( {
-      type: 'qunit-test',
-      main: 'scenery',
-      result: details.result,
-      module: details.module,
-      name: details.name,
-      message: details.message,
-      source: details.source // TODO: consider expected/actual, or don't worry because we'll run finer tests once it fails.
-    } ), '*' );
-  } );
-
-  QUnit.done( function( details ) {
-    window.parent && window.parent.postMessage( JSON.stringify( {
-      type: 'qunit-done',
-      failed: details.failed,
-      passed: details.passed,
-      total: details.total
-    } ), '*' );
-  } );
+  QUnit.module( 'QueryStringMachine' );
 
   // assert shadows window.assert
   QUnit.test( 'basic tests', function( assert ) {
@@ -187,4 +173,4 @@
     var f = function() {};
     assert.equal( QueryStringMachine.deepEquals( f, f ), true, 'same reference function' );
   } );
-})();
+} );
