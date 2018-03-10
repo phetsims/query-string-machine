@@ -220,7 +220,7 @@
 
       // validValues is an Array
       if ( schema.hasOwnProperty( 'validValues' ) ) {
-        queryStringMachineAssert( Array.isArray(schema.validValues), key, 'isValidValue must be a function' );
+        queryStringMachineAssert( Array.isArray( schema.validValues ), key, 'isValidValue must be a function' );
       }
 
       // isValidValue is a function
@@ -370,7 +370,7 @@
      * @param {*[]} value - type of array elements depends on elementSchema
      */
     var validateArrayValue = function( key, schema, value ) {
-      queryStringMachineAssert( Array.isArray(value) || value === null, key, 'invalid value: ' + value );
+      queryStringMachineAssert( Array.isArray( value ) || value === null, key, 'invalid value: ' + value );
     };
 
     /**
