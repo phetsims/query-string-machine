@@ -12,7 +12,7 @@
  * @author Sam Reid (PhET Interactive Simulations)
  * @author Chris Malley (PixelZoom, Inc.)
  */
-(function( root, factory ) {
+( function( root, factory ) {
   'use strict';
 
   if ( typeof define === 'function' && define.amd ) {
@@ -41,16 +41,24 @@
   // Just return a value to define the module export.
   // This example returns an object, but the module
   // can return a function as the exported value.
-  return (function() {
+  return ( function() {
 
+
+    // NOTE: This jsdoc is client facing for phet-io documentation, edit with care.
+    /**
+     * Phet's query string manipulation type, useful for accessing and validating specific query parameters. Available
+     * in the main PhET-iO js import.
+     * @namespace {Object} window.QueryStringMachine
+     */
     var QueryStringMachine = {
 
       /**
        * Gets the value for a single query parameter.
        *
        * @param {string} key - the query parameter name
-       * @param {Object} schema`
+       * @param {Object} schema
        * @returns {*} query parameter value, converted to the proper type
+       * @memberOf window.QueryStringMachine
        * @public
        */
       get: function( key, schema ) {
@@ -62,6 +70,7 @@
        *
        * @param {Object} schemaMap - see QueryStringMachine.getAllForString
        * @returns {Object} - see QueryStringMachine.getAllForString
+       * @memberOf window.QueryStringMachine
        * @public
        */
       getAll: function( schemaMap ) {
@@ -75,6 +84,7 @@
        * @param {string} key - the query parameter name
        * @param {Object} schema - see QueryStringMachine.get
        * @returns {*} query parameter value, converted to the proper type
+       * @memberOf window.QueryStringMachine
        * @public (for testing only)
        */
       getForString: function( key, schema, string ) {
@@ -94,6 +104,7 @@
        * @param {Object} schemaMap - key/value pairs, key is query parameter name and value is a schema
        * @param {string} string - the parameters string
        * @returns {Object} - key/value pairs holding the parsed results
+       * @memberOf window.QueryStringMachine
        * @public (for testing only)
        */
       getAllForString: function( schemaMap, string ) {
@@ -367,7 +378,7 @@
      * Validates a value for type 'array'.
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter
-     * @param {*[]} value - type of array elements depends on elementSchema
+     * @param {Array.<*>} value - type of array elements depends on elementSchema
      */
     var validateArrayValue = function( key, schema, value ) {
       queryStringMachineAssert( Array.isArray( value ) || value === null, key, 'invalid value: ' + value );
@@ -478,7 +489,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      * @param {string|null} value - value from the query parameter string
-     * @returns {*[]|null}
+     * @returns {Array.<*>|null}
      */
     var parseArray = function( key, schema, value ) {
 
@@ -517,7 +528,7 @@
     /**
      * Determines if value is in a set of valid values, uses deep comparison.
      * @param {*} value
-     * @param {*[]} validValues
+     * @param {Array.<*>} validValues
      * @returns {boolean}
      */
     var isValidValue = function( value, validValues ) {
@@ -626,5 +637,5 @@
     };
 
     return QueryStringMachine;
-  })();
-} ));
+  } )();
+} ) );
