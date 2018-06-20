@@ -418,7 +418,7 @@
       }
       else {
         queryStringMachineAssert( values[ 0 ] !== undefined || schema.hasOwnProperty( 'defaultValue' ),
-          key, 'missing required query parameter' );
+          key, 'missing required query parameter: ' + key );
         if ( values[ 0 ] === undefined ) {
 
           // not in the query string, use the default
