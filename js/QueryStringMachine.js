@@ -85,7 +85,7 @@
        * @param {Object} schema - see QueryStringMachine.get
        * @returns {*} query parameter value, converted to the proper type
        * @memberOf window.QueryStringMachine
-       * @public (for testing only)
+       * @public
        */
       getForString: function( key, schema, string ) {
 
