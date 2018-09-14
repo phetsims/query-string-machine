@@ -1,17 +1,10 @@
 # Query String Machine
-Query String Machine is a query string parser that supports type coercion, default values & validation.  Runs in the
-browser and in Node.  No dependencies.
+Query String Machine is a query string parser that supports type coercion, default values & validation.  No dependencies.
 
 ## Installation
-Download [QueryStringMachine.js](blob/master/LICENSE).
-
-For browser, include it with a script tag, like:
+Download [QueryStringMachine.js](blob/master/LICENSE) and include it with a script tag, like:
 ```html
 <script src="QueryStringMachine.js"></script>
-```
-For Node, load it with a require statement, like so:
-```js
-const QueryStringMachine = require('QueryStringMachine');
 ```
 
 ## Usage
@@ -173,6 +166,10 @@ Error( 'value not allowed: 0, allowedValues = 4,5,6,7,8' )
   ]
 }
 ```
+
+## Parsing values from any string.
+Query String Machine parses the browser query string by default, but can also parse values from provided strings
+
 
 Launch test-query-string-machine.html for automated tests
 
