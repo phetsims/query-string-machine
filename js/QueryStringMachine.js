@@ -79,9 +79,9 @@
       /**
        * Like `get` but for an arbitrary parameter string.
        *
-       * @param {string} string - the parameters string
        * @param {string} key - the query parameter name
        * @param {Object} schema - see QueryStringMachine.get
+       * @param {string} string - the parameters string.  Must begin with '?' or be the empty string
        * @returns {*} query parameter value, converted to the proper type
        * @memberOf window.QueryStringMachine
        * @public
@@ -104,7 +104,7 @@
        * @param {string} string - the parameters string
        * @returns {Object} - key/value pairs holding the parsed results
        * @memberOf window.QueryStringMachine
-       * @public (for testing only)
+       * @public
        */
       getAllForString: function( schemaMap, string ) {
         var result = {};
@@ -120,19 +120,28 @@
        * Returns true if the window.location.search contains the given key
        * @param {string} key
        * @returns {boolean} true if the window.location.search contains the given key
+       * @memberOf window.QueryStringMachine
        * @public
        */
       containsKey: function( key ) {
-        return this.containsKeyForString( window.location.search, key );
+        return this.containsKeyForString( key, window.location.search );
       },
 
       /**
        * Returns true if the given string contains the specified key
-       * @param {string} key
+       * @param {string} key - the key to check for
+       * @param {string} string - the query string to search. Must begin with '?' or be the empty string
        * @returns {boolean} true if the given string contains the given key
+       * @memberOf window.QueryStringMachine
        * @public
        */
-      containsKeyForString: function( string, key ) {
+      containsKeyForString: function( key, string ) {
+
+        // TODO: this is the same check as above, can it be factored out?
+        if ( !( string.length === 0 || string.indexOf( '?' ) === 0 ) ) {
+          throw new Error( 'Query strings should be either the empty string or start with a "?": ' + string );
+        }
+
         var values = getValues( key, string );
         return values.length > 0;
       },
