@@ -45,8 +45,9 @@
 
     // NOTE: This jsdoc is client facing for phet-io documentation, edit with care.
     /**
-     * Phet's query string manipulation type, useful for accessing and validating specific query parameters. Available
-     * in the main PhET-iO js import.
+     * Query String Machine is a query string parser that supports type coercion, default values & validation. Please
+     * visit <a href="https://github.com/phetsims/query-string-machine">Query String Machine</a> for documentation and
+     * examples.
      * @namespace {Object} window.QueryStringMachine
      */
     var QueryStringMachine = {
@@ -57,7 +58,6 @@
        * @param {string} key - the query parameter name
        * @param {Object} schema
        * @returns {*} query parameter value, converted to the proper type
-       * @memberOf window.QueryStringMachine
        * @public
        */
       get: function( key, schema ) {
@@ -69,7 +69,6 @@
        *
        * @param {Object} schemaMap - see QueryStringMachine.getAllForString
        * @returns {Object} - see QueryStringMachine.getAllForString
-       * @memberOf window.QueryStringMachine
        * @public
        */
       getAll: function( schemaMap ) {
@@ -83,7 +82,6 @@
        * @param {Object} schema - see QueryStringMachine.get
        * @param {string} string - the parameters string.  Must begin with '?' or be the empty string
        * @returns {*} query parameter value, converted to the proper type
-       * @memberOf window.QueryStringMachine
        * @public
        */
       getForString: function( key, schema, string ) {
@@ -103,7 +101,6 @@
        * @param {Object} schemaMap - key/value pairs, key is query parameter name and value is a schema
        * @param {string} string - the parameters string
        * @returns {Object} - key/value pairs holding the parsed results
-       * @memberOf window.QueryStringMachine
        * @public
        */
       getAllForString: function( schemaMap, string ) {
@@ -120,7 +117,6 @@
        * Returns true if the window.location.search contains the given key
        * @param {string} key
        * @returns {boolean} true if the window.location.search contains the given key
-       * @memberOf window.QueryStringMachine
        * @public
        */
       containsKey: function( key ) {
@@ -132,7 +128,6 @@
        * @param {string} key - the key to check for
        * @param {string} string - the query string to search. Must begin with '?' or be the empty string
        * @returns {boolean} true if the given string contains the given key
-       * @memberOf window.QueryStringMachine
        * @public
        */
       containsKeyForString: function( key, string ) {
