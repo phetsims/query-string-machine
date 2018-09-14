@@ -1,8 +1,85 @@
-# query-string-machine
-Query String parser that supports type coercion, defaults, error checking, etc. based on a schema.  Runs in browser or 
-node. Small and only depends on `window.assert` and `_.isEqual`.
+# Query String Machine
+Query String Machine is a query string parser that supports type coercion, default values & validation.  Runs in the
+browser and in node.  No dependencies.
 
-For example:
+Query String Machine values can be obtained by calling `QueryStringMachine.get`, which supports the following types:
+
+### boolean
+Type: 'boolean' returns a primitive boolean value.  Note this is a boolean value, not a string.
+```js
+
+var audio = QueryStringMachine.get( 'audio', { type: 'boolean' } );
+
+// http://localhost/test.html?audio=false   => audio===false
+// http://localhost/test.html?audio=true    => audio===true
+```
+
+### flag
+Type: 'flag' takes the boolean value true if and only if it is provided
+```js
+
+var audio = QueryStringMachine.get( 'audio', { type: 'flag' } );
+
+// http://localhost/test.html            => audio===false
+// http://localhost/test.html?audio      => audio===true
+```
+
+### number
+Type: 'number' provides numeric values.  Note that for each type, a `defaultValue` can be provided.
+```js
+var delay = QueryStringMachine.get( 'delay', { type: 'number', defaultValue: 1000 }};
+
+// http://localhost/test.html            => delay===1000
+// http://localhost/test.html?delay=123  => delay===123
+```
+
+### string
+Type: 'string' provides values as strings:
+```js
+var name = QueryStringMachine.get( 'name', { type: 'string', defaultValue: 'Alice' }};
+
+// http://localhost/test.html            => name==='Alice'
+// http://localhost/test.html?name=Bob   => name==='Bob'
+```
+
+### array
+Type: 'array' provides values as strings, using a nested element schema
+```js
+var words = QueryStringMachine.get( 'heights', { type: 'array', elementSchema: { type: 'string' } } };
+
+// http://localhost/test.html?words=hello,there  => words===['hello', 'there']
+// http://localhost/test.html?words=hi           => words===['hi']
+```
+
+### custom
+By providing a `parse` function, you can support arbitrary types:
+
+```js
+var lower = QueryStringMachine.get( 'name', {
+  parse: function( string ) {
+    return string.toLowerCase();
+  }
+};
+
+// http://localhost/test.html?name=Edward       => name==='edward'
+```
+
+## Allowed Values
+Each type supports allowed values, which specifies an array of valid values, which are checked with `===`.
+
+```js
+var height = QueryStringMachine.get( 'height', {
+  type: 'number',
+  allowedValues: [ 4, 5, 6, 7, 8 ]
+};
+
+// http://localhost/test.html?height=123 => throws an Error
+```
+
+## Multiple Values
+
+In addition to `QueryStringMachine.get`, you can use `QueryStringMachine.getAll` which provides multiple values at the same time:
+
 ```js
 QueryStringMachine.getAll( {
     height: {
@@ -25,8 +102,7 @@ QueryStringMachine.getAll( {
       defaultValue: 'abc'
     },
     isWebGL: {
-      type: 'flag'  // If no equals sign, then presence indicates true
-                    // If there is an equals sign, then parse string as boolean
+      type: 'flag'
     },
     screens: {
       type: 'array',
@@ -38,8 +114,8 @@ QueryStringMachine.getAll( {
 ```
 returns the following results:
 
-```
-http://localhost/query-string-machine/test-query-string-machine.html
+```js
+// http://localhost/query-string-machine/test-query-string-machine.html
 {
   "height": 6,
   "name": "Larry",
@@ -48,7 +124,7 @@ http://localhost/query-string-machine/test-query-string-machine.html
   "screens": []
 }
 
-http://localhost/query-string-machine/test-query-string-machine.html?height=7&isWebGL&wisdom=123
+// http://localhost/query-string-machine/test-query-string-machine.html?height=7&isWebGL&wisdom=123
 {
   "height": 7,
   "name": "Larry",
@@ -57,7 +133,7 @@ http://localhost/query-string-machine/test-query-string-machine.html?height=7&is
   "screens": []
 }
 
-http://localhost/query-string-machine/test-query-string-machine.html?height=7&isWebGL&wisdom=123&custom=DEF
+// http://localhost/query-string-machine/test-query-string-machine.html?height=7&isWebGL&wisdom=123&custom=DEF
 {
   "height": 7,
   "name": "Larry",
@@ -66,10 +142,10 @@ http://localhost/query-string-machine/test-query-string-machine.html?height=7&is
   "screens": []
 }
 
-http://localhost/query-string-machine/test-query-string-machine.html?height=0
-value not allowed: 0, allowedValues = 4,5,6,7,8
+// http://localhost/query-string-machine/test-query-string-machine.html?height=0
+Error( 'value not allowed: 0, allowedValues = 4,5,6,7,8' )
 
-http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&screens=1,2,3,5
+// http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&screens=1,2,3,5
 {
   "height": 6,
   "name": "Larry",
@@ -86,4 +162,4 @@ http://localhost/query-string-machine/test-query-string-machine.html?isWebGL&scr
 
 Launch test-query-string-machine.html for automated tests
 
-QueryStringMachine is Copyright 2016, University of Colorado Boulder and licensed under MIT
+QueryStringMachine is Copyright 2016-2018, University of Colorado Boulder and licensed under MIT
