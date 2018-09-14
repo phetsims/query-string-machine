@@ -167,10 +167,36 @@ Error( 'value not allowed: 0, allowedValues = 4,5,6,7,8' )
 }
 ```
 
-## Parsing values from any string.
-Query String Machine parses the browser query string by default, but can also parse values from provided strings
+## Additional Features
+Most use cases are covered by the preceding examples, but in some cases you will want to parse arbitrary strings or
+check for the existence of a key.
 
+### Parsing arbitrary strings
+By default, Query String Machine parses the browser query string `window.location.search`.  It can also parse values from
+provided strings like so:
+
+```js
+var text = QueryStringMachine.getForString( 'text', { type: 'string' }, '?text=hello' );
+var queryParameters = QueryStringMachine.getAllForString( {
+  name: {
+    type: 'string'
+  },
+  age: {
+    type: 'number',
+    defaultValue: '0',
+  }, '?name=Shirley&age=100' );
+```
+
+### Checking for the existence of a key
+
+In some cases, it is only important to check for the existence of a key.  This can be done using Query String Machine like so:
+
+```js
+var containsAudioKey = QueryStringMachine.containsKey( 'audio' );
+var queryParameters = QueryStringMachine.containsKeyForString( 'audio', '?mute' );
+```
 
 Launch test-query-string-machine.html for automated tests
 
+## Copyright and License
 QueryStringMachine is Copyright 2016-2018, University of Colorado Boulder and licensed under MIT
