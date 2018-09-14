@@ -43,7 +43,6 @@
   // can return a function as the exported value.
   return ( function() {
 
-
     // NOTE: This jsdoc is client facing for phet-io documentation, edit with care.
     /**
      * Phet's query string manipulation type, useful for accessing and validating specific query parameters. Available
@@ -120,11 +119,19 @@
       /**
        * Returns true if the window.location.search contains the given key
        * @param {string} key
+       * @returns {boolean} true if the window.location.search contains the given key
+       * @public
        */
       containsKey: function( key ) {
         return this.containsKeyForString( window.location.search, key );
       },
 
+      /**
+       * Returns true if the given string contains the specified key
+       * @param {string} key
+       * @returns {boolean} true if the given string contains the given key
+       * @public
+       */
       containsKeyForString: function( string, key ) {
         var values = getValues( key, string );
         return values.length > 0;
