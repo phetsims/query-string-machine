@@ -12,7 +12,7 @@ After downloading and including QueryStringMachine, you can use it to obtain val
 Machine values can be obtained by calling `QueryStringMachine.get`, which supports the following types:
 
 ### boolean
-Type: 'boolean' returns a primitive boolean value.  Note this is a boolean value, not a string.
+Type: 'boolean' returns a primitive boolean value.  Note this of type boolean, not string.
 ```js
 
 var audio = QueryStringMachine.get( 'audio', { type: 'boolean' } );
@@ -32,7 +32,8 @@ var audio = QueryStringMachine.get( 'audio', { type: 'flag' } );
 ```
 
 ### number
-Type: 'number' provides numeric values.  Note that for each type, a `defaultValue` can be provided.
+Type: 'number' provides numeric values.  Note that for each type, a `defaultValue` can be provided. If `defaultValue` is
+not provided, then that query parameter is required, or QueryStringMachine will error.
 ```js
 var delay = QueryStringMachine.get( 'delay', { type: 'number', defaultValue: 1000 }};
 
