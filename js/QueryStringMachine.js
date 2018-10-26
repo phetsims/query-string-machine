@@ -46,8 +46,8 @@
     // NOTE: This jsdoc is client facing for phet-io documentation, edit with care.
     /**
      * Query String Machine is a query string parser that supports type coercion, default values & validation. Please
-     * visit <a href="https://github.com/phetsims/query-string-machine">Query String Machine</a> for documentation and
-     * examples.
+     * visit PhET's <a href="https://github.com/phetsims/query-string-machine" target="_blank">query-string-machine</a>
+     * repository for documentation and examples.
      * @namespace {Object} window.QueryStringMachine
      */
     var QueryStringMachine = {
