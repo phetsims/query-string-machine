@@ -203,10 +203,12 @@
       var values = [];
       var params = string.slice( 1 ).split( '&' );
       for ( var i = 0; i < params.length; i++ ) {
-        var nameValuePair = params[ i ].split( '=' ); // Array with key=[0] and value=[1]
-        if ( nameValuePair[ 0 ] === key ) {
-          if ( nameValuePair[ 1 ] ) {
-            values.push( decodeURIComponent( nameValuePair[ 1 ] ) );
+        var splitByEquals = params[ i ].split( '=' );
+        var name = splitByEquals[ 0 ];
+        var value = splitByEquals.slice( 1 ).join( '=' ); // Support arbitrary number of '=' in the value
+        if ( name === key ) {
+          if ( value ) {
+            values.push( decodeURIComponent( value ) );
           }
           else {
             values.push( null ); // no value provided
