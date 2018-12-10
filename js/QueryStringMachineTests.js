@@ -173,4 +173,13 @@ define( function( require ) {
     var f = function() {};
     assert.equal( QueryStringMachine.deepEquals( f, f ), true, 'same reference function' );
   } );
+
+  QUnit.test( 'removeKeyValuePair', function( assert ) {
+    assert.equal( QueryStringMachine.removeKeyValuePair( '?time=now', 'time' ), '', 'Remove single occurrence' );
+    assert.equal( QueryStringMachine.removeKeyValuePair( '?time=now&place=here', 'time' ), '?place=here', 'Remove single occurrence but leave other' );
+    assert.equal( QueryStringMachine.removeKeyValuePair( '?time=now&time=later', 'time' ), '', 'Remove multiple occurrences' );
+    assert.equal( QueryStringMachine.removeKeyValuePair( '?place=here&time=now', 'time' ), '?place=here', 'Different order' );
+    assert.equal( QueryStringMachine.removeKeyValuePair( '?time&place', 'time' ), '?place', 'Remove with no values' );
+    assert.equal( QueryStringMachine.removeKeyValuePair( '?place&time', 'time' ), '?place', 'Remove with no values' );
+  } );
 } );

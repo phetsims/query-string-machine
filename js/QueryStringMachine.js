@@ -146,6 +146,7 @@
        * arrays objects that contain primitives (i.e. terminals are compared with ===)
        * @param {Object} a - an object to compare
        * @param {Object} b - an object to compare
+       * @private - however, it is called from QueryStringMachineTests
        */
       deepEquals: function( a, b ) {
         if ( typeof a !== typeof b ) {
@@ -187,6 +188,45 @@
             }
           }
           return true;
+        }
+      },
+
+      /**
+       * Returns a new URL but without the key-value pair.
+       *
+       * @param {string} queryString - tail of a URL including the beginning '?' (if any)
+       * @param {string} key
+       * @public
+       */
+      removeKeyValuePair: function( queryString, key ) {
+        assert && assert( typeof queryString === 'string', 'url should be string, but it was: ' + ( typeof queryString ) );
+        assert && assert( typeof key === 'string', 'url should be string, but it was: ' + ( typeof key ) );
+        assert && assert( queryString.length === 0 || queryString.indexOf( '?' ) === 0, 'queryString should be length 0 or begin with ?' );
+        assert && assert( key.length > 0, 'url should be a string with length > 0' );
+
+        if ( queryString.indexOf( '?' ) === 0 ) {
+          var newString = '';
+          var query = queryString.substring( 1 );
+          var elements = query.split( '&' );
+          for ( var i = 0; i < elements.length; i++ ) {
+            var element = elements[ i ];
+            var keyAndMaybeValue = element.split( '=' );
+
+            const elementKey = decodeURIComponent( keyAndMaybeValue[ 0 ] );
+            if ( elementKey !== key ) {
+              newString += element;
+            }
+          }
+
+          if ( newString.length > 0 ) {
+            return '?' + newString;
+          }
+          else {
+            return newString;
+          }
+        }
+        else {
+          return queryString;
         }
       }
     };
