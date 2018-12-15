@@ -11,5 +11,8 @@
   },
   "phet": {
     "generatedUnitTests": true
+  },
+  "eslintConfig": {
+    "extends": "../chipper/eslint/.eslintrc.js"
   }
 }
