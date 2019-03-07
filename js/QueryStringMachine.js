@@ -38,6 +38,12 @@
   // Default string that splits array strings
   var DEFAULT_SEPARATOR = ',';
 
+  // If a query parameter has private:true in its schema, it must pass this predicate to be read from the URL.
+  // See https://github.com/phetsims/chipper/issues/743
+  const privatePredicate = () => {
+    return localStorage.getItem( 'phetTeamMember' ) === 'true';
+  };
+
   // Just return a value to define the module export.
   // This example returns an object, but the module
   // can return a function as the exported value.
@@ -90,8 +96,12 @@
           throw new Error( 'Query strings should be either the empty string or start with a "?": ' + string );
         }
 
+        // Ignore URL values for private query parameters that fail privatePredicate.
+        // See https://github.com/phetsims/chipper/issues/743.
+        const values = ( schema.private && !privatePredicate() ) ? [] : getValues( key, string );
+
         validateSchema( key, schema );
-        var value = parseValues( key, schema, getValues( key, string ) );
+        var value = parseValues( key, schema, values );
         validateValue( key, schema, value );
         return value;
       },
@@ -637,7 +647,7 @@
       // value is true if present, false if absent
       flag: {
         required: [],
-        optional: [],
+        optional: [ 'private' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseFlag,
         validateValue: validateFlagValue
@@ -646,7 +656,7 @@
       // value is either true or false, e.g. showAnswer=true
       boolean: {
         required: [],
-        optional: [ 'defaultValue' ],
+        optional: [ 'defaultValue', 'private' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseBoolean,
         validateValue: validateBooleanValue
@@ -655,7 +665,7 @@
       // value is a number, e.g. frameRate=100
       number: {
         required: [],
-        optional: [ 'defaultValue', 'validValues', 'isValidValue' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseNumber,
         validateValue: validateNumberValue
@@ -664,7 +674,7 @@
       // value is a string, e.g. name=Ringo
       string: {
         required: [],
-        optional: [ 'defaultValue', 'validValues', 'isValidValue' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseString,
         validateValue: validateStringValue
@@ -673,7 +683,7 @@
       // value is an array, e.g. screens=1,2,3
       array: {
         required: [ 'elementSchema' ],
-        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues', 'private' ],
         validateSchema: validateArraySchema,
         parse: parseArray,
         validateValue: validateArrayValue
@@ -682,7 +692,7 @@
       // value is a custom data type, e.g. color=255,0,255
       custom: {
         required: [ 'parse' ],
-        optional: [ 'defaultValue', 'validValues', 'isValidValue' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseCustom,
         validateValue: validateCustomValue
