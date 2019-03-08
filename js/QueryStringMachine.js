@@ -294,7 +294,7 @@
 
       // validValues is an Array
       if ( schema.hasOwnProperty( 'validValues' ) ) {
-        queryStringMachineAssert( Array.isArray( schema.validValues ), key, 'isValidValue must be a function' );
+        queryStringMachineAssert( Array.isArray( schema.validValues ), key, 'isValidValue must be an array' );
       }
 
       // isValidValue is a function
