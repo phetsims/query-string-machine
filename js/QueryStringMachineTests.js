@@ -182,4 +182,18 @@ define( function( require ) {
     assert.equal( QueryStringMachine.removeKeyValuePair( '?time&place', 'time' ), '?place', 'Remove with no values' );
     assert.equal( QueryStringMachine.removeKeyValuePair( '?place&time', 'time' ), '?place', 'Remove with no values' );
   } );
+
+  QUnit.test( 'appendQueryString', function( assert ) {
+
+    var test = function( url, queryParameters, expected ) {
+      assert.equal( QueryStringMachine.appendQueryString( url, queryParameters ), expected, url + ' + ' + queryParameters + ' should be ok' );
+    };
+
+    test( 'http://localhost.com/hello.html', '', 'http://localhost.com/hello.html' );
+    test( 'http://localhost.com/hello.html', '?test', 'http://localhost.com/hello.html?test' );
+    test( 'http://localhost.com/hello.html', '&test', 'http://localhost.com/hello.html?test' );
+    test( 'http://localhost.com/hello.html?abc', '', 'http://localhost.com/hello.html?abc' );
+    test( 'http://localhost.com/hello.html?abc', '?123', 'http://localhost.com/hello.html?abc&123' );
+    test( 'http://localhost.com/hello.html?abc', '&123', 'http://localhost.com/hello.html?abc&123' );
+  } );
 } );

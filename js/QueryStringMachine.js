@@ -236,6 +236,48 @@
         else {
           return queryString;
         }
+      },
+
+      /**
+       * Appends a query string to a given url.
+       * @param {string} url - may or may not already have other query parameters
+       * @param {string} queryParameters - may start with '', '?' or '&'
+       * @returns {string}
+       * @public
+       * @static
+       *
+       * @example
+       * // Limit to the second screen
+       * simURL = QueryStringMachine.appendQueryString( simURL, 'screens=2' );
+       */
+      appendQueryString: function( url, queryParameters ) {
+        if ( queryParameters.indexOf( '?' ) === 0 || queryParameters.indexOf( '&' ) === 0 ) {
+          queryParameters = queryParameters.substring( 1 );
+        }
+        if ( queryParameters.length === 0 ) {
+          return url;
+        }
+        const combination = url.indexOf( '?' ) >= 0 ? '&' : '?';
+        return url + combination + queryParameters;
+      },
+
+      /**
+       * Helper function for multiple query strings
+       * @param {string} url - may or may not already have other query parameters
+       * @param {Array.<string>} queryStringArray - each item may start with '', '?', or '&'
+       * @returns {string}
+       * @public
+       * @static
+       *
+       * @example
+       * sourceFrame.src = QueryStringMachine.appendQueryStringArray( simURL, [ 'screens=2', 'frameTitle=source' ] );
+       */
+      appendQueryStringArray: function( url, queryStringArray ) {
+
+        for ( let i = 0; i < queryStringArray.length; i++ ) {
+          url = this.appendQueryString( url, queryStringArray[ i ] );
+        }
+        return url;
       }
     };
 
