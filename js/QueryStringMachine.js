@@ -213,7 +213,7 @@
         assert && assert( key.length > 0, 'url should be a string with length > 0' );
 
         if ( queryString.indexOf( '?' ) === 0 ) {
-          var newString = '';
+          var newParameters = [];
           var query = queryString.substring( 1 );
           var elements = query.split( '&' );
           for ( var i = 0; i < elements.length; i++ ) {
@@ -222,15 +222,15 @@
 
             const elementKey = decodeURIComponent( keyAndMaybeValue[ 0 ] );
             if ( elementKey !== key ) {
-              newString += element;
+              newParameters.push( element );
             }
           }
 
-          if ( newString.length > 0 ) {
-            return '?' + newString;
+          if ( newParameters.length > 0 ) {
+            return '?' + newParameters.join( '&');
           }
           else {
-            return newString;
+            return '';
           }
         }
         else {
