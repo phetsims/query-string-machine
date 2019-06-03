@@ -227,7 +227,7 @@
           }
 
           if ( newParameters.length > 0 ) {
-            return '?' + newParameters.join( '&');
+            return '?' + newParameters.join( '&' );
           }
           else {
             return '';

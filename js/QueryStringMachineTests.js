@@ -182,11 +182,11 @@ define( function( require ) {
     assert.equal( QueryStringMachine.removeKeyValuePair( '?place=here&time=now', 'time' ), '?place=here', 'Different order' );
     assert.equal( QueryStringMachine.removeKeyValuePair( '?time&place', 'time' ), '?place', 'Remove with no values' );
     assert.equal( QueryStringMachine.removeKeyValuePair( '?place&time', 'time' ), '?place', 'Remove with no values' );
-    assert.equal( QueryStringMachine.removeKeyValuePair( '?place&time', 'times' ), '?place&time', 'Key to remove not resent' );
+    assert.equal( QueryStringMachine.removeKeyValuePair( '?place&time', 'times' ), '?place&time', 'Key to remove not present' );
     assert.equal( QueryStringMachine.removeKeyValuePair(
       '?sim=ohms-law&phetioValidateTandems&phetioDebug&phetioValidateAPI=false', 'fuzz' ),
       '?sim=ohms-law&phetioValidateTandems&phetioDebug&phetioValidateAPI=false',
-      'key not present' );
+      'Key to remove not present' );
   } );
 
   QUnit.test( 'appendQueryString', function( assert ) {
