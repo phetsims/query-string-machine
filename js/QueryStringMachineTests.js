@@ -196,6 +196,7 @@ define( function( require ) {
     };
 
     test( 'http://localhost.com/hello.html', '', 'http://localhost.com/hello.html' );
+    test( 'http://localhost.com/hello.html?hi', '', 'http://localhost.com/hello.html?hi' );
     test( 'http://localhost.com/hello.html', '?test', 'http://localhost.com/hello.html?test' );
     test( 'http://localhost.com/hello.html', '&test', 'http://localhost.com/hello.html?test' );
     test( 'http://localhost.com/hello.html?abc', '', 'http://localhost.com/hello.html?abc' );
