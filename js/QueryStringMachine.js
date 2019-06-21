@@ -41,7 +41,14 @@
   // If a query parameter has private:true in its schema, it must pass this predicate to be read from the URL.
   // See https://github.com/phetsims/chipper/issues/743
   const privatePredicate = () => {
-    return localStorage.getItem( 'phetTeamMember' ) === 'true';
+    // Trying to access localStorage may fail with a SecurityError if cookies are blocked in a certain way.
+    // See https://github.com/phetsims/qa/issues/329 for more information.
+    try {
+      return localStorage.getItem( 'phetTeamMember' ) === 'true';
+    }
+    catch ( e ) {
+      return false;
+    }
   };
 
   // Just return a value to define the module export.
