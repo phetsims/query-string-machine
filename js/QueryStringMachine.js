@@ -36,7 +36,7 @@
   'use strict';
 
   // Default string that splits array strings
-  var DEFAULT_SEPARATOR = ',';
+  const DEFAULT_SEPARATOR = ',';
 
   // If a query parameter has private:true in its schema, it must pass this predicate to be read from the URL.
   // See https://github.com/phetsims/chipper/issues/743
@@ -106,7 +106,7 @@
         const values = ( schema.private && !privatePredicate() ) ? [] : getValues( key, string );
 
         validateSchema( key, schema );
-        var value = parseValues( key, schema, values );
+        const value = parseValues( key, schema, values );
         validateValue( key, schema, value );
         return value;
       },
@@ -119,8 +119,8 @@
        * @public
        */
       getAllForString: function( schemaMap, string ) {
-        var result = {};
-        for ( var key in schemaMap ) {
+        const result = {};
+        for ( const key in schemaMap ) {
           if ( schemaMap.hasOwnProperty( key ) ) {
             result[ key ] = this.getForString( key, schemaMap[ key ], string );
           }
@@ -152,7 +152,7 @@
           throw new Error( 'Query strings should be either the empty string or start with a "?": ' + string );
         }
 
-        var values = getValues( key, string );
+        const values = getValues( key, string );
         return values.length > 0;
       },
 
@@ -182,8 +182,8 @@
         if ( a === undefined && b === null ) {
           return false;
         }
-        var aKeys = Object.keys( a );
-        var bKeys = Object.keys( b );
+        const aKeys = Object.keys( a );
+        const bKeys = Object.keys( b );
         if ( aKeys.length !== bKeys.length ) {
           return false;
         }
@@ -192,12 +192,12 @@
         }
         else {
 
-          for ( var i = 0; i < aKeys.length; i++ ) {
+          for ( let i = 0; i < aKeys.length; i++ ) {
             if ( aKeys[ i ] !== bKeys[ i ] ) {
               return false;
             }
-            var aChild = a[ aKeys[ i ] ];
-            var bChild = b[ aKeys[ i ] ];
+            const aChild = a[ aKeys[ i ] ];
+            const bChild = b[ aKeys[ i ] ];
             if ( !QueryStringMachine.deepEquals( aChild, bChild ) ) {
               return false;
             }
@@ -220,12 +220,12 @@
         assert && assert( key.length > 0, 'url should be a string with length > 0' );
 
         if ( queryString.indexOf( '?' ) === 0 ) {
-          var newParameters = [];
-          var query = queryString.substring( 1 );
-          var elements = query.split( '&' );
-          for ( var i = 0; i < elements.length; i++ ) {
-            var element = elements[ i ];
-            var keyAndMaybeValue = element.split( '=' );
+          const newParameters = [];
+          const query = queryString.substring( 1 );
+          const elements = query.split( '&' );
+          for ( let i = 0; i < elements.length; i++ ) {
+            const element = elements[ i ];
+            const keyAndMaybeValue = element.split( '=' );
 
             const elementKey = decodeURIComponent( keyAndMaybeValue[ 0 ] );
             if ( elementKey !== key ) {
@@ -297,12 +297,12 @@
      * @returns {Array.<string|null>} - the resulting values, null indicates the query parameter is present with no value
      */
     var getValues = function( key, string ) {
-      var values = [];
-      var params = string.slice( 1 ).split( '&' );
-      for ( var i = 0; i < params.length; i++ ) {
-        var splitByEquals = params[ i ].split( '=' );
-        var name = splitByEquals[ 0 ];
-        var value = splitByEquals.slice( 1 ).join( '=' ); // Support arbitrary number of '=' in the value
+      const values = [];
+      const params = string.slice( 1 ).split( '&' );
+      for ( let i = 0; i < params.length; i++ ) {
+        const splitByEquals = params[ i ].split( '=' );
+        const name = splitByEquals[ 0 ];
+        const value = splitByEquals.slice( 1 ).join( '=' ); // Support arbitrary number of '=' in the value
         if ( name === key ) {
           if ( value ) {
             values.push( decodeURIComponent( value ) );
@@ -381,7 +381,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
-    var validateArraySchema = function( key, schema ) {
+    const validateArraySchema = function( key, schema ) {
 
       // separator is a single character
       if ( schema.hasOwnProperty( 'separator' ) ) {
@@ -403,7 +403,7 @@
     var validateSchemaProperties = function( key, schema, requiredProperties, optionalProperties ) {
 
       // {string[]}, the names of the properties in the schema
-      var schemaProperties = Object.getOwnPropertyNames( schema );
+      const schemaProperties = Object.getOwnPropertyNames( schema );
 
       // verify that all required properties are present
       requiredProperties.forEach( function( property ) {
@@ -412,7 +412,7 @@
       } );
 
       // verify that there are no unsupported properties
-      var supportedProperties = requiredProperties.concat( optionalProperties );
+      const supportedProperties = requiredProperties.concat( optionalProperties );
       schemaProperties.forEach( function( property ) {
         queryStringMachineAssert( property === 'type' || supportedProperties.indexOf( property ) !== -1,
           key, 'unsupported property: ' + property );
@@ -450,7 +450,7 @@
      * @param {Object} schema - schema that describes the query parameter
      * @param {boolean} value
      */
-    var validateFlagValue = function( key, schema, value ) {
+    const validateFlagValue = function( key, schema, value ) {
       return validateBooleanValue( key, schema, value ); // flag is a convenient variation of boolean
     };
 
@@ -470,7 +470,7 @@
      * @param {Object} schema - schema that describes the query parameter
      * @param {number} value - value from the query parameter string
      */
-    var validateNumberValue = function( key, schema, value ) {
+    const validateNumberValue = function( key, schema, value ) {
       queryStringMachineAssert( typeof value === 'number' && !isNaN( value ), key, 'invalid value: ' + value );
     };
 
@@ -480,7 +480,7 @@
      * @param {Object} schema - schema that describes the query parameter
      * @param {string|null} value - value from the query parameter string
      */
-    var validateStringValue = function( key, schema, value ) {
+    const validateStringValue = function( key, schema, value ) {
       queryStringMachineAssert( value === null || typeof value === 'string', key, 'invalid value: ' + value );
     };
 
@@ -490,7 +490,7 @@
      * @param {Object} schema - schema that describes the query parameter
      * @param {Array.<*>} value - type of array elements depends on elementSchema
      */
-    var validateArrayValue = function( key, schema, value ) {
+    const validateArrayValue = function( key, schema, value ) {
       queryStringMachineAssert( Array.isArray( value ) || value === null, key, 'invalid value: ' + value );
     };
 
@@ -500,7 +500,7 @@
      * @param {Object} schema - schema that describes the query parameter
      * @param {*} value - type depends on what parse returns
      */
-    var validateCustomValue = function( key, schema, value ) {
+    const validateCustomValue = function( key, schema, value ) {
       //TODO do we need to add a property to 'custom' schema that handles validation of custom value's type?
     };
 
@@ -516,7 +516,7 @@
      */
     var parseValues = function( key, schema, values ) {
 
-      var returnValue;
+      let returnValue;
 
       // values contains values for all occurrences of the query parameter.  We currently support only 1 occurrence.
       queryStringMachineAssert( values.length <= 1, key, 'query parameter cannot occur multiple times' );
@@ -565,7 +565,7 @@
      * @param {string|null} value - value from the query parameter string
      * @returns {boolean}
      */
-    var parseBoolean = function( key, schema, value ) {
+    const parseBoolean = function( key, schema, value ) {
       queryStringMachineAssert( value === 'true' || value === 'false', key, 'invalid value: ' + value );
       return ( value === 'true' );
     };
@@ -577,8 +577,8 @@
      * @param {string|null} value - value from the query parameter string
      * @returns {number}
      */
-    var parseNumber = function( key, schema, value ) {
-      var returnValue = Number( value );
+    const parseNumber = function( key, schema, value ) {
+      const returnValue = Number( value );
       queryStringMachineAssert( !isNaN( returnValue ), key, 'value must be a number: ' + value );
       return returnValue;
     };
@@ -590,7 +590,7 @@
      * @param {string|null} value - value from the query parameter string
      * @returns {string|null}
      */
-    var parseString = function( key, schema, value ) {
+    const parseString = function( key, schema, value ) {
       return value;
     };
 
@@ -601,9 +601,9 @@
      * @param {string|null} value - value from the query parameter string
      * @returns {Array.<*>|null}
      */
-    var parseArray = function( key, schema, value ) {
+    const parseArray = function( key, schema, value ) {
 
-      var returnValue;
+      let returnValue;
 
       if ( value === null ) {
 
@@ -629,7 +629,7 @@
      * @param {string} value - value from the query parameter string
      * @returns {*}
      */
-    var parseCustom = function( key, schema, value ) {
+    const parseCustom = function( key, schema, value ) {
       return schema.parse( value );
     };
 
@@ -642,8 +642,8 @@
      * @returns {boolean}
      */
     var isValidValue = function( value, validValues ) {
-      var found = false;
-      for ( var i = 0; i < validValues.length && !found; i++ ) {
+      let found = false;
+      for ( let i = 0; i < validValues.length && !found; i++ ) {
         found = QueryStringMachine.deepEquals( validValues[ i ], value );
       }
       return found;

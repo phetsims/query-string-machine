@@ -12,10 +12,10 @@ define( require => {
 
   // assert shadows window.assert
   QUnit.test( 'basic tests', function( assert ) {
-    var value = 'hello';
+    const value = 'hello';
     assert.equal( value, 'hello', 'We expect value to be hello' );
 
-    var schemaMap = {
+    const schemaMap = {
       height: {
         type: 'number',
         defaultValue: 6,
@@ -103,7 +103,7 @@ define( require => {
           defaultValue: [ 1, 6, 0 ],
           isValidValue: function( arr ) {
             // Fake test: check that elements sum to 7 for phetsims/query-string-machine#11
-            var arraySum = arr.reduce( function( a, b ) { return a + b; }, 0 );
+            const arraySum = arr.reduce( function( a, b ) { return a + b; }, 0 );
             return ( arraySum === 7 );
           }
         }
@@ -170,7 +170,7 @@ define( require => {
     assert.equal( QueryStringMachine.deepEquals( null, undefined ), false, 'null undefined' );
     assert.equal( QueryStringMachine.deepEquals( undefined, undefined ), true, 'undefined undefined' );
     assert.equal( QueryStringMachine.deepEquals( function() {}, function() {} ), false, 'different implementations of similar functions' );
-    var f = function() {};
+    const f = function() {};
     assert.equal( QueryStringMachine.deepEquals( f, f ), true, 'same reference function' );
   } );
 
@@ -191,7 +191,7 @@ define( require => {
 
   QUnit.test( 'appendQueryString', function( assert ) {
 
-    var test = function( url, queryParameters, expected ) {
+    const test = function( url, queryParameters, expected ) {
       assert.equal( QueryStringMachine.appendQueryString( url, queryParameters ), expected, url + ' + ' + queryParameters + ' should be ok' );
     };
 
