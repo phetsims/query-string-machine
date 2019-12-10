@@ -46,10 +46,18 @@
     try {
       return localStorage.getItem( 'phetTeamMember' ) === 'true';
     }
-    catch ( e ) {
+    catch( e ) {
       return false;
     }
   };
+
+  /**
+   * Valid parameter strings begin with ? or are the empty string.  This is used for assertions in some cases and for
+   * throwing Errors in other cases.
+   * @param {string} string
+   * @returns {boolean}
+   */
+  const isParameterString = string => string.length === 0 || string.indexOf( '?' ) === 0;
 
   // Just return a value to define the module export.
   // This example returns an object, but the module
@@ -97,7 +105,7 @@
        */
       getForString: function( key, schema, string ) {
 
-        if ( !( string.length === 0 || string.indexOf( '?' ) === 0 ) ) {
+        if ( !isParameterString( string ) ) {
           throw new Error( 'Query strings should be either the empty string or start with a "?": ' + string );
         }
 
@@ -146,12 +154,9 @@
        * @public
        */
       containsKeyForString: function( key, string ) {
-
-        // TODO: this is the same check as above, can it be factored out?
-        if ( !( string.length === 0 || string.indexOf( '?' ) === 0 ) ) {
+        if ( !isParameterString( string ) ) {
           throw new Error( 'Query strings should be either the empty string or start with a "?": ' + string );
         }
-
         const values = getValues( key, string );
         return values.length > 0;
       },
@@ -216,7 +221,7 @@
       removeKeyValuePair: function( queryString, key ) {
         assert && assert( typeof queryString === 'string', 'url should be string, but it was: ' + ( typeof queryString ) );
         assert && assert( typeof key === 'string', 'url should be string, but it was: ' + ( typeof key ) );
-        assert && assert( queryString.length === 0 || queryString.indexOf( '?' ) === 0, 'queryString should be length 0 or begin with ?' );
+        assert && assert( isParameterString( queryString ), 'queryString should be length 0 or begin with ?' );
         assert && assert( key.length > 0, 'url should be a string with length > 0' );
 
         if ( queryString.indexOf( '?' ) === 0 ) {
