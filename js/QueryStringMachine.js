@@ -506,7 +506,7 @@
      * @param {*} value - type depends on what parse returns
      */
     const validateCustomValue = function( key, schema, value ) {
-      //TODO do we need to add a property to 'custom' schema that handles validation of custom value's type?
+      // TODO do we need to add a property to 'custom' schema that handles validation of custom value's type? see https://github.com/phetsims/query-string-machine/issues/35
     };
 
     // Parsing =========================================================================================================
