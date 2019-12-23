@@ -71,6 +71,9 @@
      */
     var QueryStringMachine = {
 
+      // @public {{key:string, message:string, value:{*}, defaultValue:{*}}[]}
+      warnings: [],
+
       /**
        * Gets the value for a single query parameter.
        *
@@ -115,8 +118,9 @@
 
         validateSchema( key, schema );
         const value = parseValues( key, schema, values );
-        validateValue( key, schema, value );
-        return value;
+        const validatedValue = validateValue( key, schema, value );
+
+        return validatedValue === undefined ? value : validatedValue;
       },
 
       /**
@@ -290,6 +294,27 @@
           url = this.appendQueryString( url, queryStringArray[ i ] );
         }
         return url;
+      },
+
+      /**
+       * Adds a warning to the console and QueryStringMachine.warnings to indicate that a default value is being used
+       * instead of the invalid provided value
+       *
+       * @param {string} key - the query parameter name
+       * @param {string} message - the message that indicates the problem with the value
+       * @param {*} value - type depends on schema type
+       * @param {*} defaultValue - default value for the query parameter schema
+       * @public
+       */
+      addWarning: function( key, message, value, defaultValue ) {
+        console.warn( `"${key}" ${message}${value}, reverting to default value: ${defaultValue}` );
+
+        this.warnings.push( {
+          key: key,
+          message: message,
+          value: value,
+          defaultValue: defaultValue
+        } );
       }
     };
 
@@ -433,20 +458,37 @@
      * @param {*} value - type depends on schema type
      */
     var validateValue = function( key, schema, value ) {
+      let defaultValue = null;
 
       // value is a member of validValues
       if ( schema.hasOwnProperty( 'validValues' ) ) {
-        queryStringMachineAssert( isValidValue( value, schema.validValues ),
-          key, 'value must be a member of validValues: ' + value );
+        const errorMessage = 'value must be a member of validValues: ';
+        if ( !schema.isGraceful ) {
+          queryStringMachineAssert( isValidValue( value, schema.validValues ),
+            key, errorMessage + value );
+        }
+        else if ( !isValidValue( value, schema.validValues ) ) {
+          defaultValue = schema.defaultValue;
+          QueryStringMachine.addWarning( key, errorMessage, value, defaultValue );
+        }
       }
 
       // isValidValue evaluates to true
       if ( schema.hasOwnProperty( 'isValidValue' ) ) {
-        queryStringMachineAssert( schema.isValidValue( value ), key, 'invalid value: ' + value );
+        const errorMessage = 'invalid value: ';
+        if ( !schema.isGraceful ) {
+          queryStringMachineAssert( schema.isValidValue( value ), key, errorMessage + value );
+        }
+        else if ( !schema.isValidValue( value ) ) {
+          defaultValue = schema.defaultValue;
+          QueryStringMachine.addWarning( key, errorMessage, value, defaultValue );
+        }
       }
 
       // dispatch further validation to a type-specific function
-      TYPES[ schema.type ].validateValue( key, schema, value );
+      value = TYPES[ schema.type ].validateValue( key, schema, value );
+
+      return defaultValue || value;
     };
 
     /**
@@ -571,8 +613,18 @@
      * @returns {boolean}
      */
     const parseBoolean = function( key, schema, value ) {
-      queryStringMachineAssert( value === 'true' || value === 'false', key, 'invalid value: ' + value );
-      return ( value === 'true' );
+      let defaultValue = null;
+      const errorMessage = 'invalid value: ';
+
+      if ( !schema.isGraceful ) {
+        queryStringMachineAssert( value === 'true' || value === 'false', key, errorMessage + value );
+      }
+      else if ( !( value === 'true' || value === 'false' ) ) {
+        defaultValue = schema.defaultValue;
+        QueryStringMachine.addWarning( key, errorMessage, value, defaultValue );
+      }
+
+      return defaultValue ? ( defaultValue === 'true' ) : ( value === 'true' );
     };
 
     /**
@@ -584,8 +636,18 @@
      */
     const parseNumber = function( key, schema, value ) {
       const returnValue = Number( value );
-      queryStringMachineAssert( !isNaN( returnValue ), key, 'value must be a number: ' + value );
-      return returnValue;
+      let defaultValue = null;
+      const errorMessage = 'value must be a number: ';
+
+      if ( !schema.isGraceful ) {
+        queryStringMachineAssert( !isNaN( returnValue ), key, errorMessage + value );
+      }
+      else if ( isNaN( returnValue ) ) {
+        defaultValue = schema.defaultValue;
+        QueryStringMachine.addWarning( key, errorMessage, value, defaultValue );
+      }
+
+      return defaultValue || returnValue;
     };
 
     /**
@@ -708,7 +770,7 @@
       // value is either true or false, e.g. showAnswer=true
       boolean: {
         required: [],
-        optional: [ 'defaultValue', 'private' ],
+        optional: [ 'defaultValue', 'private', 'isGraceful' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseBoolean,
         validateValue: validateBooleanValue
@@ -717,7 +779,7 @@
       // value is a number, e.g. frameRate=100
       number: {
         required: [],
-        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'isGraceful' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseNumber,
         validateValue: validateNumberValue
@@ -726,7 +788,7 @@
       // value is a string, e.g. name=Ringo
       string: {
         required: [],
-        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'isGraceful' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseString,
         validateValue: validateStringValue
@@ -735,7 +797,7 @@
       // value is an array, e.g. screens=1,2,3
       array: {
         required: [ 'elementSchema' ],
-        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues', 'private' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues', 'private', 'isGraceful' ],
         validateSchema: validateArraySchema,
         parse: parseArray,
         validateValue: validateArrayValue
@@ -744,7 +806,7 @@
       // value is a custom data type, e.g. color=255,0,255
       custom: {
         required: [ 'parse' ],
-        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'isGraceful' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseCustom,
         validateValue: validateCustomValue
