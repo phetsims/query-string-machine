@@ -459,6 +459,7 @@
      * @returns {*} the validated value, or an alternate valid value if the value was not validated
      */
     const validateValue = function( key, schema, value ) {
+      let defaultValue = null;
 
       // value is a member of validValues
       if ( schema.hasOwnProperty( 'validValues' ) ) {
