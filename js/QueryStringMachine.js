@@ -69,7 +69,7 @@
      * visit PhET's <a href="https://github.com/phetsims/query-string-machine" target="_blank">query-string-machine</a>
      * repository for documentation and examples.
      */
-    var QueryStringMachine = {
+    const QueryStringMachine = {
 
       // @public {{key:string, message:string, value:{*}, defaultValue:{*}}[]}
       warnings: [],
@@ -326,7 +326,7 @@
      * @param {string} string - the parameters string
      * @returns {Array.<string|null>} - the resulting values, null indicates the query parameter is present with no value
      */
-    var getValues = function( key, string ) {
+    const getValues = function( key, string ) {
       const values = [];
       const params = string.slice( 1 ).split( '&' );
       for ( let i = 0; i < params.length; i++ ) {
@@ -352,7 +352,7 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      */
-    var validateSchema = function( key, schema ) {
+    const validateSchema = function( key, schema ) {
 
       // type is required
       queryStringMachineAssert( schema.hasOwnProperty( 'type' ), key, 'type field is required' );
@@ -430,7 +430,7 @@
      * @param {string[]} requiredProperties - properties that the schema must have
      * @param {string[]} optionalProperties - properties that the schema may optionally have
      */
-    var validateSchemaProperties = function( key, schema, requiredProperties, optionalProperties ) {
+    const validateSchemaProperties = function( key, schema, requiredProperties, optionalProperties ) {
 
       // {string[]}, the names of the properties in the schema
       const schemaProperties = Object.getOwnPropertyNames( schema );
@@ -456,9 +456,9 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter
      * @param {*} value - type depends on schema type
+     * @returns {*} the validated value, or an alternate valid value if the value was not validated
      */
-    var validateValue = function( key, schema, value ) {
-      let defaultValue = null;
+    const validateValue = function( key, schema, value ) {
 
       // value is a member of validValues
       if ( schema.hasOwnProperty( 'validValues' ) ) {
@@ -507,7 +507,7 @@
      * @param {Object} schema - schema that describes the query parameter
      * @param {boolean} value - value from the query parameter string
      */
-    var validateBooleanValue = function( key, schema, value ) {
+    const validateBooleanValue = function( key, schema, value ) { // TODO: https://github.com/phetsims/joist/issues/593 this is called as if it has a return value, but it has no return value
       queryStringMachineAssert( value === true || value === false, key, 'invalid value: ' + value );
     };
 
@@ -561,7 +561,7 @@
      *   could be multiple for ?value=x&value=y for example
      * @returns {*} the associated value, converted to the proper type
      */
-    var parseValues = function( key, schema, values ) {
+    const parseValues = function( key, schema, values ) {
 
       let returnValue;
 
@@ -598,7 +598,7 @@
      * @param {undefined|null} value - value from the query parameter string
      * @returns {boolean}
      */
-    var parseFlag = function( key, schema, value ) {
+    const parseFlag = function( key, schema, value ) {
       queryStringMachineAssert( ( value === undefined || value === null ), key, 'flag type does not support a value: ' + value );
 
       // value is true if the flag is present, false if absent
@@ -708,7 +708,7 @@
      * @param {Array.<*>} validValues
      * @returns {boolean}
      */
-    var isValidValue = function( value, validValues ) {
+    const isValidValue = function( value, validValues ) {
       let found = false;
       for ( let i = 0; i < validValues.length && !found; i++ ) {
         found = QueryStringMachine.deepEquals( validValues[ i ], value );
@@ -736,7 +736,7 @@
      * @param {string} message
      * @returns {string}
      */
-    var formatErrorMessage = function( key, message ) {
+    const formatErrorMessage = function( key, message ) {
       return 'Error for query parameter "' + key + '": ' + message;
     };
 
@@ -756,7 +756,7 @@
      * separator -  array elements are separated by this string, defaults to `,`
      * parse - a function that takes a string and returns an Object
      */
-    var TYPES = {
+    const TYPES = {
 
       // value is true if present, false if absent
       flag: {
