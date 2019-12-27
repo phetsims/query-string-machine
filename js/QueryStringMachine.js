@@ -65,6 +65,30 @@
   return ( function() {
 
     /**
+     * In order to support graceful failures for user-supplied values, we fall back to default values when isGraceful
+     * is specified.  If the schema entry is isGraceful: false, then a queryStringMachineAssert is thrown.
+     * @param {boolean} ok
+     * @param {string} key
+     * @param {Object} value - value of the parsed type, or, if parsing failed, the {string} that would not parse
+     * @param {Object} schema
+     * @param {string} message
+     * @returns {Object}
+     */
+    const getValidValue = ( ok, key, value, schema, message ) => {
+      if ( !ok ) {
+
+        if ( schema.isGraceful ) {
+          QueryStringMachine.addWarning( key, message, value, schema.defaultValue );
+          value = schema.defaultValue;
+        }
+        else {
+          queryStringMachineAssert( ok, message );
+        }
+      }
+      return value;
+    };
+
+    /**
      * Query String Machine is a query string parser that supports type coercion, default values & validation. Please
      * visit PhET's <a href="https://github.com/phetsims/query-string-machine" target="_blank">query-string-machine</a>
      * repository for documentation and examples.
@@ -117,10 +141,31 @@
         const values = ( schema.private && !privatePredicate() ) ? [] : getValues( key, string );
 
         validateSchema( key, schema );
-        const value = parseValues( key, schema, values );
-        const validatedValue = validateValue( key, schema, value );
 
-        return validatedValue === undefined ? value : validatedValue;
+        let value = parseValues( key, schema, values );
+
+        if ( schema.hasOwnProperty( 'validValues' ) ) {
+          value = getValidValue(
+            isValidValue( value, schema.validValues ), key, value, schema,
+            `Invalid value supplied for key "${key}": ${value} is not a member of valid values: ${schema.validValues.join( ', ' )}`
+          );
+        }
+
+        // isValidValue evaluates to true
+        else if ( schema.hasOwnProperty( 'isValidValue' ) ) {
+          value = getValidValue(
+            schema.isValidValue( value ), key, value, schema,
+            `Invalid value supplied for key "${key}": ${value}`
+          );
+        }
+
+        // dispatch further validation to a type-specific function
+        value = getValidValue(
+          TYPES[ schema.type ].isValidValue( value ), key, value, schema,
+          `Invalid value for type, key: ${key}`
+        );
+
+        return value;
       },
 
       /**
@@ -302,12 +347,12 @@
        *
        * @param {string} key - the query parameter name
        * @param {string} message - the message that indicates the problem with the value
-       * @param {*} value - type depends on schema type
+       * @param {string} value - type depends on schema type
        * @param {*} defaultValue - default value for the query parameter schema
        * @public
        */
       addWarning: function( key, message, value, defaultValue ) {
-        console.warn( `"${key}" ${message}${value}, reverting to default value: ${defaultValue}` );
+        console.warn( `${message}. Reverting to default value: ${defaultValue}` );
 
         this.warnings.push( {
           key: key,
@@ -355,46 +400,49 @@
     const validateSchema = function( key, schema ) {
 
       // type is required
-      queryStringMachineAssert( schema.hasOwnProperty( 'type' ), key, 'type field is required' );
+      queryStringMachineAssert( schema.hasOwnProperty( 'type' ), 'type field is required for key: ' + key );
 
       // type is valid
-      queryStringMachineAssert( TYPES.hasOwnProperty( schema.type ), key, 'invalid type: ' + schema.type );
+      queryStringMachineAssert( TYPES.hasOwnProperty( schema.type ), 'invalid type: ' + schema.type + ' for key: ' + key );
 
       // parse is a function
       if ( schema.hasOwnProperty( 'parse' ) ) {
-        queryStringMachineAssert( typeof schema.parse === 'function', key, 'parse must be a function' );
+        queryStringMachineAssert( typeof schema.parse === 'function', 'parse must be a function for key: ' + key );
       }
 
       // validValues and isValidValue are optional and mutually exclusive
       queryStringMachineAssert( !( schema.hasOwnProperty( 'validValues' ) && schema.hasOwnProperty( 'isValidValue' ) ),
-        key, 'validValues and isValidValue are mutually exclusive' );
+        schema, key, 'validValues and isValidValue are mutually exclusive for key: ' + key );
 
       // validValues is an Array
       if ( schema.hasOwnProperty( 'validValues' ) ) {
-        queryStringMachineAssert( Array.isArray( schema.validValues ), key, 'isValidValue must be an array' );
+        queryStringMachineAssert( Array.isArray( schema.validValues ), 'isValidValue must be an array for key: ' + key );
       }
 
       // isValidValue is a function
       if ( schema.hasOwnProperty( 'isValidValue' ) ) {
-        queryStringMachineAssert( typeof schema.isValidValue === 'function', key, 'isValidValue must be a function' );
+        queryStringMachineAssert( typeof schema.isValidValue === 'function', 'isValidValue must be a function for key: ' + key );
       }
 
       // defaultValue has the correct type
       if ( schema.hasOwnProperty( 'defaultValue' ) ) {
-        TYPES[ schema.type ].validateValue( key, schema, schema.defaultValue );
+        queryStringMachineAssert( TYPES[ schema.type ].isValidValue( schema.defaultValue ), 'defaultValue incorrect type: ' + key );
       }
 
       // validValues have the correct type
       if ( schema.hasOwnProperty( 'validValues' ) ) {
-        schema.validValues.forEach( function( value ) {
-          TYPES[ schema.type ].validateValue( key, schema, value );
-        } );
+        schema.validValues.forEach( value => queryStringMachineAssert( TYPES[ schema.type ].isValidValue( value ), 'validValue incorrect type for key: ' + key ) );
       }
 
       // defaultValue is a member of validValues
       if ( schema.hasOwnProperty( 'defaultValue' ) && schema.hasOwnProperty( 'validValues' ) ) {
-        queryStringMachineAssert( isValidValue( schema.defaultValue, schema.validValues ),
-          key, 'defaultValue must be a member of validValues' );
+        queryStringMachineAssert( isValidValue( schema.defaultValue, schema.validValues ), schema,
+          key, 'defaultValue must be a member of validValues, for key: ' + key );
+      }
+
+      // defaultValue is a member of validValues
+      if ( schema.hasOwnProperty( 'isGraceful' ) && schema.isGraceful ) {
+        queryStringMachineAssert( schema.hasOwnProperty( 'defaultValue' ), 'defaultValue is required when isGraceful is true for key: ' + key );
       }
 
       // verify that the schema has appropriate properties
@@ -415,8 +463,7 @@
 
       // separator is a single character
       if ( schema.hasOwnProperty( 'separator' ) ) {
-        queryStringMachineAssert( typeof schema.separator === 'string' && schema.separator.length === 1,
-          key, 'invalid separator: ' + schema.separator );
+        queryStringMachineAssert( typeof schema.separator === 'string' && schema.separator.length === 1, 'invalid separator: ' + schema.separator + ', for key: ' + key );
       }
 
       // validate elementSchema
@@ -437,119 +484,14 @@
 
       // verify that all required properties are present
       requiredProperties.forEach( function( property ) {
-        queryStringMachineAssert( schemaProperties.indexOf( property ) !== -1,
-          key, 'missing required property: ' + property );
+        queryStringMachineAssert( schemaProperties.indexOf( property ) !== -1, 'missing required property: ' + property + ' for key: ' + key );
       } );
 
       // verify that there are no unsupported properties
       const supportedProperties = requiredProperties.concat( optionalProperties );
       schemaProperties.forEach( function( property ) {
-        queryStringMachineAssert( property === 'type' || supportedProperties.indexOf( property ) !== -1,
-          key, 'unsupported property: ' + property );
+        queryStringMachineAssert( property === 'type' || supportedProperties.indexOf( property ) !== -1, 'unsupported property: ' + property + ' for key: ' + key );
       } );
-    };
-
-    // Value validation ================================================================================================
-
-    /**
-     * Validates a value.
-     * @param {string} key - the query parameter name
-     * @param {Object} schema - schema that describes the query parameter
-     * @param {*} value - type depends on schema type
-     * @returns {*} the validated value, or an alternate valid value if the value was not validated
-     */
-    const validateValue = function( key, schema, value ) {
-      let defaultValue = null;
-
-      // value is a member of validValues
-      if ( schema.hasOwnProperty( 'validValues' ) ) {
-        const errorMessage = 'value must be a member of validValues: ';
-        if ( !schema.isGraceful ) {
-          queryStringMachineAssert( isValidValue( value, schema.validValues ),
-            key, errorMessage + value );
-        }
-        else if ( !isValidValue( value, schema.validValues ) ) {
-          defaultValue = schema.defaultValue;
-          QueryStringMachine.addWarning( key, errorMessage, value, defaultValue );
-        }
-      }
-
-      // isValidValue evaluates to true
-      if ( schema.hasOwnProperty( 'isValidValue' ) ) {
-        const errorMessage = 'invalid value: ';
-        if ( !schema.isGraceful ) {
-          queryStringMachineAssert( schema.isValidValue( value ), key, errorMessage + value );
-        }
-        else if ( !schema.isValidValue( value ) ) {
-          defaultValue = schema.defaultValue;
-          QueryStringMachine.addWarning( key, errorMessage, value, defaultValue );
-        }
-      }
-
-      // dispatch further validation to a type-specific function
-      value = TYPES[ schema.type ].validateValue( key, schema, value );
-
-      return defaultValue || value;
-    };
-
-    /**
-     * Validates a value for type 'flag'.
-     * @param {string} key - the query parameter name
-     * @param {Object} schema - schema that describes the query parameter
-     * @param {boolean} value
-     */
-    const validateFlagValue = function( key, schema, value ) {
-      return validateBooleanValue( key, schema, value ); // flag is a convenient variation of boolean
-    };
-
-    /**
-     * Validates a value for type 'boolean'.
-     * @param {string} key - the query parameter name
-     * @param {Object} schema - schema that describes the query parameter
-     * @param {boolean} value - value from the query parameter string
-     */
-    const validateBooleanValue = function( key, schema, value ) { // TODO: https://github.com/phetsims/joist/issues/593 this is called as if it has a return value, but it has no return value
-      queryStringMachineAssert( value === true || value === false, key, 'invalid value: ' + value );
-    };
-
-    /**
-     * Validates a value for type 'number'.
-     * @param {string} key - the query parameter name
-     * @param {Object} schema - schema that describes the query parameter
-     * @param {number} value - value from the query parameter string
-     */
-    const validateNumberValue = function( key, schema, value ) {
-      queryStringMachineAssert( typeof value === 'number' && !isNaN( value ), key, 'invalid value: ' + value );
-    };
-
-    /**
-     * Validates a value for type 'string'.
-     * @param {string} key - the query parameter name
-     * @param {Object} schema - schema that describes the query parameter
-     * @param {string|null} value - value from the query parameter string
-     */
-    const validateStringValue = function( key, schema, value ) {
-      queryStringMachineAssert( value === null || typeof value === 'string', key, 'invalid value: ' + value );
-    };
-
-    /**
-     * Validates a value for type 'array'.
-     * @param {string} key - the query parameter name
-     * @param {Object} schema - schema that describes the query parameter
-     * @param {Array.<*>} value - type of array elements depends on elementSchema
-     */
-    const validateArrayValue = function( key, schema, value ) {
-      queryStringMachineAssert( Array.isArray( value ) || value === null, key, 'invalid value: ' + value );
-    };
-
-    /**
-     * Validates a value for type 'custom'.
-     * @param {string} key - the query parameter name
-     * @param {Object} schema - schema that describes the query parameter
-     * @param {*} value - type depends on what parse returns
-     */
-    const validateCustomValue = function( key, schema, value ) {
-      // TODO do we need to add a property to 'custom' schema that handles validation of custom value's type? see https://github.com/phetsims/query-string-machine/issues/35
     };
 
     // Parsing =========================================================================================================
@@ -561,22 +503,22 @@
      * @param {Array.<string|null|undefined>} values - any matches from the query string,
      *   could be multiple for ?value=x&value=y for example
      * @returns {*} the associated value, converted to the proper type
+     * TODO: can this be improved?
      */
     const parseValues = function( key, schema, values ) {
-
       let returnValue;
 
       // values contains values for all occurrences of the query parameter.  We currently support only 1 occurrence.
-      queryStringMachineAssert( values.length <= 1, key, 'query parameter cannot occur multiple times' );
+      queryStringMachineAssert( values.length <= 1, 'query parameter cannot occur multiple times' );
 
       if ( schema.type === 'flag' ) {
 
         // flag is a convenient variation of boolean, which depends on whether the query string is present or not
-        returnValue = parseFlag( key, schema, values[ 0 ] );
+        returnValue = TYPES[ schema.type ].parse( key, schema, values[ 0 ] );
       }
       else {
         queryStringMachineAssert( values[ 0 ] !== undefined || schema.hasOwnProperty( 'defaultValue' ),
-          key, 'missing required query parameter: ' + key );
+          'missing required query parameter: ' + key );
         if ( values[ 0 ] === undefined ) {
 
           // not in the query string, use the default
@@ -600,7 +542,7 @@
      * @returns {boolean}
      */
     const parseFlag = function( key, schema, value ) {
-      queryStringMachineAssert( ( value === undefined || value === null ), key, 'flag type does not support a value: ' + value );
+      queryStringMachineAssert( ( value === undefined || value === null ), 'flag type does not support a value: ' + value );
 
       // value is true if the flag is present, false if absent
       return ( value !== undefined );
@@ -610,56 +552,29 @@
      * Parses the value for a type 'boolean'.
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
-     * @param {string|null} value - value from the query parameter string
+     * @param {string|null} string - value from the query parameter string
      * @returns {boolean}
      */
-    const parseBoolean = function( key, schema, value ) {
-      let defaultValue = null;
-      const errorMessage = 'invalid value: ';
+    const parseBoolean = function( key, schema, string ) {
 
-      if ( !schema.isGraceful ) {
-        queryStringMachineAssert( value === 'true' || value === 'false', key, errorMessage + value );
-      }
-      else if ( !( value === 'true' || value === 'false' ) ) {
-        defaultValue = schema.defaultValue;
-        QueryStringMachine.addWarning( key, errorMessage, value, defaultValue );
-      }
+      const ok = string === 'true' || string === 'false';
 
-      return defaultValue ? ( defaultValue === 'true' ) : ( value === 'true' );
+      // {boolean|string}
+      const value = string === 'true' ? true : false;
+      return getValidValue( ok, key, ok ? value : string, schema, `Value was not true|false for key "${key}"` );
     };
 
     /**
      * Parses the value for a type 'number'.
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
-     * @param {string|null} value - value from the query parameter string
+     * @param {string|null} string - value from the query parameter string
      * @returns {number}
      */
-    const parseNumber = function( key, schema, value ) {
-      const returnValue = Number( value );
-      let defaultValue = null;
-      const errorMessage = 'value must be a number: ';
-
-      if ( !schema.isGraceful ) {
-        queryStringMachineAssert( !isNaN( returnValue ), key, errorMessage + value );
-      }
-      else if ( isNaN( returnValue ) ) {
-        defaultValue = schema.defaultValue;
-        QueryStringMachine.addWarning( key, errorMessage, value, defaultValue );
-      }
-
-      return defaultValue || returnValue;
-    };
-
-    /**
-     * Parses the value for a type 'string'.
-     * @param {string} key - the query parameter name
-     * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
-     * @param {string|null} value - value from the query parameter string
-     * @returns {string|null}
-     */
-    const parseString = function( key, schema, value ) {
-      return value;
+    const parseNumber = function( key, schema, string ) {
+      const number = Number( string );
+      const ok = !isNaN( number );
+      return getValidValue( ok, key, ok ? number : string, schema, 'value must be a number' );
     };
 
     /**
@@ -682,9 +597,8 @@
       else {
 
         // Split up the string into an array of values. E.g. ?screens=1,2 would give [1,2]
-        returnValue = value.split( schema.separator || DEFAULT_SEPARATOR ).map( function( element ) {
-          return parseValues( key, schema.elementSchema, [ element ] );
-        } );
+        returnValue = value.split( schema.separator || DEFAULT_SEPARATOR )
+          .map( element => parseValues( key, schema.elementSchema, [ element ] ) );
       }
 
       return returnValue;
@@ -720,25 +634,14 @@
     /**
      * Query parameters are specified by the user, and are outside the control of the programmer.
      * So the application should throw an Error if query parameters are invalid.
-     * @param {boolean} condition - if this condition is false, an Error is throw
-     * @param {string} key - the query parameter name
+     * @param {boolean} ok - if this condition is false, an Error is throw
      * @param {string} message
      */
-    var queryStringMachineAssert = function( condition, key, message ) {
-      if ( !condition ) {
-        console && console.log && console.log( formatErrorMessage( key, message ) );
-        throw new Error( 'Assertion failed: ' + message );
+    const queryStringMachineAssert = function( ok, message ) {
+      if ( !ok ) {
+        console && console.log && console.log( message );
+        throw new Error( 'Query String Machine Assertion failed: ' + message );
       }
-    };
-
-    /**
-     * Formats an error message.
-     * @param {string} key - the query parameter name
-     * @param {string} message
-     * @returns {string}
-     */
-    const formatErrorMessage = function( key, message ) {
-      return 'Error for query parameter "' + key + '": ' + message;
     };
 
     //==================================================================================================================
@@ -765,7 +668,7 @@
         optional: [ 'private' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseFlag,
-        validateValue: validateFlagValue
+        isValidValue: value => value === true || value === false
       },
 
       // value is either true or false, e.g. showAnswer=true
@@ -774,7 +677,7 @@
         optional: [ 'defaultValue', 'private', 'isGraceful' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseBoolean,
-        validateValue: validateBooleanValue
+        isValidValue: value => value === true || value === false
       },
 
       // value is a number, e.g. frameRate=100
@@ -783,7 +686,7 @@
         optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'isGraceful' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseNumber,
-        validateValue: validateNumberValue
+        isValidValue: value => typeof value === 'number' && !isNaN( value )
       },
 
       // value is a string, e.g. name=Ringo
@@ -791,8 +694,8 @@
         required: [],
         optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'isGraceful' ],
         validateSchema: null, // no type-specific schema validation
-        parse: parseString,
-        validateValue: validateStringValue
+        parse: ( key, schema, string ) => string, // The variable to be parsed is already string, so it is guaranteed to parse as a string.
+        isValidValue: value => value === null || typeof value === 'string'
       },
 
       // value is an array, e.g. screens=1,2,3
@@ -801,16 +704,20 @@
         optional: [ 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues', 'private', 'isGraceful' ],
         validateSchema: validateArraySchema,
         parse: parseArray,
-        validateValue: validateArrayValue
+        isValidValue: value => Array.isArray( value ) || value === null
       },
 
       // value is a custom data type, e.g. color=255,0,255
       custom: {
-        required: [ 'parse' ],
+        required: [ 'parse' ], // TODO: https://github.com/phetsims/joist/issues/593 how to allow custom parse implementations to use getValidValue or otherwise deal with isGraceful?
         optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'isGraceful' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseCustom,
-        validateValue: validateCustomValue
+        isValidValue: value => {
+
+          // TODO do we need to add a property to 'custom' schema that handles validation of custom value's type? see https://github.com/phetsims/query-string-machine/issues/35
+          return true;
+        }
       }
     };
 
