@@ -65,8 +65,8 @@
   return ( function() {
 
     /**
-     * In order to support graceful failures for user-supplied values, we fall back to default values when isGraceful
-     * is specified.  If the schema entry is isGraceful: false, then a queryStringMachineAssert is thrown.
+     * In order to support graceful failures for user-supplied values, we fall back to default values when public: true
+     * is specified.  If the schema entry is public: false, then a queryStringMachineAssert is thrown.
      * @param {boolean} ok
      * @param {string} key
      * @param {Object} value - value of the parsed type, or, if parsing failed, the {string} that would not parse
@@ -77,7 +77,7 @@
     const getValidValue = ( ok, key, value, schema, message ) => {
       if ( !ok ) {
 
-        if ( schema.isGraceful ) {
+        if ( schema.public ) {
           QueryStringMachine.addWarning( key, message, value, schema.defaultValue );
           value = schema.defaultValue;
         }
@@ -441,8 +441,8 @@
       }
 
       // defaultValue is a member of validValues
-      if ( schema.hasOwnProperty( 'isGraceful' ) && schema.isGraceful ) {
-        queryStringMachineAssert( schema.hasOwnProperty( 'defaultValue' ), 'defaultValue is required when isGraceful is true for key: ' + key );
+      if ( schema.hasOwnProperty( 'public' ) && schema.public ) {
+        queryStringMachineAssert( schema.hasOwnProperty( 'defaultValue' ), 'defaultValue is required when public: true for key: ' + key );
       }
 
       // verify that the schema has appropriate properties
@@ -674,7 +674,7 @@
       // value is either true or false, e.g. showAnswer=true
       boolean: {
         required: [],
-        optional: [ 'defaultValue', 'private', 'isGraceful' ],
+        optional: [ 'defaultValue', 'private', 'public' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseBoolean,
         isValidValue: value => value === true || value === false
@@ -683,7 +683,7 @@
       // value is a number, e.g. frameRate=100
       number: {
         required: [],
-        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'isGraceful' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'public' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseNumber,
         isValidValue: value => typeof value === 'number' && !isNaN( value )
@@ -692,7 +692,7 @@
       // value is a string, e.g. name=Ringo
       string: {
         required: [],
-        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'isGraceful' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'public' ],
         validateSchema: null, // no type-specific schema validation
         parse: ( key, schema, string ) => string, // The variable to be parsed is already string, so it is guaranteed to parse as a string.
         isValidValue: value => value === null || typeof value === 'string'
@@ -701,7 +701,7 @@
       // value is an array, e.g. screens=1,2,3
       array: {
         required: [ 'elementSchema' ],
-        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues', 'private', 'isGraceful' ],
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues', 'private', 'public' ],
         validateSchema: validateArraySchema,
         parse: parseArray,
         isValidValue: value => Array.isArray( value ) || value === null
@@ -709,8 +709,8 @@
 
       // value is a custom data type, e.g. color=255,0,255
       custom: {
-        required: [ 'parse' ], // TODO: https://github.com/phetsims/joist/issues/593 how to allow custom parse implementations to use getValidValue or otherwise deal with isGraceful?
-        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'isGraceful' ],
+        required: [ 'parse' ], // TODO: https://github.com/phetsims/joist/issues/593 how to allow custom parse implementations to use getValidValue or otherwise deal with public?
+        optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'public' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseCustom,
         isValidValue: value => {
