@@ -360,6 +360,16 @@
           defaultValue: defaultValue,
           message: message
         } );
+      },
+
+      /**
+       * Determines if there is a warning for a specified key.
+       * @param {string} key
+       * @returns {boolean}
+       * @public
+       */
+      hasWarning: function( key ) {
+        return _.some( this.warnings, warning => warning.key === key );
       }
     };
 
