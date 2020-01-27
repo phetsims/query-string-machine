@@ -78,7 +78,7 @@
       if ( !ok ) {
 
         if ( schema.public ) {
-          QueryStringMachine.addWarning( key, message, value, schema.defaultValue );
+          QueryStringMachine.addWarning( key, value, schema.defaultValue, message );
           value = schema.defaultValue;
         }
         else {
@@ -95,7 +95,7 @@
      */
     const QueryStringMachine = {
 
-      // @public {{key:string, message:string, value:{*}, defaultValue:{*}}[]}
+      // @public {{key:string, value:{*}, defaultValue:{*}, message:string}[]}
       warnings: [],
 
       /**
@@ -346,19 +346,19 @@
        * instead of the invalid provided value
        *
        * @param {string} key - the query parameter name
-       * @param {string} message - the message that indicates the problem with the value
        * @param {string} value - type depends on schema type
        * @param {*} defaultValue - default value for the query parameter schema
+       * @param {string} message - the message that indicates the problem with the value
        * @public
        */
-      addWarning: function( key, message, value, defaultValue ) {
+      addWarning: function( key, value, defaultValue, message ) {
         console.warn( `${message}. Reverting to default value: ${defaultValue}` );
 
         this.warnings.push( {
           key: key,
-          message: message,
           value: value,
-          defaultValue: defaultValue
+          defaultValue: defaultValue,
+          message: message
         } );
       }
     };
