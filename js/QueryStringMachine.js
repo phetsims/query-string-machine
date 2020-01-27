@@ -584,7 +584,7 @@
     const parseNumber = function( key, schema, string ) {
       const number = Number( string );
       const ok = !isNaN( number );
-      return getValidValue( ok, key, ok ? number : string, schema, 'value must be a number' );
+      return getValidValue( ok, key, ok ? number : string, schema, `value must be a number for key "${key}"` );
     };
 
     /**
