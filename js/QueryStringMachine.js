@@ -369,7 +369,11 @@
        * @public
        */
       hasWarning: function( key ) {
-        return _.some( this.warnings, warning => warning.key === key );
+        let hasWarning = false;
+        this.warnings.forEach( warning => {
+          hasWarning = warning.key === key ? true : hasWarning;
+        } );
+        return hasWarning;
       }
     };
 
