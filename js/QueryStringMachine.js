@@ -221,7 +221,7 @@
         if ( typeof a !== typeof b ) {
           return false;
         }
-        if ( typeof a === 'string' ) {
+        if ( typeof a === 'string' || typeof a === 'number' || typeof a === 'boolean' ) {
           return a === b;
         }
         if ( a === null && b === null ) {
@@ -246,17 +246,17 @@
         }
         else {
 
-          for ( let i = 0; i < aKeys.length; i++ ) {
-            if ( aKeys[ i ] !== bKeys[ i ] ) {
-              return false;
+            for ( let i = 0; i < aKeys.length; i++ ) {
+              if ( aKeys[ i ] !== bKeys[ i ] ) {
+                return false;
+              }
+              const aChild = a[ aKeys[ i ] ];
+              const bChild = b[ aKeys[ i ] ];
+              if ( !QueryStringMachine.deepEquals( aChild, bChild ) ) {
+                return false;
+              }
             }
-            const aChild = a[ aKeys[ i ] ];
-            const bChild = b[ aKeys[ i ] ];
-            if ( !QueryStringMachine.deepEquals( aChild, bChild ) ) {
-              return false;
-            }
-          }
-          return true;
+            return true;
         }
       },
 
