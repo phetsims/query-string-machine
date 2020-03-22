@@ -370,9 +370,9 @@
        */
       hasWarning: function( key ) {
         let hasWarning = false;
-        this.warnings.forEach( warning => {
-          hasWarning = warning.key === key ? true : hasWarning;
-        } );
+        for ( let i = 0; i < this.warnings.length && !hasWarning; i++ ) {
+          hasWarning = ( this.warnings[ i ].key === key );
+        }
         return hasWarning;
       }
     };
