@@ -184,8 +184,8 @@ QUnit.test( 'removeKeyValuePair', function( assert ) {
   assert.equal( QueryStringMachine.removeKeyValuePair( '?place&time', 'time' ), '?place', 'Remove with no values' );
   assert.equal( QueryStringMachine.removeKeyValuePair( '?place&time', 'times' ), '?place&time', 'Key to remove not present' );
   assert.equal( QueryStringMachine.removeKeyValuePair(
-    '?sim=ohms-law&phetioValidateTandems&phetioDebug&phetioValidateAPI=false', 'fuzz' ),
-    '?sim=ohms-law&phetioValidateTandems&phetioDebug&phetioValidateAPI=false',
+    '?sim=ohms-law&phetioValidateTandems&phetioDebug', 'fuzz' ),
+    '?sim=ohms-law&phetioValidateTandems&phetioDebug',
     'Key to remove not present' );
 } );
 
