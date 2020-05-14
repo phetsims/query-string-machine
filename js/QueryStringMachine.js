@@ -454,8 +454,10 @@
           key, 'defaultValue must be a member of validValues, for key: ' + key );
       }
 
-      // defaultValue is a member of validValues
-      if ( schema.hasOwnProperty( 'public' ) && schema.public ) {
+      // defaultValue must exist for a public schema so there's a fallback in case a user provides an invalid value.
+      // However, defaultValue is not required for flags since they're only a key. While marking a flag as public: true
+      // doesn't change its behavior, it's allowed so that we can use the public key for documentation, see https://github.com/phetsims/query-string-machine/issues/41
+      if ( schema.hasOwnProperty( 'public' ) && schema.public && schema.type !== 'flag' ) {
         queryStringMachineAssert( schema.hasOwnProperty( 'defaultValue' ), 'defaultValue is required when public: true for key: ' + key );
       }
 
@@ -679,7 +681,7 @@
       // value is true if present, false if absent
       flag: {
         required: [],
-        optional: [ 'private' ],
+        optional: [ 'private', 'public' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseFlag,
         isValidValue: value => value === true || value === false
