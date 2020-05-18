@@ -95,7 +95,8 @@
      */
     const QueryStringMachine = {
 
-      // @public {{key:string, value:{*}, defaultValue:{*}, message:string}[]}
+      // @public (read-only) {{key:string, value:{*}, defaultValue:{*}, message:string}[]}
+      // See QueryStringMachine.addWarning for a description of these fields, and to add warnings.
       warnings: [],
 
       /**
