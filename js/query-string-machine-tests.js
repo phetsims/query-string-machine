@@ -7,6 +7,7 @@
  */
 
 import './QueryStringMachineTests.js'; // Use local path because there is no path for query string machine, because it is a preload
+import qunitStart from '../../chipper/js/sim-tests/qunitStart.js';
 
 // Since our tests are loaded asynchronously, we must direct QUnit to begin the tests
-QUnit.start();
+qunitStart();
