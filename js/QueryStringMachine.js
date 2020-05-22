@@ -246,18 +246,17 @@
           return a === b;
         }
         else {
-
-            for ( let i = 0; i < aKeys.length; i++ ) {
-              if ( aKeys[ i ] !== bKeys[ i ] ) {
-                return false;
-              }
-              const aChild = a[ aKeys[ i ] ];
-              const bChild = b[ aKeys[ i ] ];
-              if ( !QueryStringMachine.deepEquals( aChild, bChild ) ) {
-                return false;
-              }
+          for ( let i = 0; i < aKeys.length; i++ ) {
+            if ( aKeys[ i ] !== bKeys[ i ] ) {
+              return false;
             }
-            return true;
+            const aChild = a[ aKeys[ i ] ];
+            const bChild = b[ aKeys[ i ] ];
+            if ( !QueryStringMachine.deepEquals( aChild, bChild ) ) {
+              return false;
+            }
+          }
+          return true;
         }
       },
 
