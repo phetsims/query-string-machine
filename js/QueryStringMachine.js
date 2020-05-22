@@ -78,7 +78,7 @@
       if ( !ok ) {
 
         if ( schema.public ) {
-          QueryStringMachine.addWarning( key, value, schema.defaultValue, message );
+          QueryStringMachine.addWarning( key, value, message );
           value = schema.defaultValue;
         }
         else {
@@ -95,7 +95,7 @@
      */
     const QueryStringMachine = {
 
-      // @public (read-only) {{key:string, value:{*}, defaultValue:{*}, message:string}[]}
+      // @public (read-only) {{key:string, value:{*}, message:string}[]}
       // See QueryStringMachine.addWarning for a description of these fields, and to add warnings.
       warnings: [],
 
@@ -343,22 +343,20 @@
       },
 
       /**
-       * Adds a warning to the console and QueryStringMachine.warnings to indicate that a default value is being used
-       * instead of the invalid provided value
+       * Adds a warning to the console and QueryStringMachine.warnings to indicate that the provided invalid value will
+       * not be used.
        *
        * @param {string} key - the query parameter name
        * @param {string} value - type depends on schema type
-       * @param {*} defaultValue - default value for the query parameter schema
        * @param {string} message - the message that indicates the problem with the value
        * @public
        */
-      addWarning: function( key, value, defaultValue, message ) {
-        console.warn( `${message}. Reverting to default value: ${defaultValue}` );
+      addWarning: function( key, value, message ) {
+        console.warn( message );
 
         this.warnings.push( {
           key: key,
           value: value,
-          defaultValue: defaultValue,
           message: message
         } );
       },
