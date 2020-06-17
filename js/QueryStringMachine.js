@@ -15,10 +15,10 @@
 ( function( root, factory ) {
   'use strict';
 
-  if ( typeof define === 'function' && define.amd ) {
+  if ( typeof window.define === 'function' && window.define.amd ) {
 
     // AMD. Register as an anonymous module.
-    define( [], factory );
+    window.define( [], factory );
   }
   else if ( typeof module === 'object' && module.exports ) {
 
