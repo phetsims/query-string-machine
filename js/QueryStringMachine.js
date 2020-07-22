@@ -480,6 +480,8 @@
         queryStringMachineAssert( typeof schema.separator === 'string' && schema.separator.length === 1, 'invalid separator: ' + schema.separator + ', for key: ' + key );
       }
 
+      queryStringMachineAssert( !schema.elementSchema.hasOwnProperty( 'public' ), 'Array elements should not declare public; it comes from the array schema itself.' );
+
       // validate elementSchema
       validateSchema( key + '.element', schema.elementSchema );
     };
@@ -610,9 +612,25 @@
       }
       else {
 
+        const fallBackMarker = {};
+        let elementSchema = schema.elementSchema;
+        if ( schema.public ) {
+          elementSchema = Object.assign( {}, schema.elementSchema );
+          elementSchema.public = schema.public;
+          elementSchema.defaultValue = fallBackMarker;
+        }
+
         // Split up the string into an array of values. E.g. ?screens=1,2 would give [1,2]
         returnValue = value.split( schema.separator || DEFAULT_SEPARATOR )
-          .map( element => parseValues( key, schema.elementSchema, [ element ] ) );
+          .map( element => parseValues( key, elementSchema, [ element ] ) );
+
+        for ( let i = 0; i < returnValue.length; i++ ) {
+          if ( returnValue[ i ] === fallBackMarker ) {
+            queryStringMachineAssert( schema.public, 'value should not be capable of fallback without being public' );
+            returnValue = schema.defaultValue;
+            break;
+          }
+        }
       }
 
       return returnValue;
