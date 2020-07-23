@@ -1,4 +1,3 @@
-
 // Copyright 2016-2019, University of Colorado Boulder
 
 /**
@@ -202,4 +201,45 @@ QUnit.test( 'appendQueryString', function( assert ) {
   test( 'http://localhost.com/hello.html?abc', '', 'http://localhost.com/hello.html?abc' );
   test( 'http://localhost.com/hello.html?abc', '?123', 'http://localhost.com/hello.html?abc&123' );
   test( 'http://localhost.com/hello.html?abc', '&123', 'http://localhost.com/hello.html?abc&123' );
+} );
+QUnit.test( 'public query parameters should be graceful', function( assert ) {
+
+  // clear any warnings from before this test
+  QueryStringMachine.warnings.length = 0;
+
+  const screensSchema = {
+    type: 'array',
+    elementSchema: {
+      type: 'number',
+      isValidValue: Number.isInteger
+    },
+    defaultValue: null,
+    isValidValue: function( value ) {
+
+      // screen indices cannot be duplicated
+      return value === null || ( value.length === _.uniq( value ).length );
+    },
+    public: true
+  };
+
+  let screens = QueryStringMachine.getForString( 'screens', screensSchema, '?screens=1' );
+  assert.ok( screens.length === 1 );
+  assert.ok( screens[ 0 ] === 1 );
+
+  screens = QueryStringMachine.getForString( 'screens', screensSchema, '?screens=1.1' );
+  assert.ok( QueryStringMachine.warnings.length === 1 );
+  assert.ok( screens === null, 'should have the default value' );
+  screens = QueryStringMachine.getForString( 'screens', screensSchema, '?screens=54890,fd' );
+  assert.ok( QueryStringMachine.warnings.length === 2 );
+  assert.ok( screens === null, 'should have the default value' );
+
+  screens = QueryStringMachine.getForString( 'screens', screensSchema, '?screens=1,1,1' );
+  assert.ok( QueryStringMachine.warnings.length === 3 );
+  assert.ok( screens === null, 'should have the default value' );
+
+  // should use the fallback
+  screens = QueryStringMachine.getForString( 'screens', screensSchema, '?screens=Hello1,1,Goose1' );
+  assert.ok( screens === null, 'should have the default value' );
+
+  QueryStringMachine.warnings.length = 0;
 } );
