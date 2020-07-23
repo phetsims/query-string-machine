@@ -95,7 +95,7 @@
      */
     const QueryStringMachine = {
 
-      // @public (read-only) {{key:string, value:{*}, message:string}[]}
+      // @public (read-only) {{key:string, value:{*}, message:string}[]} - cleared by some tests in QueryStringMachineTests.js
       // See QueryStringMachine.addWarning for a description of these fields, and to add warnings.
       warnings: [],
 
@@ -160,9 +160,27 @@
           );
         }
 
+        let valueValid = TYPES[ schema.type ].isValidValue( value );
+
+        // support custom validation for elementSchema for arrays
+        if ( schema.type === 'array' && Array.isArray( value ) ) {
+          let elementsValid = true;
+          for ( let i = 0; i < value.length; i++ ) {
+            if ( schema.elementSchema.hasOwnProperty( 'isValidValue' ) && !schema.elementSchema.isValidValue( value[ i ] ) ) {
+              elementsValid = false;
+              break;
+            }
+            if ( schema.elementSchema.hasOwnProperty( 'validValues' ) && !isValidValue( value, schema.elementSchemavalidValues ) ) {
+              elementsValid = false;
+              break;
+            }
+          }
+          valueValid = valueValid && elementsValid;
+        }
+
         // dispatch further validation to a type-specific function
         value = getValidValue(
-          TYPES[ schema.type ].isValidValue( value ), key, value, schema,
+          valueValid, key, value, schema,
           `Invalid value for type, key: ${key}`
         );
 
