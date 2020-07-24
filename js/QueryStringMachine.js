@@ -166,11 +166,12 @@
         if ( schema.type === 'array' && Array.isArray( value ) ) {
           let elementsValid = true;
           for ( let i = 0; i < value.length; i++ ) {
-            if ( schema.elementSchema.hasOwnProperty( 'isValidValue' ) && !schema.elementSchema.isValidValue( value[ i ] ) ) {
+            const element = value[ i ];
+            if ( schema.elementSchema.hasOwnProperty( 'isValidValue' ) && !schema.elementSchema.isValidValue( element ) ) {
               elementsValid = false;
               break;
             }
-            if ( schema.elementSchema.hasOwnProperty( 'validValues' ) && !isValidValue( value, schema.elementSchemavalidValues ) ) {
+            if ( schema.elementSchema.hasOwnProperty( 'validValues' ) && !isValidValue( element, schema.elementSchema.validValues ) ) {
               elementsValid = false;
               break;
             }
