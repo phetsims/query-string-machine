@@ -242,4 +242,39 @@ QUnit.test( 'public query parameters should be graceful', function( assert ) {
   assert.ok( screens === null, 'should have the default value' );
 
   QueryStringMachine.warnings.length = 0;
+
+  const otherScreensSchema = {
+    type: 'array',
+    elementSchema: {
+      type: 'string',
+      validValues: [ 'first', 'notFirst' ]
+    },
+    defaultValue: null,
+    isValidValue: function( value ) {
+
+      // screen indices cannot be duplicated
+      return value === null || ( value.length === _.uniq( value ).length );
+    },
+    public: true
+  };
+  screens = QueryStringMachine.getForString( 'screens', otherScreensSchema, '?screens=first' );
+  assert.ok( screens.length === 1 );
+  assert.ok( screens[ 0 ] === 'first' );
+
+  screens = QueryStringMachine.getForString( 'screens', otherScreensSchema, '?screens=first,notFirst' );
+  assert.ok( screens.length === 2 );
+  assert.ok( screens[ 0 ] === 'first' );
+  assert.ok( screens[ 1 ] === 'notFirst' );
+
+  screens = QueryStringMachine.getForString( 'screens', otherScreensSchema, '?screens=firsfdt,notFisrst' );
+  assert.ok( QueryStringMachine.warnings.length === 1 );
+  assert.ok( screens === null );
+
+  screens = QueryStringMachine.getForString( 'screens', otherScreensSchema, '?screens=firsfdt,1' );
+  assert.ok( QueryStringMachine.warnings.length === 2 );
+  assert.ok( screens === null );
+
+  QueryStringMachine.warnings.length = 0;
+
+
 } );
