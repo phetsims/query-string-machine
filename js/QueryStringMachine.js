@@ -79,7 +79,15 @@
 
         if ( schema.public ) {
           QueryStringMachine.addWarning( key, value, message );
-          value = schema.defaultValue;
+          if ( schema.hasOwnProperty( 'defaultValue' ) ) {
+            value = schema.defaultValue;
+          }
+          else {
+            const typeSchema = TYPES[ schema.type ];
+            queryStringMachineAssert( typeSchema.hasOwnProperty( 'defaultValue' ),
+              'Type must have a default value if the provided schema does not have one.' );
+            value = typeSchema.defaultValue;
+          }
         }
         else {
           queryStringMachineAssert( ok, message );
@@ -577,14 +585,11 @@
      * Parses the value for a type 'flag'.
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
-     * @param {undefined|null} value - value from the query parameter string
-     * @returns {boolean}
+     * @param {null|undefined|string} value - value from the query parameter string
+     * @returns {boolean|string}
      */
     const parseFlag = function( key, schema, value ) {
-      queryStringMachineAssert( ( value === undefined || value === null ), 'flag type does not support a value: ' + value );
-
-      // value is true if the flag is present, false if absent
-      return ( value !== undefined );
+      return value === null ? true : value === undefined ? false : value;
     };
 
     /**
@@ -701,7 +706,8 @@
         optional: [ 'private', 'public' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseFlag,
-        isValidValue: value => value === true || value === false
+        isValidValue: value => value === true || value === false,
+        defaultValue: true // only needed for flags marks as 'public: true`
       },
 
       // value is either true or false, e.g. showAnswer=true

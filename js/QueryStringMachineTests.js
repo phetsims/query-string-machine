@@ -99,6 +99,27 @@ QUnit.test( 'basic tests', function( assert ) {
     'colors': [ 'yellow', 'orange', 'pink' ]
   }, 'Array should be parsed' );
 
+  const flagSchema = {
+    flag: {
+      type: 'flag'
+    }
+  };
+  assert.deepEqual( QueryStringMachine.getAllForString( flagSchema, '?flag' ), {
+    'flag': true
+  }, 'Flag was provided' );
+
+  assert.deepEqual( QueryStringMachine.getAllForString( flagSchema, '?flag=' ), {
+    'flag': true
+  }, 'Flag was provided with no value' );
+
+  assert.throws( () => {
+    QueryStringMachine.getAllForString( flagSchema, '?flag=hello' );
+  }, 'Flags cannot have values' );
+
+  assert.throws( () => {
+    QueryStringMachine.getAllForString( flagSchema, '?flag=true' );
+  }, 'Flags cannot have values' );
+
   // Test that isValidValue is supported for arrays with a contrived check (element sum == 7).
   // With an input of [2,4,0], QSM should throw an error, and it should be caught here.
   assert.throws( function() {
@@ -285,5 +306,22 @@ QUnit.test( 'public query parameters should be graceful', function( assert ) {
 
   QueryStringMachine.warnings.length = 0;
 
+  const flagSchema = {
+    type: 'flag',
+    public: true
+  };
 
+  let flag = QueryStringMachine.getForString( 'flag', flagSchema, '?flag=true' );
+  assert.ok( flag === true );
+  assert.ok( QueryStringMachine.warnings.length === 1 );
+
+  flag = QueryStringMachine.getForString( 'flag', flagSchema, '?flag=' );
+  assert.ok( flag === true );
+  assert.ok( QueryStringMachine.warnings.length === 1 );
+
+  flag = QueryStringMachine.getForString( 'flag', flagSchema, '?hello' );
+  assert.ok( flag === false );
+  assert.ok( QueryStringMachine.warnings.length === 1 );
+
+  QueryStringMachine.warnings.length = 0;
 } );
