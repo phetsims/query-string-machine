@@ -72,6 +72,15 @@ QUnit.test( 'basic tests', function( assert ) {
     'colors': [ 'red', 'green', 'blue' ]
   }, 'Query parameter values should be parsed' );
 
+  assert.deepEqual( QueryStringMachine.getAllForString( schemaMap, '?screens=' ), {
+    'height': 6,
+    'name': 'Larry',
+    'custom': 'abc',
+    'isWebGL': false,
+    'screens': [],
+    'colors': [ 'red', 'green', 'blue' ]
+  }, 'No value for screens should result in an empty array ' );
+
   assert.deepEqual( QueryStringMachine.getAllForString( schemaMap, '?height=7&isWebGL&custom=DEF' ), {
     'height': 7,
     'name': 'Larry',
