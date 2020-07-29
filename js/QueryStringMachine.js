@@ -167,6 +167,10 @@
           let elementsValid = true;
           for ( let i = 0; i < value.length; i++ ) {
             const element = value[ i ];
+            if ( !TYPES[ schema.elementSchema.type ].isValidValue( element ) ) {
+              elementsValid = false;
+              break;
+            }
             if ( schema.elementSchema.hasOwnProperty( 'isValidValue' ) && !schema.elementSchema.isValidValue( element ) ) {
               elementsValid = false;
               break;
@@ -588,15 +592,10 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      * @param {string|null} string - value from the query parameter string
-     * @returns {boolean}
+     * @returns {boolean|string|null}
      */
     const parseBoolean = function( key, schema, string ) {
-
-      const ok = string === 'true' || string === 'false';
-
-      // {boolean|string}
-      const value = string === 'true' ? true : false;
-      return getValidValue( ok, key, ok ? value : string, schema, `Value was not true|false for key "${key}"` );
+      return string === 'true' ? true : string === 'false' ? false : string;
     };
 
     /**
@@ -604,12 +603,11 @@
      * @param {string} key - the query parameter name
      * @param {Object} schema - schema that describes the query parameter, see QueryStringMachine.get
      * @param {string|null} string - value from the query parameter string
-     * @returns {number}
+     * @returns {number|string|null}
      */
     const parseNumber = function( key, schema, string ) {
       const number = Number( string );
-      const ok = !isNaN( number );
-      return getValidValue( ok, key, ok ? number : string, schema, `value must be a number for key "${key}"` );
+      return string === null || isNaN( number ) ? string : number;
     };
 
     /**
@@ -631,25 +629,9 @@
       }
       else {
 
-        const fallBackMarker = {};
-        let elementSchema = schema.elementSchema;
-        if ( schema.public ) {
-          elementSchema = Object.assign( {}, schema.elementSchema );
-          elementSchema.public = schema.public;
-          elementSchema.defaultValue = fallBackMarker;
-        }
-
         // Split up the string into an array of values. E.g. ?screens=1,2 would give [1,2]
         returnValue = value.split( schema.separator || DEFAULT_SEPARATOR )
-          .map( element => parseValues( key, elementSchema, [ element ] ) );
-
-        for ( let i = 0; i < returnValue.length; i++ ) {
-          if ( returnValue[ i ] === fallBackMarker ) {
-            queryStringMachineAssert( schema.public, 'value should not be capable of fallback without being public' );
-            returnValue = schema.defaultValue;
-            break;
-          }
-        }
+          .map( element => parseValues( key, schema.elementSchema, [ element ] ) );
       }
 
       return returnValue;
