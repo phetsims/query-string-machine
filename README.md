@@ -116,7 +116,7 @@ QueryStringMachine.getAll( {
       type: 'array',
       elementType: 'number',
       defaultValue: [],
-      // separator can be overriden, defaults to ','
+      // separator can be overridden, defaults to ','
     }
   } )
 ```
