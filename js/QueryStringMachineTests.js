@@ -55,48 +55,48 @@ QUnit.test( 'basic tests', function( assert ) {
   };
 
   assert.deepEqual( QueryStringMachine.getAllForString( schemaMap, '' ), {
-    'height': 6,
-    'name': 'Larry',
-    'custom': 'abc',
-    'isWebGL': false,
-    'screens': [],
-    'colors': [ 'red', 'green', 'blue' ]
+    height: 6,
+    name: 'Larry',
+    custom: 'abc',
+    isWebGL: false,
+    screens: [],
+    colors: [ 'red', 'green', 'blue' ]
   }, 'A blank query string should provide defaults' );
 
   assert.deepEqual( QueryStringMachine.getAllForString( schemaMap, '?height=7&isWebGL' ), {
-    'height': 7,
-    'name': 'Larry',
-    'custom': 'abc',
-    'isWebGL': true,
-    'screens': [],
-    'colors': [ 'red', 'green', 'blue' ]
+    height: 7,
+    name: 'Larry',
+    custom: 'abc',
+    isWebGL: true,
+    screens: [],
+    colors: [ 'red', 'green', 'blue' ]
   }, 'Query parameter values should be parsed' );
 
   assert.deepEqual( QueryStringMachine.getAllForString( schemaMap, '?screens=' ), {
-    'height': 6,
-    'name': 'Larry',
-    'custom': 'abc',
-    'isWebGL': false,
-    'screens': [],
-    'colors': [ 'red', 'green', 'blue' ]
+    height: 6,
+    name: 'Larry',
+    custom: 'abc',
+    isWebGL: false,
+    screens: [],
+    colors: [ 'red', 'green', 'blue' ]
   }, 'No value for screens should result in an empty array ' );
 
   assert.deepEqual( QueryStringMachine.getAllForString( schemaMap, '?height=7&isWebGL&custom=DEF' ), {
-    'height': 7,
-    'name': 'Larry',
-    'custom': 'def',
-    'isWebGL': true,
-    'screens': [],
-    'colors': [ 'red', 'green', 'blue' ]
+    height: 7,
+    name: 'Larry',
+    custom: 'def',
+    isWebGL: true,
+    screens: [],
+    colors: [ 'red', 'green', 'blue' ]
   }, 'Custom query parameter should be supported' );
 
   assert.deepEqual( QueryStringMachine.getAllForString( schemaMap, '?isWebGL&screens=1,2,3,5&colors=yellow,orange,pink' ), {
-    'height': 6,
-    'name': 'Larry',
-    'custom': 'abc',
-    'isWebGL': true,
-    'screens': [ 1, 2, 3, 5 ],
-    'colors': [ 'yellow', 'orange', 'pink' ]
+    height: 6,
+    name: 'Larry',
+    custom: 'abc',
+    isWebGL: true,
+    screens: [ 1, 2, 3, 5 ],
+    colors: [ 'yellow', 'orange', 'pink' ]
   }, 'Array should be parsed' );
 
   const flagSchema = {
@@ -105,11 +105,11 @@ QUnit.test( 'basic tests', function( assert ) {
     }
   };
   assert.deepEqual( QueryStringMachine.getAllForString( flagSchema, '?flag' ), {
-    'flag': true
+    flag: true
   }, 'Flag was provided' );
 
   assert.deepEqual( QueryStringMachine.getAllForString( flagSchema, '?flag=' ), {
-    'flag': true
+    flag: true
   }, 'Flag was provided with no value' );
 
   assert.throws( () => {
