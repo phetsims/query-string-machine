@@ -32,7 +32,7 @@
     // Browser globals (root is window)
     root.QueryStringMachine = factory();
   }
-}( this, function() {
+}( this, () => {
   'use strict';
 
   // Default string that splits array strings
@@ -530,13 +530,13 @@
       const schemaProperties = Object.getOwnPropertyNames( schema );
 
       // verify that all required properties are present
-      requiredProperties.forEach( function( property ) {
+      requiredProperties.forEach( property => {
         queryStringMachineAssert( schemaProperties.indexOf( property ) !== -1, 'missing required property: ' + property + ' for key: ' + key );
       } );
 
       // verify that there are no unsupported properties
       const supportedProperties = requiredProperties.concat( optionalProperties );
-      schemaProperties.forEach( function( property ) {
+      schemaProperties.forEach( property => {
         queryStringMachineAssert( property === 'type' || supportedProperties.indexOf( property ) !== -1, 'unsupported property: ' + property + ' for key: ' + key );
       } );
     };

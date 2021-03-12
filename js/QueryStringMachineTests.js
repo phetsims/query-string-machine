@@ -10,7 +10,7 @@
 QUnit.module( 'QueryStringMachine' );
 
 // assert shadows window.assert
-QUnit.test( 'basic tests', function( assert ) {
+QUnit.test( 'basic tests', assert => {
   const value = 'hello';
   assert.equal( value, 'hello', 'We expect value to be hello' );
 
@@ -122,7 +122,7 @@ QUnit.test( 'basic tests', function( assert ) {
 
   // Test that isValidValue is supported for arrays with a contrived check (element sum == 7).
   // With an input of [2,4,0], QSM should throw an error, and it should be caught here.
-  assert.throws( function() {
+  assert.throws( () => {
     QueryStringMachine.getAllForString( {
       numbers: {
         type: 'array',
@@ -132,14 +132,14 @@ QUnit.test( 'basic tests', function( assert ) {
         defaultValue: [ 1, 6, 0 ],
         isValidValue: function( arr ) {
           // Fake test: check that elements sum to 7 for phetsims/query-string-machine#11
-          const arraySum = arr.reduce( function( a, b ) { return a + b; }, 0 );
+          const arraySum = arr.reduce( ( a, b ) => a + b, 0 );
           return ( arraySum === 7 );
         }
       }
     }, '?numbers=2,4,0' );
   }, 'Array error handling should catch exception' );
 
-  assert.throws( function() {
+  assert.throws( () => {
     QueryStringMachine.getAllForString( {
       sim: {
         type: 'string'
@@ -159,7 +159,7 @@ QUnit.test( 'basic tests', function( assert ) {
     defaultValue: [ 1, 2 ]
   }, '?ea&hello=1,2,3' ), [ 1, 2, 3 ], 'Arrays should support defaultValue and validValues' );
 
-  assert.throws( function() {
+  assert.throws( () => {
     QueryStringMachine.getForString( 'hello', {
       type: 'array',
       elementSchema: {
@@ -183,7 +183,7 @@ QUnit.test( 'basic tests', function( assert ) {
 } );
 
 // Tests for our own deepEquals method
-QUnit.test( 'deepEquals', function( assert ) {
+QUnit.test( 'deepEquals', assert => {
   assert.equal( QueryStringMachine.deepEquals( 7, 7 ), true, '7 should equal itself' );
   assert.equal( QueryStringMachine.deepEquals( 7, 8 ), false, '7 should not equal 8' );
   assert.equal( QueryStringMachine.deepEquals( 7, '7' ), false, '7 should not equal "7"' );
@@ -198,12 +198,12 @@ QUnit.test( 'deepEquals', function( assert ) {
   assert.equal( QueryStringMachine.deepEquals( null, null ), true, 'null null' );
   assert.equal( QueryStringMachine.deepEquals( null, undefined ), false, 'null undefined' );
   assert.equal( QueryStringMachine.deepEquals( undefined, undefined ), true, 'undefined undefined' );
-  assert.equal( QueryStringMachine.deepEquals( function() {}, function() {} ), false, 'different implementations of similar functions' );
+  assert.equal( QueryStringMachine.deepEquals( () => {}, () => {} ), false, 'different implementations of similar functions' );
   const f = function() {};
   assert.equal( QueryStringMachine.deepEquals( f, f ), true, 'same reference function' );
 } );
 
-QUnit.test( 'removeKeyValuePair', function( assert ) {
+QUnit.test( 'removeKeyValuePair', assert => {
   assert.equal( QueryStringMachine.removeKeyValuePair( '?time=now', 'time' ), '', 'Remove single occurrence' );
   assert.equal( QueryStringMachine.removeKeyValuePair( '?time=now&place=here', 'time' ), '?place=here', 'Remove single occurrence but leave other' );
   assert.equal( QueryStringMachine.removeKeyValuePair( '?time=now&time=later', 'time' ), '', 'Remove multiple occurrences' );
@@ -218,7 +218,7 @@ QUnit.test( 'removeKeyValuePair', function( assert ) {
     'Key to remove not present' );
 } );
 
-QUnit.test( 'appendQueryString', function( assert ) {
+QUnit.test( 'appendQueryString', assert => {
 
   const test = function( url, queryParameters, expected ) {
     assert.equal( QueryStringMachine.appendQueryString( url, queryParameters ), expected, url + ' + ' + queryParameters + ' should be ok' );
@@ -232,7 +232,7 @@ QUnit.test( 'appendQueryString', function( assert ) {
   test( 'http://localhost.com/hello.html?abc', '?123', 'http://localhost.com/hello.html?abc&123' );
   test( 'http://localhost.com/hello.html?abc', '&123', 'http://localhost.com/hello.html?abc&123' );
 } );
-QUnit.test( 'public query parameters should be graceful', function( assert ) {
+QUnit.test( 'public query parameters should be graceful', assert => {
 
   // clear any warnings from before this test
   QueryStringMachine.warnings.length = 0;
