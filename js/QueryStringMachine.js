@@ -142,7 +142,7 @@
       getForString: function( key, schema, string ) {
 
         if ( !isParameterString( string ) ) {
-          throw new Error( 'Query strings should be either the empty string or start with a "?": ' + string );
+          throw new Error( `Query strings should be either the empty string or start with a "?": ${string}` );
         }
 
         // Ignore URL values for private query parameters that fail privatePredicate.
@@ -236,7 +236,7 @@
        */
       containsKeyForString: function( key, string ) {
         if ( !isParameterString( string ) ) {
-          throw new Error( 'Query strings should be either the empty string or start with a "?": ' + string );
+          throw new Error( `Query strings should be either the empty string or start with a "?": ${string}` );
         }
         const values = getValues( key, string );
         return values.length > 0;
@@ -299,8 +299,8 @@
        * @public
        */
       removeKeyValuePair: function( queryString, key ) {
-        assert && assert( typeof queryString === 'string', 'url should be string, but it was: ' + ( typeof queryString ) );
-        assert && assert( typeof key === 'string', 'url should be string, but it was: ' + ( typeof key ) );
+        assert && assert( typeof queryString === 'string', `url should be string, but it was: ${typeof queryString}` );
+        assert && assert( typeof key === 'string', `url should be string, but it was: ${typeof key}` );
         assert && assert( isParameterString( queryString ), 'queryString should be length 0 or begin with ?' );
         assert && assert( key.length > 0, 'url should be a string with length > 0' );
 
@@ -319,7 +319,7 @@
           }
 
           if ( newParameters.length > 0 ) {
-            return '?' + newParameters.join( '&' );
+            return `?${newParameters.join( '&' )}`;
           }
           else {
             return '';
@@ -443,51 +443,51 @@
     const validateSchema = function( key, schema ) {
 
       // type is required
-      queryStringMachineAssert( schema.hasOwnProperty( 'type' ), 'type field is required for key: ' + key );
+      queryStringMachineAssert( schema.hasOwnProperty( 'type' ), `type field is required for key: ${key}` );
 
       // type is valid
-      queryStringMachineAssert( TYPES.hasOwnProperty( schema.type ), 'invalid type: ' + schema.type + ' for key: ' + key );
+      queryStringMachineAssert( TYPES.hasOwnProperty( schema.type ), `invalid type: ${schema.type} for key: ${key}` );
 
       // parse is a function
       if ( schema.hasOwnProperty( 'parse' ) ) {
-        queryStringMachineAssert( typeof schema.parse === 'function', 'parse must be a function for key: ' + key );
+        queryStringMachineAssert( typeof schema.parse === 'function', `parse must be a function for key: ${key}` );
       }
 
       // validValues and isValidValue are optional and mutually exclusive
       queryStringMachineAssert( !( schema.hasOwnProperty( 'validValues' ) && schema.hasOwnProperty( 'isValidValue' ) ),
-        schema, key, 'validValues and isValidValue are mutually exclusive for key: ' + key );
+        schema, key, `validValues and isValidValue are mutually exclusive for key: ${key}` );
 
       // validValues is an Array
       if ( schema.hasOwnProperty( 'validValues' ) ) {
-        queryStringMachineAssert( Array.isArray( schema.validValues ), 'isValidValue must be an array for key: ' + key );
+        queryStringMachineAssert( Array.isArray( schema.validValues ), `isValidValue must be an array for key: ${key}` );
       }
 
       // isValidValue is a function
       if ( schema.hasOwnProperty( 'isValidValue' ) ) {
-        queryStringMachineAssert( typeof schema.isValidValue === 'function', 'isValidValue must be a function for key: ' + key );
+        queryStringMachineAssert( typeof schema.isValidValue === 'function', `isValidValue must be a function for key: ${key}` );
       }
 
       // defaultValue has the correct type
       if ( schema.hasOwnProperty( 'defaultValue' ) ) {
-        queryStringMachineAssert( TYPES[ schema.type ].isValidValue( schema.defaultValue ), 'defaultValue incorrect type: ' + key );
+        queryStringMachineAssert( TYPES[ schema.type ].isValidValue( schema.defaultValue ), `defaultValue incorrect type: ${key}` );
       }
 
       // validValues have the correct type
       if ( schema.hasOwnProperty( 'validValues' ) ) {
-        schema.validValues.forEach( value => queryStringMachineAssert( TYPES[ schema.type ].isValidValue( value ), 'validValue incorrect type for key: ' + key ) );
+        schema.validValues.forEach( value => queryStringMachineAssert( TYPES[ schema.type ].isValidValue( value ), `validValue incorrect type for key: ${key}` ) );
       }
 
       // defaultValue is a member of validValues
       if ( schema.hasOwnProperty( 'defaultValue' ) && schema.hasOwnProperty( 'validValues' ) ) {
         queryStringMachineAssert( isValidValue( schema.defaultValue, schema.validValues ), schema,
-          key, 'defaultValue must be a member of validValues, for key: ' + key );
+          key, `defaultValue must be a member of validValues, for key: ${key}` );
       }
 
       // defaultValue must exist for a public schema so there's a fallback in case a user provides an invalid value.
       // However, defaultValue is not required for flags since they're only a key. While marking a flag as public: true
       // doesn't change its behavior, it's allowed so that we can use the public key for documentation, see https://github.com/phetsims/query-string-machine/issues/41
       if ( schema.hasOwnProperty( 'public' ) && schema.public && schema.type !== 'flag' ) {
-        queryStringMachineAssert( schema.hasOwnProperty( 'defaultValue' ), 'defaultValue is required when public: true for key: ' + key );
+        queryStringMachineAssert( schema.hasOwnProperty( 'defaultValue' ), `defaultValue is required when public: true for key: ${key}` );
       }
 
       // verify that the schema has appropriate properties
@@ -508,13 +508,13 @@
 
       // separator is a single character
       if ( schema.hasOwnProperty( 'separator' ) ) {
-        queryStringMachineAssert( typeof schema.separator === 'string' && schema.separator.length === 1, 'invalid separator: ' + schema.separator + ', for key: ' + key );
+        queryStringMachineAssert( typeof schema.separator === 'string' && schema.separator.length === 1, `invalid separator: ${schema.separator}, for key: ${key}` );
       }
 
       queryStringMachineAssert( !schema.elementSchema.hasOwnProperty( 'public' ), 'Array elements should not declare public; it comes from the array schema itself.' );
 
       // validate elementSchema
-      validateSchema( key + '.element', schema.elementSchema );
+      validateSchema( `${key}.element`, schema.elementSchema );
     };
 
     /**
@@ -531,13 +531,13 @@
 
       // verify that all required properties are present
       requiredProperties.forEach( property => {
-        queryStringMachineAssert( schemaProperties.indexOf( property ) !== -1, 'missing required property: ' + property + ' for key: ' + key );
+        queryStringMachineAssert( schemaProperties.indexOf( property ) !== -1, `missing required property: ${property} for key: ${key}` );
       } );
 
       // verify that there are no unsupported properties
       const supportedProperties = requiredProperties.concat( optionalProperties );
       schemaProperties.forEach( property => {
-        queryStringMachineAssert( property === 'type' || supportedProperties.indexOf( property ) !== -1, 'unsupported property: ' + property + ' for key: ' + key );
+        queryStringMachineAssert( property === 'type' || supportedProperties.indexOf( property ) !== -1, `unsupported property: ${property} for key: ${key}` );
       } );
     };
 
@@ -565,7 +565,7 @@
       }
       else {
         queryStringMachineAssert( values[ 0 ] !== undefined || schema.hasOwnProperty( 'defaultValue' ),
-          'missing required query parameter: ' + key );
+          `missing required query parameter: ${key}` );
         if ( values[ 0 ] === undefined ) {
 
           // not in the query string, use the default
@@ -678,7 +678,7 @@
     const queryStringMachineAssert = function( ok, message ) {
       if ( !ok ) {
         console && console.log && console.log( message );
-        throw new Error( 'Query String Machine Assertion failed: ' + message );
+        throw new Error( `Query String Machine Assertion failed: ${message}` );
       }
     };
 

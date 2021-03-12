@@ -221,7 +221,7 @@ QUnit.test( 'removeKeyValuePair', assert => {
 QUnit.test( 'appendQueryString', assert => {
 
   const test = function( url, queryParameters, expected ) {
-    assert.equal( QueryStringMachine.appendQueryString( url, queryParameters ), expected, url + ' + ' + queryParameters + ' should be ok' );
+    assert.equal( QueryStringMachine.appendQueryString( url, queryParameters ), expected, `${url} + ${queryParameters} should be ok` );
   };
 
   test( 'http://localhost.com/hello.html', '', 'http://localhost.com/hello.html' );
