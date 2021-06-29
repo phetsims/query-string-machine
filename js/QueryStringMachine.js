@@ -13,7 +13,7 @@
  * @author Chris Malley (PixelZoom, Inc.)
  */
 ( function( root, factory ) {
-  'use strict';
+  
 
   if ( typeof window.define === 'function' && window.define.amd ) {
 
@@ -33,7 +33,7 @@
     root.QueryStringMachine = factory();
   }
 }( this, () => {
-  'use strict';
+  
 
   // Default string that splits array strings
   const DEFAULT_SEPARATOR = ',';
