@@ -747,7 +747,7 @@
 
       // value is a custom data type, e.g. color=255,0,255
       custom: {
-        required: [ 'parse' ], // TODO: https://github.com/phetsims/joist/issues/593 how to allow custom parse implementations to use getValidValue or otherwise deal with public?
+        required: [ 'parse' ],
         optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'public' ],
         validateSchema: null, // no type-specific schema validation
         parse: parseCustom,
