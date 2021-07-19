@@ -550,7 +550,6 @@
      * @param {Array.<string|null|undefined>} values - any matches from the query string,
      *   could be multiple for ?value=x&value=y for example
      * @returns {*} the associated value, converted to the proper type
-     * TODO: can this be improved? https://github.com/phetsims/joist/issues/593
      */
     const parseValues = function( key, schema, values ) {
       let returnValue;
