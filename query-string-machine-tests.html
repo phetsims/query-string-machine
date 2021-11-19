@@ -102,6 +102,7 @@
     script.type = type;
     script.src = preloadURL;
     script.async = false;
+    script.setAttribute( 'crossorigin', 'use-credentials' );
     document.head.appendChild( script );
   };
 
@@ -113,7 +114,7 @@
 
   // Module loading in compilation-free (development) mode will be kicked off once strings are loaded.
   // This is done in load-unbuilt-strings.js
-  window.phet.chipper.loadModules = () => loadURL( 'js/query-string-machine-tests.js', 'module' );
+  window.phet.chipper.loadModules = () => loadURL( '../chipper/dist/query-string-machine/js/query-string-machine-tests.js', 'module' );
 </script>
 </body>
 </html>
