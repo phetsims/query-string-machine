@@ -377,7 +377,7 @@
        * not be used.
        *
        * @param {string} key - the query parameter name
-       * @param {string} value - type depends on schema type
+       * @param {Object} value - type depends on schema type
        * @param {string} message - the message that indicates the problem with the value
        * @public
        */
