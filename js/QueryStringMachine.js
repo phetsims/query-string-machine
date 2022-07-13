@@ -13,7 +13,6 @@
  * @author Chris Malley (PixelZoom, Inc.)
  */
 ( function( root, factory ) {
-  
 
   if ( typeof window.define === 'function' && window.define.amd ) {
 
@@ -33,7 +32,6 @@
     root.QueryStringMachine = factory();
   }
 }( this, () => {
-  
 
   // Default string that splits array strings
   const DEFAULT_SEPARATOR = ',';
@@ -331,6 +329,20 @@
       },
 
       /**
+       * Remove all the keys from the queryString (ok if they do not appear at all)
+       * @param {string} queryString
+       * @param {string[]} keys
+       * @returns {string}
+       * @public
+       */
+      removeKeyValuePairs: function( queryString, keys ) {
+        for ( let i = 0; i < keys.length; i++ ) {
+          queryString = this.removeKeyValuePair( queryString, keys[ i ] );
+        }
+        return queryString;
+      },
+
+      /**
        * Appends a query string to a given url.
        * @param {string} url - may or may not already have other query parameters
        * @param {string} queryParameters - may start with '', '?' or '&'
@@ -370,6 +382,23 @@
           url = this.appendQueryString( url, queryStringArray[ i ] );
         }
         return url;
+      },
+
+      /**
+       * Returns the query string at the end of a url, or '?' if there is none.
+       * @param {string} url
+       * @returns {string}
+       * @public
+       */
+      getQueryString: function( url ) {
+        const index = url.indexOf( '?' );
+
+        if ( index >= 0 ) {
+          return url.substring( index );
+        }
+        else {
+          return '?';
+        }
       },
 
       /**
@@ -555,7 +584,7 @@
       let returnValue;
 
       // values contains values for all occurrences of the query parameter.  We currently support only 1 occurrence.
-      queryStringMachineAssert( values.length <= 1, 'query parameter cannot occur multiple times' );
+      queryStringMachineAssert( values.length <= 1, `query parameter cannot occur multiple times: ${key}` );
 
       if ( schema.type === 'flag' ) {
 
