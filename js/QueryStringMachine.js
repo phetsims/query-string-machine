@@ -727,6 +727,7 @@
      * parse - a function that takes a string and returns an Object
      */
     const TYPES = {
+      // NOTE: Types for this are currently in phet-types.d.ts! Changes here should be made there also
 
       // value is true if present, false if absent
       flag: {
