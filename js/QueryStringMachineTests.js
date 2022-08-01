@@ -212,10 +212,8 @@ QUnit.test( 'removeKeyValuePair', assert => {
   assert.equal( QueryStringMachine.removeKeyValuePair( '?time&place', 'time' ), '?place', 'Remove with no values' );
   assert.equal( QueryStringMachine.removeKeyValuePair( '?place&time', 'time' ), '?place', 'Remove with no values' );
   assert.equal( QueryStringMachine.removeKeyValuePair( '?place&time', 'times' ), '?place&time', 'Key to remove not present' );
-  assert.equal( QueryStringMachine.removeKeyValuePair(
-    '?sim=ohms-law&phetioValidation&phetioDebug=true', 'fuzz' ),
-    '?sim=ohms-law&phetioValidation&phetioDebug=true',
-    'Key to remove not present' );
+  assert.equal( QueryStringMachine.removeKeyValuePair( '?sim=ohms-law&phetioValidation&phetioDebug=true', 'fuzz' ),
+    '?sim=ohms-law&phetioValidation&phetioDebug=true', 'Key to remove not present' );
 } );
 
 QUnit.test( 'appendQueryString', assert => {
@@ -231,6 +229,23 @@ QUnit.test( 'appendQueryString', assert => {
   test( 'http://localhost.com/hello.html?abc', '', 'http://localhost.com/hello.html?abc' );
   test( 'http://localhost.com/hello.html?abc', '?123', 'http://localhost.com/hello.html?abc&123' );
   test( 'http://localhost.com/hello.html?abc', '&123', 'http://localhost.com/hello.html?abc&123' );
+} );
+
+QUnit.test( 'getSingleQueryParameterString', assert => {
+
+  const test = function( url, key, expected ) {
+    assert.equal( QueryStringMachine.getSingleQueryParameterString( key, url ), expected, `${url} + ${key} should be equal` );
+  };
+
+  test( 'http://phet.colorado.com/hello.html?test', 'test', 'test' );
+  test( 'http://phet.colorado.com/hello.html?test=hi', 'test', 'test=hi' );
+  test( 'http://phet.colorado.com/hello.html?hi&test=hi', 'test', 'test=hi' );
+  test( '?hi&test=hi,4,3,%203', 'test', 'test=hi,4,3,%203' );
+
+  const parameterKey = encodeURIComponent( 'jf4238597043*$(%$*()#%&*#(^_(&' );
+  const parameterEntire = `${parameterKey}=7`;
+
+  test( `http://something.edu/hello.html?${parameterEntire}`, decodeURIComponent( parameterKey ), parameterEntire );
 } );
 QUnit.test( 'public query parameters should be graceful', assert => {
 

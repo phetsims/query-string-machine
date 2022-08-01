@@ -432,6 +432,41 @@
           hasWarning = ( this.warnings[ i ].key === key );
         }
         return hasWarning;
+      },
+
+      /**
+       * @param {string} queryString - tail of a URL including the beginning '?' (if any)
+       * @returns {string[]} - the split up still-URI-encoded parameters (with values if present)
+       * @public
+       */
+      getQueryParametersFromString: function( queryString ) {
+        if ( queryString.indexOf( '?' ) === 0 ) {
+          const query = queryString.substring( 1 );
+          return query.split( '&' );
+        }
+        return [];
+      },
+
+      /**
+       * @param {string} key - the query parameter key to return if presetn
+       * @param {string} string - a URL including a "?" if it has a query string
+       * @returns {string|null} - the query parameter as it appears in the URL, like `key=VALUE`, or null if not present
+       * @public
+       */
+      getSingleQueryParameterString: function( key, string ) {
+        const queryString = this.getQueryString( string );
+        const queryParameters = this.getQueryParametersFromString( queryString );
+
+        for ( let i = 0; i < queryParameters.length; i++ ) {
+          const queryParameter = queryParameters[ i ];
+          const keyAndMaybeValue = queryParameter.split( '=' );
+
+          if ( decodeURIComponent( keyAndMaybeValue[ 0 ] ) === key ) {
+            return queryParameter;
+          }
+        }
+
+        return null;
       }
     };
 
