@@ -448,7 +448,7 @@
       },
 
       /**
-       * @param {string} key - the query parameter key to return if presetn
+       * @param {string} key - the query parameter key to return if present
        * @param {string} string - a URL including a "?" if it has a query string
        * @returns {string|null} - the query parameter as it appears in the URL, like `key=VALUE`, or null if not present
        * @public
