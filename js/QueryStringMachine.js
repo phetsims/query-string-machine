@@ -629,6 +629,7 @@
       else {
         queryStringMachineAssert( values[ 0 ] !== undefined || schema.hasOwnProperty( 'defaultValue' ),
           `missing required query parameter: ${key}` );
+        console.log( `key=${key} value=${values[ 0 ]}` );//XXX
         if ( values[ 0 ] === undefined ) {
 
           // not in the query string, use the default
@@ -676,6 +677,18 @@
     const parseNumber = function( key, schema, string ) {
       const number = Number( string );
       return string === null || isNaN( number ) ? string : number;
+    };
+
+    /**
+     * Parses the value for a type 'number'.
+     * The value to be parsed is already string, so it is guaranteed to parse as a string.
+     * @param {string} key
+     * @param {Object} schema
+     * @param {string|null} string
+     * @returns {string|null}
+     */
+    const parseString = function( key, schema, string ) {
+      return string;
     };
 
     /**
@@ -797,7 +810,7 @@
         required: [],
         optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'public' ],
         validateSchema: null, // no type-specific schema validation
-        parse: ( key, schema, string ) => string, // The variable to be parsed is already string, so it is guaranteed to parse as a string.
+        parse: parseString,
         isValidValue: value => value === null || typeof value === 'string'
       },
 
