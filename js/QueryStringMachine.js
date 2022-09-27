@@ -65,15 +65,15 @@
     /**
      * In order to support graceful failures for user-supplied values, we fall back to default values when public: true
      * is specified.  If the schema entry is public: false, then a queryStringMachineAssert is thrown.
-     * @param {boolean} ok
+     * @param {boolean} predicate
      * @param {string} key
      * @param {Object} value - value of the parsed type, or, if parsing failed, the {string} that would not parse
      * @param {Object} schema
      * @param {string} message
      * @returns {Object}
      */
-    const getValidValue = ( ok, key, value, schema, message ) => {
-      if ( !ok ) {
+    const getValidValue = ( predicate, key, value, schema, message ) => {
+      if ( !predicate ) {
 
         if ( schema.public ) {
           QueryStringMachine.addWarning( key, value, message );
@@ -88,7 +88,7 @@
           }
         }
         else {
-          queryStringMachineAssert( ok, message );
+          queryStringMachineAssert( predicate, message );
         }
       }
       return value;
@@ -152,16 +152,14 @@
         let value = parseValues( key, schema, values );
 
         if ( schema.hasOwnProperty( 'validValues' ) ) {
-          value = getValidValue(
-            isValidValue( value, schema.validValues ), key, value, schema,
+          value = getValidValue( isValidValue( value, schema.validValues ), key, value, schema,
             `Invalid value supplied for key "${key}": ${value} is not a member of valid values: ${schema.validValues.join( ', ' )}`
           );
         }
 
         // isValidValue evaluates to true
         else if ( schema.hasOwnProperty( 'isValidValue' ) ) {
-          value = getValidValue(
-            schema.isValidValue( value ), key, value, schema,
+          value = getValidValue( schema.isValidValue( value ), key, value, schema,
             `Invalid value supplied for key "${key}": ${value}`
           );
         }
@@ -190,11 +188,7 @@
         }
 
         // dispatch further validation to a type-specific function
-        value = getValidValue(
-          valueValid, key, value, schema,
-          `Invalid value for type, key: ${key}`
-        );
-
+        value = getValidValue( valueValid, key, value, schema, `Invalid value for type, key: ${key}` );
         return value;
       },
 
@@ -748,11 +742,11 @@
     /**
      * Query parameters are specified by the user, and are outside the control of the programmer.
      * So the application should throw an Error if query parameters are invalid.
-     * @param {boolean} ok - if this condition is false, an Error is throw
+     * @param {boolean} predicate - if predicate evaluates to false, an Error is thrown
      * @param {string} message
      */
-    const queryStringMachineAssert = function( ok, message ) {
-      if ( !ok ) {
+    const queryStringMachineAssert = function( predicate, message ) {
+      if ( !predicate ) {
         console && console.log && console.log( message );
         throw new Error( `Query String Machine Assertion failed: ${message}` );
       }
