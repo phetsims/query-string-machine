@@ -629,7 +629,6 @@
       else {
         queryStringMachineAssert( values[ 0 ] !== undefined || schema.hasOwnProperty( 'defaultValue' ),
           `missing required query parameter: ${key}` );
-        console.log( `key=${key} value=${values[ 0 ]}` );//XXX
         if ( values[ 0 ] === undefined ) {
 
           // not in the query string, use the default
