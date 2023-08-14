@@ -2,7 +2,7 @@
 Query String Machine is a query string parser that supports type coercion, default values & validation.  No dependencies.
 
 ## Installation
-Download [QueryStringMachine.js](blob/master/LICENSE) and include it with a script tag, like:
+Download [QueryStringMachine.js](blob/main/LICENSE) and include it with a script tag, like:
 ```html
 <script src="QueryStringMachine.js"></script>
 ```
