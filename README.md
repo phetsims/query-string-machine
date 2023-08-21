@@ -1,18 +1,24 @@
 # Query String Machine
-Query String Machine is a query string parser that supports type coercion, default values & validation.  No dependencies.
+
+Query String Machine is a query string parser that supports type coercion, default values & validation. No dependencies.
 
 ## Installation
+
 Download [QueryStringMachine.js](blob/main/LICENSE) and include it with a script tag, like:
+
 ```html
 <script src="QueryStringMachine.js"></script>
 ```
 
 ## Usage
-After downloading and including QueryStringMachine, you can use it to obtain values from the query string.  Query String
+
+After downloading and including QueryStringMachine, you can use it to obtain values from the query string. Query String
 Machine values can be obtained by calling `QueryStringMachine.get`, which supports the following types:
 
 ### boolean
-Type: 'boolean' returns a primitive boolean value.  Note this of type boolean, not string.
+
+Type: 'boolean' returns a primitive boolean value. Note this of type boolean, not string.
+
 ```js
 
 var audio = QueryStringMachine.get( 'audio', { type: 'boolean' } );
@@ -22,7 +28,9 @@ var audio = QueryStringMachine.get( 'audio', { type: 'boolean' } );
 ```
 
 ### flag
+
 Type: 'flag' takes the boolean value true if and only if it is provided
+
 ```js
 
 var audio = QueryStringMachine.get( 'audio', { type: 'flag' } );
@@ -32,8 +40,10 @@ var audio = QueryStringMachine.get( 'audio', { type: 'flag' } );
 ```
 
 ### number
-Type: 'number' provides numeric values.  Note that for each type, a `defaultValue` can be provided. If `defaultValue` is
+
+Type: 'number' provides numeric values. Note that for each type, a `defaultValue` can be provided. If `defaultValue` is
 not provided, then that query parameter is required, or QueryStringMachine will error.
+
 ```js
 var delay = QueryStringMachine.get( 'delay', { type: 'number', defaultValue: 1000 }};
 
@@ -42,7 +52,9 @@ var delay = QueryStringMachine.get( 'delay', { type: 'number', defaultValue: 100
 ```
 
 ### string
+
 Type: 'string' provides values as strings:
+
 ```js
 var name = QueryStringMachine.get( 'name', { type: 'string', defaultValue: 'Alice' }};
 
@@ -51,7 +63,9 @@ var name = QueryStringMachine.get( 'name', { type: 'string', defaultValue: 'Alic
 ```
 
 ### array
+
 Type: 'array' provides values as strings, using a nested element schema
+
 ```js
 var words = QueryStringMachine.get( 'heights', { type: 'array', elementSchema: { type: 'string' } } };
 
@@ -60,6 +74,7 @@ var words = QueryStringMachine.get( 'heights', { type: 'array', elementSchema: {
 ```
 
 ### custom
+
 By providing a `parse` function, you can support arbitrary types:
 
 ```js
@@ -73,6 +88,7 @@ var lower = QueryStringMachine.get( 'name', {
 ```
 
 ## Allowed Values
+
 Each type supports allowed values, which specifies an array of valid values, which are checked with `===`.
 
 ```js
@@ -86,7 +102,8 @@ var height = QueryStringMachine.get( 'height', {
 
 ## Multiple Values
 
-In addition to `QueryStringMachine.get`, you can use `QueryStringMachine.getAll` which provides multiple values at the same time:
+In addition to `QueryStringMachine.get`, you can use `QueryStringMachine.getAll` which provides multiple values at the
+same time:
 
 ```js
 QueryStringMachine.getAll( {
@@ -120,6 +137,7 @@ QueryStringMachine.getAll( {
     }
   } )
 ```
+
 returns the following results:
 
 ```js
@@ -169,11 +187,13 @@ Error( 'value not allowed: 0, allowedValues = 4,5,6,7,8' )
 ```
 
 ## Additional Features
+
 Most use cases are covered by the preceding examples, but in some cases you will want to parse arbitrary strings or
 check for the existence of a key.
 
 ### Parsing arbitrary strings
-By default, Query String Machine parses the browser query string `window.location.search`.  It can also parse values from
+
+By default, Query String Machine parses the browser query string `window.location.search`. It can also parse values from
 provided strings like so:
 
 ```js
@@ -190,7 +210,8 @@ var queryParameters = QueryStringMachine.getAllForString( {
 
 ### Checking for the existence of a key
 
-In some cases, it is only important to check for the existence of a key.  This can be done using Query String Machine like so:
+In some cases, it is only important to check for the existence of a key. This can be done using Query String Machine
+like so:
 
 ```js
 var containsAudioKey = QueryStringMachine.containsKey( 'audio' );
@@ -200,4 +221,5 @@ var queryParameters = QueryStringMachine.containsKeyForString( 'audio', '?mute' 
 Launch test-query-string-machine.html for automated tests
 
 ## Copyright and License
+
 QueryStringMachine is Copyright 2016-2018, University of Colorado Boulder and licensed under MIT
