@@ -214,6 +214,13 @@ QUnit.test( 'removeKeyValuePair', assert => {
   assert.equal( QueryStringMachine.removeKeyValuePair( '?place&time', 'times' ), '?place&time', 'Key to remove not present' );
   assert.equal( QueryStringMachine.removeKeyValuePair( '?sim=ohms-law&phetioValidation&phetioDebug=true', 'fuzz' ),
     '?sim=ohms-law&phetioValidation&phetioDebug=true', 'Key to remove not present' );
+  assert.equal( QueryStringMachine.removeKeyValuePair( '', 'fuzz' ),
+    '', 'No search present' );
+
+  if ( window.assert ) {
+    assert.throws( () => QueryStringMachine.removeKeyValuePair( 'time=now', 'time' ), 'Not removed if there is no question mark' );
+  }
+
 } );
 
 QUnit.test( 'appendQueryString', assert => {
