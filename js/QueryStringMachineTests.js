@@ -236,6 +236,10 @@ QUnit.test( 'appendQueryString', assert => {
   test( 'http://localhost.com/hello.html?abc', '', 'http://localhost.com/hello.html?abc' );
   test( 'http://localhost.com/hello.html?abc', '?123', 'http://localhost.com/hello.html?abc&123' );
   test( 'http://localhost.com/hello.html?abc', '&123', 'http://localhost.com/hello.html?abc&123' );
+  test( '?abc', '&123', '?abc&123' );
+  test( '?abc', '123', '?abc&123' );
+  test( '?abc', '123&hi', '?abc&123&hi' );
+  test( '?', 'abc&123&hi', '?&abc&123&hi' );
 } );
 
 QUnit.test( 'getSingleQueryParameterString', assert => {
