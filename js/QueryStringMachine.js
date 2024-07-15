@@ -405,13 +405,24 @@
        * @public
        */
       addWarning: function( key, value, message ) {
-        console.warn( message );
 
-        this.warnings.push( {
-          key: key,
-          value: value,
-          message: message
-        } );
+        let isDuplicate = false;
+        for ( let i = 0; i < this.warnings.length; i++ ) {
+          const warning = this.warnings[ i ];
+          if ( key === warning.key && value === warning.value && message === warning.message ) {
+            isDuplicate = true;
+            break;
+          }
+        }
+        if ( !isDuplicate ) {
+          console.warn( message );
+
+          this.warnings.push( {
+            key: key,
+            value: value,
+            message: message
+          } );
+        }
       },
 
       /**
