@@ -21,7 +21,7 @@
         ],
         "parserOptions": {
           "project": [
-            "../query-string-machine/tsconfig.json"
+            "../chipper/tsconfig/eslint-all/tsconfig.json"
           ]
         }
       }
