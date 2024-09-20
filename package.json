@@ -13,6 +13,18 @@
     "generatedUnitTests": true
   },
   "eslintConfig": {
-    "extends": "../chipper/eslint/phet-library_eslintrc.js"
+    "extends": "../chipper/eslint/phet-library_eslintrc.js",
+    "overrides": [
+      {
+        "files": [
+          "**/*.ts"
+        ],
+        "parserOptions": {
+          "project": [
+            "../query-string-machine/tsconfig.json"
+          ]
+        }
+      }
+    ]
   }
 }
