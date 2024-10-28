@@ -19,11 +19,13 @@
     // AMD. Register as an anonymous module.
     window.define( [], factory );
   }
+  // eslint-disable-next-line no-undef
   else if ( typeof module === 'object' && module.exports ) {
 
     // Node. Does not work with strict CommonJS, but
     // only CommonJS-like environments that support module.exports,
     // like Node.
+    // eslint-disable-next-line no-undef
     module.exports = factory();
   }
   else {
