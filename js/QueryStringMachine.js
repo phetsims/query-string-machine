@@ -1,4 +1,4 @@
-// Copyright 2017-2025, University of Colorado Boulder
+// Copyright 2025, University of Colorado Boulder
 // @author Michael Kauzmann (PhET Interactive Simulations)
 // AUTO GENERATED: DO NOT EDIT!!!! See QueryStringMachineModule.ts and chipper/js/scripts/build-qsm.ts
 /* eslint-disable */

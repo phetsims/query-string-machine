@@ -1,4 +1,4 @@
-// Copyright 2016-2024, University of Colorado Boulder
+// Copyright 2025, University of Colorado Boulder
 /**
  * For use of QSM as a module
  * @author Michael Kauzmann (PhET Interactive Simulations)`
