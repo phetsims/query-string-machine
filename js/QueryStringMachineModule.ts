@@ -13,14 +13,12 @@
  * @author Michael Kauzmann (PhET Interactive Simulations)
  */
 
-/* eslint-disable phet/no-simple-type-checking-assertions */
-
 // Default string that splits array strings
 const DEFAULT_SEPARATOR = ',';
 
 type Any = any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-type Warning = {
+export type Warning = {
   key: string;
   value: string;
   message: string;
@@ -79,6 +77,7 @@ type Schema = FlagSchema |
   StringSchema |
   ArraySchema |
   CustomSchema;
+export type QueryStringMachineSchema = Schema;
 
 type UnparsedValue = string | null | undefined;
 type ParsedValue<S extends Schema> = ReturnType<SchemaTypes[S['type']]['parse']>;
@@ -88,8 +87,7 @@ type QueryMachineTypeToType<T> = T extends ( 'flag' | 'boolean' ) ? boolean : ( 
 
 type QSMSchemaObject = Record<string, Schema>;
 
-// TODO: Combine this with SchemaTypes typing and ParsedValue<>, since they are two different things right now. https://github.com/phetsims/query-string-machine/issues/45
-type QSMParsedParameters<SchemaMap extends QSMSchemaObject> = {
+export type QSMParsedParameters<SchemaMap extends QSMSchemaObject> = {
   // Will return a map of the "result" types
   [Property in keyof SchemaMap]: QueryMachineTypeToType<SchemaMap[ Property ][ 'type' ]>
   // SCHEMA_MAP allowed to be set in types
@@ -336,10 +334,10 @@ const QueryStringMachine = {
    * @param key
    */
   removeKeyValuePair: function( queryString: string, key: string ): string {
-    assert && assert( typeof queryString === 'string', `url should be string, but it was: ${typeof queryString}` );
-    assert && assert( typeof key === 'string', `url should be string, but it was: ${typeof key}` );
-    assert && assert( isParameterString( queryString ), 'queryString should be length 0 or begin with ?' );
-    assert && assert( key.length > 0, 'url should be a string with length > 0' );
+    queryStringMachineAssert( typeof queryString === 'string', `url should be string, but it was: ${typeof queryString}` );
+    queryStringMachineAssert( typeof key === 'string', `url should be string, but it was: ${typeof key}` );
+    queryStringMachineAssert( isParameterString( queryString ), 'queryString should be length 0 or begin with ?' );
+    queryStringMachineAssert( key.length > 0, 'url should be a string with length > 0' );
 
     if ( queryString.startsWith( '?' ) ) {
       const newParameters = [];
