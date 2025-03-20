@@ -1,0 +1,10 @@
+{
+  "extends": "../perennial-alias/tsconfig/tsconfig-browser.json",
+  "include": [
+    "js/**/*"
+  ],
+  "exclude": [
+    "**/*Tests*",
+    "**/*tests*"
+  ]
+}
