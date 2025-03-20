@@ -149,7 +149,7 @@ const getValidValue = ( predicate: boolean, key: string, value: Any, schema: Sch
  * visit PhET's <a href="https://github.com/phetsims/query-string-machine" target="_blank">query-string-machine</a>
  * repository for documentation and examples.
  */
-const QueryStringMachine = {
+export const QueryStringMachine = {
 
   // public (read-only) {{key:string, value:{*}, message:string}[]} - cleared by some tests in QueryStringMachineTests.js
   // See QueryStringMachine.addWarning for a description of these fields, and to add warnings.
@@ -883,5 +883,3 @@ const TYPES: SchemaTypes = {
     }
   }
 };
-
-export default QueryStringMachine;

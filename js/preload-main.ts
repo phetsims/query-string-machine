@@ -4,6 +4,6 @@
  * @author Michael Kauzmann (PhET Interactive Simulations)`
  */
 
-import QueryStringMachineModule from './QueryStringMachineModule.js';
+import { QueryStringMachine } from './QueryStringMachineModule.js';
 
-self.QueryStringMachine = QueryStringMachineModule;
+self.QueryStringMachine = QueryStringMachine;
