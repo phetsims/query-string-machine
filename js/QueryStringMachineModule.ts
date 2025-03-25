@@ -77,7 +77,6 @@ type Schema = FlagSchema |
   StringSchema |
   ArraySchema |
   CustomSchema;
-export type QueryStringMachineSchema = Schema;
 
 type UnparsedValue = string | null | undefined;
 type ParsedValue<S extends Schema> = ReturnType<SchemaTypes[S['type']]['parse']>;
@@ -85,7 +84,7 @@ type ParsedValue<S extends Schema> = ReturnType<SchemaTypes[S['type']]['parse']>
 // Converts a Schema's type to the actual Typescript type it represents
 type QueryMachineTypeToType<T> = T extends ( 'flag' | 'boolean' ) ? boolean : ( T extends 'number' ? number : ( T extends 'string' ? ( string | null ) : ( T extends 'array' ? Any[] : Any ) ) );
 
-type QSMSchemaObject = Record<string, Schema>;
+export type QSMSchemaObject = Record<string, Schema>;
 
 export type QSMParsedParameters<SchemaMap extends QSMSchemaObject> = {
   // Will return a map of the "result" types
