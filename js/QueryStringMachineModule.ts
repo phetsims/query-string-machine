@@ -875,10 +875,6 @@ const TYPES: SchemaTypes = {
     optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'public' ],
     validateSchema: null, // no type-specific schema validation
     parse: parseCustom,
-    isValidValue: value => {
-
-      // TODO do we need to add a property to 'custom' schema that handles validation of custom value's type? see https://github.com/phetsims/query-string-machine/issues/35
-      return true;
-    }
+    isValidValue: value => true
   }
 };
