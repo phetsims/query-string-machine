@@ -16,7 +16,9 @@
 // Default string that splits array strings
 const DEFAULT_SEPARATOR = ',';
 
-type Any = any; // eslint-disable-line @typescript-eslint/no-explicit-any
+type IntentionalQSMAny = any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+type IsValidValue = ( n: IntentionalQSMAny[] ) => boolean;
 
 export type Warning = {
   key: string;
@@ -56,17 +58,17 @@ type ArraySchema = {
   type: 'array';
   elementSchema: Schema;
   separator?: string;
-  defaultValue?: null | readonly Any[];
-  validValues?: readonly Any[][];
-  isValidValue?: ( n: Any[] ) => boolean;
+  defaultValue?: null | readonly IntentionalQSMAny[];
+  validValues?: readonly IntentionalQSMAny[][];
+  isValidValue?: IsValidValue;
 } & SharedSchema;
 
 type CustomSchema = {
   type: 'custom';
-  parse: ( str: string ) => Any;
-  defaultValue?: Any;
-  validValues?: readonly Any[];
-  isValidValue?: ( n: Any ) => boolean;
+  parse: ( str: string ) => IntentionalQSMAny;
+  defaultValue?: IntentionalQSMAny;
+  validValues?: readonly IntentionalQSMAny[];
+  isValidValue?: ( n: IntentionalQSMAny ) => boolean;
 } & SharedSchema;
 
 
@@ -82,7 +84,7 @@ type UnparsedValue = string | null | undefined;
 type ParsedValue<S extends Schema> = ReturnType<SchemaTypes[S['type']]['parse']>;
 
 // Converts a Schema's type to the actual Typescript type it represents
-type QueryMachineTypeToType<T> = T extends ( 'flag' | 'boolean' ) ? boolean : ( T extends 'number' ? number : ( T extends 'string' ? ( string | null ) : ( T extends 'array' ? Any[] : Any ) ) );
+type QueryMachineTypeToType<T> = T extends ( 'flag' | 'boolean' ) ? boolean : ( T extends 'number' ? number : ( T extends 'string' ? ( string | null ) : ( T extends 'array' ? IntentionalQSMAny[] : IntentionalQSMAny ) ) );
 
 export type QSMSchemaObject = Record<string, Schema>;
 
@@ -105,6 +107,14 @@ const privatePredicate = () => {
   }
 };
 
+type DontUseThisObject = {}; // eslint-disable-line @typescript-eslint/no-restricted-types
+
+function hasOwnProperty<
+  X extends DontUseThisObject,
+  Y extends PropertyKey>( obj: X, prop: Y ): obj is X & Record<Y, unknown> {
+  return obj.hasOwnProperty( prop );
+}
+
 /**
  * Valid parameter strings begin with ? or are the empty string.  This is used for assertions in some cases and for
  * throwing Errors in other cases.
@@ -120,18 +130,17 @@ const isParameterString = ( string: string ): boolean => string.length === 0 || 
  * is specified.  If the schema entry is public: false, then a queryStringMachineAssert is thrown.
  * TODO: Parametric typing, https://github.com/phetsims/query-string-machine/issues/45
  */
-const getValidValue = ( predicate: boolean, key: string, value: Any, schema: Schema, message: string ): Any => {
+const getValidValue = ( predicate: boolean, key: string, value: IntentionalQSMAny, schema: Schema, message: string ): IntentionalQSMAny => {
   if ( !predicate ) {
 
     if ( schema.public ) {
       QueryStringMachine.addWarning( key, value, message );
-      if ( schema.hasOwnProperty( 'defaultValue' ) ) {
-        // @ts-expect-error
+      if ( hasOwnProperty( schema, 'defaultValue' ) ) {
         value = schema.defaultValue;
       }
       else {
         const typeSchema = TYPES[ schema.type ];
-        queryStringMachineAssert( typeSchema.hasOwnProperty( 'defaultValue' ),
+        queryStringMachineAssert( hasOwnProperty( typeSchema, 'defaultValue' ),
           'Type must have a default value if the provided schema does not have one.' );
         value = typeSchema.defaultValue;
       }
@@ -194,18 +203,16 @@ export const QueryStringMachine = {
 
     let value = parseValues( key, schema, values );
 
-    if ( schema.hasOwnProperty( 'validValues' ) ) {
-      // @ts-expect-error - TODO What is the best way to type narrow schema? https://github.com/phetsims/query-string-machine/issues/45
-      value = getValidValue( isValidValue( value, schema.validValues ), key, value, schema,
-        // @ts-expect-error - TODO What is the best way to type narrow schema? https://github.com/phetsims/query-string-machine/issues/45
-        `Invalid value supplied for key "${key}": ${value} is not a member of valid values: ${schema.validValues.join( ', ' )}`
+    if ( hasOwnProperty( schema, 'validValues' ) ) {
+      const validValues = schema.validValues as IntentionalQSMAny[];
+      value = getValidValue( isValidValue( value, validValues ), key, value, schema,
+        `Invalid value supplied for key "${key}": ${value} is not a member of valid values: ${validValues.join( ', ' )}`
       );
     }
 
     // isValidValue evaluates to true
-    else if ( schema.hasOwnProperty( 'isValidValue' ) ) {
-      // @ts-expect-error - TODO What is the best way to type narrow schema? https://github.com/phetsims/query-string-machine/issues/45
-      value = getValidValue( schema.isValidValue( value ), key, value, schema,
+    else if ( hasOwnProperty( schema, 'isValidValue' ) ) {
+      value = getValidValue( ( schema.isValidValue as IsValidValue )( value ), key, value, schema,
         `Invalid value supplied for key "${key}": ${value}`
       );
     }
@@ -221,13 +228,11 @@ export const QueryStringMachine = {
           elementsValid = false;
           break;
         }
-        // @ts-expect-error - TODO What is the best way to type narrow schema? https://github.com/phetsims/query-string-machine/issues/45
-        if ( schema.elementSchema.hasOwnProperty( 'isValidValue' ) && !schema.elementSchema.isValidValue( element ) ) {
+        if ( hasOwnProperty( schema.elementSchema, 'isValidValue' ) && !( schema.elementSchema.isValidValue as IsValidValue )( element ) ) {
           elementsValid = false;
           break;
         }
-        // @ts-expect-error - TODO What is the best way to type narrow schema? https://github.com/phetsims/query-string-machine/issues/45
-        if ( schema.elementSchema.hasOwnProperty( 'validValues' ) && !isValidValue( element, schema.elementSchema.validValues ) ) {
+        if ( hasOwnProperty( schema.elementSchema, 'validValues' ) && !isValidValue( element, schema.elementSchema.validValues as IntentionalQSMAny[] ) ) {
           elementsValid = false;
           break;
         }
@@ -284,7 +289,7 @@ export const QueryStringMachine = {
    * arrays objects that contain primitives (i.e. terminals are compared with ===)
    * private - however, it is called from QueryStringMachineTests
    */
-  deepEquals: function( a: Any, b: Any ): boolean {
+  deepEquals: function( a: IntentionalQSMAny, b: IntentionalQSMAny ): boolean {
     if ( typeof a !== typeof b ) {
       return false;
     }
@@ -432,7 +437,7 @@ export const QueryStringMachine = {
    * @param value - type depends on schema type
    * @param message - the message that indicates the problem with the value
    */
-  addWarning: function( key: string, value: Any, message: string ): void {
+  addWarning: function( key: string, value: IntentionalQSMAny, message: string ): void {
 
     let isDuplicate = false;
     for ( let i = 0; i < this.warnings.length; i++ ) {
@@ -506,7 +511,7 @@ export const QueryStringMachine = {
  * @param string - the parameters string
  * @returns - the resulting values, null indicates the query parameter is present with no value
  */
-const getValues = function( key: string, string: string ): Array<Any | null> {
+const getValues = function( key: string, string: string ): Array<IntentionalQSMAny | null> {
   const values = [];
   const params = string.slice( 1 ).split( '&' );
   for ( let i = 0; i < params.length; i++ ) {
@@ -541,8 +546,7 @@ const validateSchema = function( key: string, schema: Schema ): void {
   queryStringMachineAssert( TYPES.hasOwnProperty( schema.type ), `invalid type: ${schema.type} for key: ${key}` );
 
   // parse is a function
-  if ( schema.hasOwnProperty( 'parse' ) ) {
-    // @ts-expect-error - TODO What is the best way to type narrow schema? https://github.com/phetsims/query-string-machine/issues/45
+  if ( hasOwnProperty( schema, 'parse' ) ) {
     queryStringMachineAssert( typeof schema.parse === 'function', `parse must be a function for key: ${key}` );
   }
 
@@ -551,39 +555,35 @@ const validateSchema = function( key: string, schema: Schema ): void {
     `validValues and isValidValue are mutually exclusive for key: ${key}` );
 
   // validValues is an Array
-  if ( schema.hasOwnProperty( 'validValues' ) ) {
-    // @ts-expect-error - TODO What is the best way to type narrow schema? https://github.com/phetsims/query-string-machine/issues/45
+  if ( hasOwnProperty( schema, 'validValues' ) ) {
     queryStringMachineAssert( Array.isArray( schema.validValues ), `isValidValue must be an array for key: ${key}` );
   }
 
   // isValidValue is a function
-  if ( schema.hasOwnProperty( 'isValidValue' ) ) {
-    // @ts-expect-error - TODO What is the best way to type narrow schema? https://github.com/phetsims/query-string-machine/issues/45
+  if ( hasOwnProperty( schema, 'isValidValue' ) ) {
     queryStringMachineAssert( typeof schema.isValidValue === 'function', `isValidValue must be a function for key: ${key}` );
   }
 
   // defaultValue has the correct type
-  if ( schema.hasOwnProperty( 'defaultValue' ) ) {
-    // @ts-expect-error - TODO What is the best way to type narrow schema? https://github.com/phetsims/query-string-machine/issues/45
+  if ( hasOwnProperty( schema, 'defaultValue' ) ) {
     queryStringMachineAssert( TYPES[ schema.type ].isValidValue( schema.defaultValue ), `defaultValue incorrect type: ${key}` );
   }
 
   // validValues have the correct type
-  if ( schema.hasOwnProperty( 'validValues' ) ) {
-    // @ts-expect-error - TODO What is the best way to type narrow schema? https://github.com/phetsims/query-string-machine/issues/45
-    schema.validValues.forEach( value => queryStringMachineAssert( TYPES[ schema.type ].isValidValue( value ), `validValue incorrect type for key: ${key}` ) );
+  if ( hasOwnProperty( schema, 'validValues' ) ) {
+    ( schema.validValues as IntentionalQSMAny[] ).forEach( value => queryStringMachineAssert( TYPES[ schema.type ].isValidValue( value ), `validValue incorrect type for key: ${key}` ) );
   }
 
   // defaultValue is a member of validValues
-  if ( schema.hasOwnProperty( 'defaultValue' ) && schema.hasOwnProperty( 'validValues' ) ) {
-    // @ts-expect-error - TODO What is the best way to type narrow schema? https://github.com/phetsims/query-string-machine/issues/45
-    queryStringMachineAssert( isValidValue( schema.defaultValue, schema.validValues ), `defaultValue must be a member of validValues, for key: ${key}` );
+  if ( hasOwnProperty( schema, 'defaultValue' ) && hasOwnProperty( schema, 'validValues' ) ) {
+    queryStringMachineAssert( isValidValue( schema.defaultValue, schema.validValues as IntentionalQSMAny[] ),
+      `defaultValue must be a member of validValues, for key: ${key}` );
   }
 
   // defaultValue must exist for a public schema so there's a fallback in case a user provides an invalid value.
   // However, defaultValue is not required for flags since they're only a key. While marking a flag as public: true
   // doesn't change its behavior, it's allowed so that we can use the public key for documentation, see https://github.com/phetsims/query-string-machine/issues/41
-  if ( schema.hasOwnProperty( 'public' ) && schema.public && schema.type !== 'flag' ) {
+  if ( hasOwnProperty( schema, 'public' ) && schema.public && schema.type !== 'flag' ) {
     queryStringMachineAssert( schema.hasOwnProperty( 'defaultValue' ), `defaultValue is required when public: true for key: ${key}` );
   }
 
@@ -729,7 +729,7 @@ const parseString = function( key: string, schema: StringSchema, string: Unparse
  * @param schema - schema that describes the query parameter, see QueryStringMachine.get
  * @param value - value from the query parameter string
  */
-const parseArray = function( key: string, schema: ArraySchema, value: UnparsedValue ): Array<Any> {
+const parseArray = function( key: string, schema: ArraySchema, value: UnparsedValue ): Array<IntentionalQSMAny> {
 
   let returnValue;
 
@@ -755,7 +755,7 @@ const parseArray = function( key: string, schema: ArraySchema, value: UnparsedVa
  * @param schema - schema that describes the query parameter, see QueryStringMachine.get
  * @param value - value from the query parameter string
  */
-const parseCustom = function( key: string, schema: CustomSchema, value: UnparsedValue ): Any {
+const parseCustom = function( key: string, schema: CustomSchema, value: UnparsedValue ): IntentionalQSMAny {
   return schema.parse( value as unknown as string );
 };
 
@@ -764,7 +764,7 @@ const parseCustom = function( key: string, schema: CustomSchema, value: Unparsed
 /**
  * Determines if value is in a set of valid values, uses deep comparison.
  */
-const isValidValue = function( value: Any, validValues: Any[] ): boolean {
+const isValidValue = function( value: IntentionalQSMAny, validValues: IntentionalQSMAny[] ): boolean {
   let found = false;
   for ( let i = 0; i < validValues.length && !found; i++ ) {
     found = QueryStringMachine.deepEquals( validValues[ i ], value );
@@ -792,7 +792,7 @@ type SchemaType<T, SpecificSchema> = {
   optional: Array<keyof SpecificSchema>;
   validateSchema: null | ( ( key: string, schema: SpecificSchema ) => void );
   parse: ( key: string, schema: SpecificSchema, value: UnparsedValue ) => T;
-  isValidValue: ( value: Any ) => boolean;
+  isValidValue: ( value: IntentionalQSMAny ) => boolean;
   defaultValue?: T;
 };
 
@@ -802,8 +802,8 @@ type SchemaTypes = {
   boolean: SchemaType<boolean | UnparsedValue, BooleanSchema>;
   number: SchemaType<number | UnparsedValue, NumberSchema>;
   string: SchemaType<string | UnparsedValue, StringSchema>;
-  array: SchemaType<Any[], ArraySchema>;
-  custom: SchemaType<Any, CustomSchema>;
+  array: SchemaType<IntentionalQSMAny[], ArraySchema>;
+  custom: SchemaType<IntentionalQSMAny, CustomSchema>;
 };
 
 /**
