@@ -92,7 +92,7 @@ export type QSMParsedParameters<SchemaMap extends QSMSchemaObject> = {
   // Will return a map of the "result" types
   [Property in keyof SchemaMap]: QueryMachineTypeToType<SchemaMap[ Property ][ 'type' ]>
   // SCHEMA_MAP allowed to be set in types
-} & { SCHEMA_MAP?: QSMSchemaObject };
+} & { readonly SCHEMA_MAP: SchemaMap };
 
 // If a query parameter has private:true in its schema, it must pass this predicate to be read from the URL.
 // See https://github.com/phetsims/chipper/issues/743
@@ -178,7 +178,10 @@ export const QueryStringMachine = {
    * @returns - see QueryStringMachine.getAllForString
    */
   getAll: function <SchemaMap extends QSMSchemaObject>( schemaMap: SchemaMap ): QSMParsedParameters<SchemaMap> {
-    return this.getAllForString( schemaMap, window.location.search );
+    return {
+      ...this.getAllForString( schemaMap, window.location.search ), // eslint-disable-line phet/no-object-spread-on-non-literals
+      SCHEMA_MAP: schemaMap
+    };
   },
 
   /**
