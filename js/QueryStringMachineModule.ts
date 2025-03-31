@@ -47,11 +47,14 @@ type NumberSchema = {
   isValidValue?: ( n: number ) => boolean;
 } & SharedSchema;
 
+// I wish this was just "string", TODO: https://github.com/phetsims/query-string-machine/issues/43
+type StringType = string | null;
+
 type StringSchema = {
   type: 'string';
-  defaultValue?: string | null;
-  validValues?: readonly ( string | null )[];
-  isValidValue?: ( n: string | null ) => boolean;
+  defaultValue?: StringType;
+  validValues?: readonly ( StringType )[];
+  isValidValue?: ( n: StringType ) => boolean;
 } & SharedSchema;
 
 type ArraySchema = {
@@ -84,7 +87,10 @@ type UnparsedValue = string | null | undefined;
 type ParsedValue<S extends Schema> = ReturnType<SchemaTypes[S['type']]['parse']>;
 
 // Converts a Schema's type to the actual Typescript type it represents
-type QueryMachineTypeToType<T> = T extends ( 'flag' | 'boolean' ) ? boolean : ( T extends 'number' ? number : ( T extends 'string' ? ( string | null ) : ( T extends 'array' ? IntentionalQSMAny[] : IntentionalQSMAny ) ) );
+type QueryMachineTypeToType<T> = T extends ( 'flag' | 'boolean' ) ? boolean :
+                                 ( T extends 'number' ? number :
+                                   ( T extends 'string' ? ( StringType ) :
+                                     ( T extends 'array' ? IntentionalQSMAny[] : IntentionalQSMAny ) ) );
 
 export type QSMSchemaObject = Record<string, Schema>;
 
@@ -794,17 +800,19 @@ type SchemaType<T, SpecificSchema> = {
   required: Array<keyof SpecificSchema>;
   optional: Array<keyof SpecificSchema>;
   validateSchema: null | ( ( key: string, schema: SpecificSchema ) => void );
-  parse: ( key: string, schema: SpecificSchema, value: UnparsedValue ) => T;
+
+  // parse() will attempt to parse the value into the right type, but does not handle all possible inputs. Instead, some
+  // incorrect values will pass through to later validation (like isValidValue) to error out.
+  parse: ( key: string, schema: SpecificSchema, value: UnparsedValue ) => T | UnparsedValue;
   isValidValue: ( value: IntentionalQSMAny ) => boolean;
   defaultValue?: T;
 };
 
-// TODO: These strings seem wrong, let's not do that, https://github.com/phetsims/query-string-machine/issues/45
 type SchemaTypes = {
-  flag: SchemaType<boolean | UnparsedValue, FlagSchema>;
-  boolean: SchemaType<boolean | UnparsedValue, BooleanSchema>;
-  number: SchemaType<number | UnparsedValue, NumberSchema>;
-  string: SchemaType<string | UnparsedValue, StringSchema>;
+  flag: SchemaType<boolean, FlagSchema>;
+  boolean: SchemaType<boolean, BooleanSchema>;
+  number: SchemaType<number, NumberSchema>;
+  string: SchemaType<StringType, StringSchema>;
   array: SchemaType<IntentionalQSMAny[], ArraySchema>;
   custom: SchemaType<IntentionalQSMAny, CustomSchema>;
 };
