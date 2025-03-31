@@ -76,12 +76,13 @@ type CustomSchema = {
 
 
 // Matches TYPE documentation in QueryStringMachine
-type Schema = FlagSchema |
+type Schema = ( FlagSchema |
   BooleanSchema |
   NumberSchema |
   StringSchema |
   ArraySchema |
-  CustomSchema;
+  CustomSchema ) & { type: keyof SchemaTypes };
+
 
 type UnparsedValue = string | null | undefined;
 type ParsedValue<S extends Schema> = ReturnType<SchemaTypes[S['type']]['parse']>;
@@ -134,7 +135,6 @@ const isParameterString = ( string: string ): boolean => string.length === 0 || 
 /**
  * In order to support graceful failures for user-supplied values, we fall back to default values when public: true
  * is specified.  If the schema entry is public: false, then a queryStringMachineAssert is thrown.
- * TODO: Parametric typing, https://github.com/phetsims/query-string-machine/issues/45
  */
 const getValidValue = ( predicate: boolean, key: string, value: IntentionalQSMAny, schema: Schema, message: string ): IntentionalQSMAny => {
   if ( !predicate ) {
