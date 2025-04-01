@@ -74,18 +74,16 @@ type CustomSchema = {
   isValidValue?: ( n: IntentionalQSMAny ) => boolean;
 } & SharedSchema;
 
-
 // Matches TYPE documentation in QueryStringMachine
-type Schema = ( FlagSchema |
+type Schema = FlagSchema |
   BooleanSchema |
   NumberSchema |
   StringSchema |
   ArraySchema |
-  CustomSchema ) & { type: keyof SchemaTypes };
-
+  CustomSchema;
 
 type UnparsedValue = string | null | undefined;
-type ParsedValue<S extends Schema> = ReturnType<SchemaTypes[S['type']]['parse']>;
+type ParsedValue<S extends Schema> = ReturnType<typeof TYPES[S['type']]['parse']>;
 
 // Converts a Schema's type to the actual Typescript type it represents
 type QueryMachineTypeToType<T> = T extends ( 'flag' | 'boolean' ) ? boolean :
@@ -148,6 +146,8 @@ const getValidValue = ( predicate: boolean, key: string, value: IntentionalQSMAn
         const typeSchema = TYPES[ schema.type ];
         queryStringMachineAssert( hasOwnProperty( typeSchema, 'defaultValue' ),
           'Type must have a default value if the provided schema does not have one.' );
+
+        // @ts-expect-error - we know they don't all have this, hence the assertion above.
         value = typeSchema.defaultValue;
       }
     }
@@ -185,7 +185,8 @@ export const QueryStringMachine = {
    */
   getAll: function <SchemaMap extends QSMSchemaObject>( schemaMap: SchemaMap ): QSMParsedParameters<SchemaMap> {
     return {
-      ...this.getAllForString( schemaMap, window.location.search ), // eslint-disable-line phet/no-object-spread-on-non-literals
+      // eslint-disable-next-line phet/no-object-spread-on-non-literals
+      ...this.getAllForString( schemaMap, window.location.search ),
       SCHEMA_MAP: schemaMap
     };
   },
@@ -548,6 +549,8 @@ const getValues = function( key: string, string: string ): Array<IntentionalQSMA
  */
 const validateSchema = function( key: string, schema: Schema ): void {
 
+  const schemaType = TYPES[ schema.type ];
+
   // type is required
   queryStringMachineAssert( schema.hasOwnProperty( 'type' ), `type field is required for key: ${key}` );
 
@@ -575,12 +578,12 @@ const validateSchema = function( key: string, schema: Schema ): void {
 
   // defaultValue has the correct type
   if ( hasOwnProperty( schema, 'defaultValue' ) ) {
-    queryStringMachineAssert( TYPES[ schema.type ].isValidValue( schema.defaultValue ), `defaultValue incorrect type: ${key}` );
+    queryStringMachineAssert( schemaType.isValidValue( schema.defaultValue ), `defaultValue incorrect type: ${key}` );
   }
 
   // validValues have the correct type
   if ( hasOwnProperty( schema, 'validValues' ) ) {
-    ( schema.validValues as IntentionalQSMAny[] ).forEach( value => queryStringMachineAssert( TYPES[ schema.type ].isValidValue( value ), `validValue incorrect type for key: ${key}` ) );
+    ( schema.validValues as IntentionalQSMAny[] ).forEach( value => queryStringMachineAssert( schemaType.isValidValue( value ), `validValue incorrect type for key: ${key}` ) );
   }
 
   // defaultValue is a member of validValues
@@ -597,12 +600,10 @@ const validateSchema = function( key: string, schema: Schema ): void {
   }
 
   // verify that the schema has appropriate properties
-  validateSchemaProperties( key, schema, TYPES[ schema.type ].required, TYPES[ schema.type ].optional );
+  validateSchemaProperties( key, schema, schemaType.required, schemaType.optional );
 
-  // dispatch further validation to an (optional) type-specific function
-  if ( TYPES[ schema.type ].validateSchema ) {
-    // @ts-expect-error - help me, https://github.com/phetsims/query-string-machine/issues/45
-    TYPES[ schema.type ].validateSchema!( key, schema );
+  if ( schema.type === 'array' ) {
+    validateArraySchema( key, schema );
   }
 };
 
@@ -682,7 +683,7 @@ const parseValues = function <S extends Schema>( key: string, schema: S, values:
 
       const type = TYPES[ schema.type ];
       // dispatch parsing of query string to a type-specific function
-      // @ts-expect-error - schema should be specific for that type. https://github.com/phetsims/query-string-machine/issues/45
+      // @ts-expect-error - schema cannot be given the exact type based on the specific value of schema.type
       returnValue = type.parse( key, schema, values[ 0 ] );
     }
   }
@@ -796,25 +797,16 @@ const queryStringMachineAssert = function( predicate: boolean, message: string )
 
 //==================================================================================================================
 
-type SchemaType<T, SpecificSchema> = {
+type SchemaType<T, SpecificSchema extends Schema> = {
   required: Array<keyof SpecificSchema>;
   optional: Array<keyof SpecificSchema>;
-  validateSchema: null | ( ( key: string, schema: SpecificSchema ) => void );
+  validateSchema?: ( ( key: string, schema: SpecificSchema ) => void );
 
   // parse() will attempt to parse the value into the right type, but does not handle all possible inputs. Instead, some
   // incorrect values will pass through to later validation (like isValidValue) to error out.
   parse: ( key: string, schema: SpecificSchema, value: UnparsedValue ) => T | UnparsedValue;
   isValidValue: ( value: IntentionalQSMAny ) => boolean;
   defaultValue?: T;
-};
-
-type SchemaTypes = {
-  flag: SchemaType<boolean, FlagSchema>;
-  boolean: SchemaType<boolean, BooleanSchema>;
-  number: SchemaType<number, NumberSchema>;
-  string: SchemaType<StringType, StringSchema>;
-  array: SchemaType<IntentionalQSMAny[], ArraySchema>;
-  custom: SchemaType<IntentionalQSMAny, CustomSchema>;
 };
 
 /**
@@ -831,61 +823,55 @@ type SchemaTypes = {
  * separator -  array elements are separated by this string, defaults to `,`
  * parse - a function that takes a string and returns an Object
  */
-const TYPES: SchemaTypes = {
+const TYPES = {
   // NOTE: Types for this are currently in phet-types.d.ts! Changes here should be made there also
 
   // value is true if present, false if absent
   flag: {
     required: [],
     optional: [ 'private', 'public' ],
-    validateSchema: null, // no type-specific schema validation
     parse: parseFlag,
     isValidValue: value => value === true || value === false,
     defaultValue: true // only needed for flags marks as 'public: true`
-  },
+  } satisfies SchemaType<boolean, FlagSchema>,
 
   // value is either true or false, e.g. showAnswer=true
   boolean: {
     required: [],
     optional: [ 'defaultValue', 'private', 'public' ],
-    validateSchema: null, // no type-specific schema validation
     parse: parseBoolean,
     isValidValue: value => value === true || value === false
-  },
+  } satisfies SchemaType<boolean, BooleanSchema>,
 
   // value is a number, e.g. frameRate=100
   number: {
     required: [],
     optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'public' ],
-    validateSchema: null, // no type-specific schema validation
     parse: parseNumber,
     isValidValue: value => typeof value === 'number' && !isNaN( value )
-  },
+  } satisfies SchemaType<number, NumberSchema>,
 
   // value is a string, e.g. name=Ringo
   string: {
     required: [],
     optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'public' ],
-    validateSchema: null, // no type-specific schema validation
     parse: parseString,
     isValidValue: value => value === null || typeof value === 'string'
-  },
+  } satisfies SchemaType<StringType, StringSchema>,
 
   // value is an array, e.g. screens=1,2,3
   array: {
     required: [ 'elementSchema' ],
     optional: [ 'defaultValue', 'validValues', 'isValidValue', 'separator', 'validValues', 'private', 'public' ],
-    validateSchema: validateArraySchema,
     parse: parseArray,
     isValidValue: value => Array.isArray( value ) || value === null
-  },
+  } satisfies SchemaType<IntentionalQSMAny[], ArraySchema>,
 
   // value is a custom data type, e.g. color=255,0,255
   custom: {
     required: [ 'parse' ],
     optional: [ 'defaultValue', 'validValues', 'isValidValue', 'private', 'public' ],
-    validateSchema: null, // no type-specific schema validation
     parse: parseCustom,
-    isValidValue: value => true
-  }
-};
+    isValidValue: () => true
+  } satisfies SchemaType<IntentionalQSMAny, CustomSchema>
+} as const;
