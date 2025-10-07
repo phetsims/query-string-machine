@@ -7,8 +7,10 @@
  * @author Michael Kauzmann (PhET Interactive Simulations)
  */
 
+import strictBooleanExpressionsConfig from '../perennial-alias/js/eslint/config/util/strictBooleanExpressionsConfig.mjs';
 import phetLibraryEslintConfig from '../perennial-alias/js/eslint/config/phet-library.eslint.config.mjs';
 
 export default [
-  ...phetLibraryEslintConfig
+  ...phetLibraryEslintConfig,
+  ...strictBooleanExpressionsConfig
 ];

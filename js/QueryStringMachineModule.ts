@@ -790,7 +790,7 @@ const isValidValue = function( value: IntentionalQSMAny, validValues: Intentiona
  */
 const queryStringMachineAssert = function( predicate: boolean, message: string ): void {
   if ( !predicate ) {
-    console && console.log && console.log( message );
+    console.log( message );
     throw new Error( `Query String Machine Assertion failed: ${message}` );
   }
 };
